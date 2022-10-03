@@ -34,7 +34,20 @@ But... that's also all it does. Everything else is up to the user. YARA's just a
 
 YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going in the _region_ of the matches and not just _in_ the matches. In other words I wanted to scope the bytes immediately before and after whatever got matched.
 
-Enter `The Yaralyzer`.
+Enter `The Yaralyzer`, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were interepreted as various character encoding.
+
+# Usage
+Install it with `pip3`, or `pipx`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
+```
+pipx install yaralyzer
+```
+`pip3 install yaralyzer` should also work, though
+
+Run `yaralyzer -h` to see the command line options (screenshot below).
+
+![Help](doc/rendered_images/yaralyze_help.png)
+
+[^1]: As I was until recently.
 
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
@@ -44,11 +57,3 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 Bonus: see what `chardet.detect()` thinks about your bytes. It estimates how likely a given chunk of bytes is in a given encoding while also guessing the language.
 
 ![Font Scan Regex](doc/rendered_images/decoding_and_chardet_table_2.png)
-
-# Usage
-
-Run `yaralyzer -h` to see the command line options (screenshot below).
-
-![Help](doc/rendered_images/yaralyze_help.png)
-
-[^1]: As I was until recently.

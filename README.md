@@ -56,7 +56,7 @@ Displays the raw YARA match result:
 
 ![YARA match](doc/rendered_images/yara_match_result.png)
 
-Display hex, raw python string, and various attempted decodings:
+Display hex, raw python string, and various attempted decodings of both the match and the bytes before and after the match (configurable):
 
 ![Font Scan Slash](doc/rendered_images/font_34_frontslash_scan.png)
 

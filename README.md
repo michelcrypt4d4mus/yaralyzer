@@ -52,6 +52,12 @@ Run `yaralyzer -h` to see the command line options (screenshot below).
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
 
+Displays the raw YARA match result:
+
+![YARA match](doc/rendered_images/yara_match_result.png)
+
+Display hex, raw python string, and various attempted decodings:
+
 ![Font Scan Slash](doc/rendered_images/font_34_frontslash_scan.png)
 
 Bonus: see what `chardet.detect()` thinks about your bytes. It estimates how likely a given chunk of bytes is in a given encoding while also guessing the language.

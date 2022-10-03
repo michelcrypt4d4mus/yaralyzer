@@ -89,7 +89,7 @@ tuning.add_argument('--min-chardet-bytes',
                     type=int)
 
 tuning.add_argument('--suppress-decodes', action='store_true',
-                    help='suppress decode attempts for quoted bytes found in font binaries')
+                    help='suppress decode attempts for matched bytes (only hex/raw output)')
 
 tuning.add_argument('--min-decode-length',
                     help='suppress decode attempts for quoted byte sequences shorter than N',

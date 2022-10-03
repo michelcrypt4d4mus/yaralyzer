@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from os import path
+from os import listdir, path
 from typing import Any, Dict, List, Optional, Union
 
 import yara
@@ -43,6 +43,12 @@ class Yaralyzer:
             rules=yara.compile(source=yara_rules_string),
             bytes_label=path.basename(file_to_scan),
             rules_label=rules_label)
+
+    @classmethod
+    def for_rules_dir(cls, file_to_scan: str, yara_rules_dir: str) -> 'Yaralyzer':
+        """Alternate constructor that will load all .yara files in yara_rules_dir"""
+        rules_files = [path.join(yara_rules_dir, f) for f in listdir(yara_rules_dir) if f.endswith('.yara')]
+        return cls.for_rules_files(file_to_scan, rules_files)
 
     @classmethod
     def for_patterns(cls, file_to_scan: str, patterns: List[str]) -> 'Yaralyzer':
@@ -94,12 +100,6 @@ class Yaralyzer:
         console.print(self.__rich__() + Text(non_match_desc, style='grey') + Text(': '), style='dim')
         console.print(Padding(Text(', ', 'white').join(non_matches_text), (0, 0, 1, 4)))
 
-    def __rich__(self) -> Text:
-        return self._text_rep()
-
-    def __str__(self) -> str:
-        return self.__rich__().plain
-
     def _panel_text(self) -> Text:
         """Inverted colors for the panel at the top of the match section of the output"""
         styles = [reverse_color(YARALYZER_THEME.styles[f"yara.{s}"]) for s in ('scanned', 'rules')]
@@ -109,3 +109,9 @@ class Yaralyzer:
         """Text representation of this YARA scan"""
         txt = Text('').append(self.bytes_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
+
+    def __rich__(self) -> Text:
+        return self._text_rep()
+
+    def __str__(self) -> str:
+        return self.__rich__().plain

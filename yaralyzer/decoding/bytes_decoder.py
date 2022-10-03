@@ -18,11 +18,10 @@ from yaralyzer.decoding.decoding_attempt import DecodingAttempt
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
-from yaralyzer.helpers.bytes_helper import clean_byte_string
 from yaralyzer.helpers.dict_helper import get_dict_key_by_value
 from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG, console
-from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row, empty_decoding_attempts_table,
-     decoding_table_row)
+from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
+     build_decoding_attempts_table, decoding_table_row)
 from yaralyzer.util.logging import log
 
 # Messages used in the table to show true vs. false (a two element array can be indexed by booleans)
@@ -40,7 +39,7 @@ class BytesDecoder:
         self.label = label or bytes_match.label
 
         # Empty table/metrics/etc
-        self.table = empty_decoding_attempts_table(bytes_match)
+        self.table = build_decoding_attempts_table(bytes_match)
         self.was_match_decodable = _build_encodings_metric_dict()
         self.was_match_force_decoded = _build_encodings_metric_dict()
         self.was_match_undecodable = _build_encodings_metric_dict()
@@ -62,7 +61,10 @@ class BytesDecoder:
         console.print(self._generate_decodings_table())
 
     def _generate_decodings_table(self) -> Table:
-        """First rows are the raw / hex views of the bytes"""
+        """First rows are the raw / hex views of the bytes, then attempted decodings"""
+        if YaralyzerConfig.SUPPRESS_DECODES:
+            return self.table
+
         self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT.keys()]
 
         # Attempt decodings we don't usually attempt if chardet is insistent enough

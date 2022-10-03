@@ -49,7 +49,7 @@ yara_r = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-yara_r.add_argument('--yara-rules', '-y',
+yara_r.add_argument('--yara-rules', '-Y',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     dest='yara_rules_files',
@@ -57,7 +57,7 @@ yara_r.add_argument('--yara-rules', '-y',
 
 #parser.add_argument('--rules-dir', '-d', help='directory with YARA rules files (all will be checke)')
 
-yara_r.add_argument('--regex-pattern', '-r',
+yara_r.add_argument('--regex-pattern', '-re',
                     help='build a rule from PATTERN and run it (can be supplied more than once)',
                     metavar='PATTERN',
                     dest='yara_patterns',

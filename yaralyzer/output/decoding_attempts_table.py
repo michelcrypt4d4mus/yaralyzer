@@ -28,7 +28,7 @@ HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
 
 
-def empty_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
+def build_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
     """First rows are the raw / hex views of the bytes"""
     table = Table(show_lines=True, border_style='bytes', header_style='color(101) bold')
 

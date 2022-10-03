@@ -272,26 +272,6 @@ def prefix_with_plain_text_obj(_str: str, style: str, root_style=None) -> Text:
     return Text('', style=root_style or 'white') + Text(_str, style)
 
 
-def generate_subtable(cols, header_style='subtable') -> Table:
-    """Suited for lpacement in larger tables"""
-    table = Table(
-        box=box.SIMPLE,
-        show_edge=False,
-        collapse_padding=True,
-        header_style=header_style,
-        show_lines=False,
-        border_style='grey.dark',
-        expand=True)
-
-    for i, col in enumerate(cols):
-        if i + 1 < len(cols):
-            table.add_column(col, style=DEFAULT_SUBTABLE_COL_STYLES[0], justify='left')
-        else:
-            table.add_column(col, style='off_white', justify='right')
-
-    return table
-
-
 def pad_header(header: str) -> Padding:
     """Would pad anything, not just headers"""
     return Padding(header, HEADER_PADDING)
@@ -348,10 +328,6 @@ def invoke_rich_export(export_method, output_file_basepath) -> str:
     elapsed_time = time.perf_counter() - start_time
     log_and_print(f"'{output_file_path}' written in {elapsed_time:02f} seconds")
     return output_file_path
-
-
-def rich_grid(num_columns: int) -> Table:
-    return Table.grid(*([''] * num_columns))
 
 
 def yaralyzer_show_color_theme() -> None:

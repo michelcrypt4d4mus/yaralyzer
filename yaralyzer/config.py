@@ -1,0 +1,64 @@
+import logging
+from os import environ, path
+
+YARALYZE = 'yaralyze'
+PYTEST_FLAG = 'INVOKED_BY_PYTEST'
+
+# Configuring YARALYZER_LOG_DIR has side effects; see .yaralyzer.example in repo for specifics.
+LOG_LEVEL_ENV_VAR = 'YARALYZER_LOG_LEVEL'
+LOG_DIR_ENV_VAR = 'YARALYZER_LOG_DIR'
+
+# Output suppression
+SUPPRESS_CHARDET_TABLE_ENV_VAR = 'YARALYZER_SUPPRESS_CHARDET_TABLE'
+SUPPRESS_DECODES_ENV_VAR = 'YARALYZER_SUPPRESS_DECODE'
+
+# Skip decoding binary matches over this length
+DEFAULT_MIN_DECODE_LENGTH = 1
+DEFAULT_MAX_DECODE_LENGTH = 256
+MIN_DECODE_LENGTH_ENV_VAR = 'YARALYZER_MIN_DECODE_LENGTH'
+MAX_DECODE_LENGTH_ENV_VAR = 'YARALYZER_MAX_DECODE_LENGTH'
+
+# chardet.detect() related
+DEFAULT_MIN_BYTES_TO_DETECT_ENCODING = 9
+MIN_BYTES_TO_DETECT_ENCODING_ENV_VAR = 'YARALYZER_MIN_BYTES_TO_DETECT_ENCODING'
+DEFAULT_MIN_CHARDET_CONFIDENCE = 2.0
+MIN_CHARDET_CONFIDENCE_ENV_VAR = 'YARALYZER_MIN_CHARDET_CONFIDENCE'
+
+# Number of bytes to show before/after byte previews and decodes. Configured by command line or env var
+SURROUNDING_BYTES_LENGTH_DEFAULT = 64
+SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
+
+
+def is_env_var_set_and_not_false(var_name):
+    """Returns True if var_name is not empty and set to anything other than 'false' (capitalization agnostic)"""
+    if var_name in environ:
+        var_value = environ[var_name]
+        return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'
+    else:
+        return False
+
+
+def is_invoked_by_pytest():
+    """Return true if pytest is running"""
+    return is_env_var_set_and_not_false(PYTEST_FLAG)
+
+
+class YaralyzerConfig:
+    LOG_DIR = environ.get(LOG_DIR_ENV_VAR)
+    LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
+
+    MIN_BYTES_FOR_ENCODING_DETECTION = int(environ.get(
+        MIN_BYTES_TO_DETECT_ENCODING_ENV_VAR,
+        DEFAULT_MIN_BYTES_TO_DETECT_ENCODING)
+    )
+
+    MIN_DECODE_LENGTH = int(environ.get(MIN_DECODE_LENGTH_ENV_VAR, DEFAULT_MIN_DECODE_LENGTH))
+    MAX_DECODE_LENGTH = int(environ.get(MAX_DECODE_LENGTH_ENV_VAR, DEFAULT_MAX_DECODE_LENGTH))
+
+    NUM_SURROUNDING_BYTES = int(environ.get(SURROUNDING_BYTES_ENV_VAR, SURROUNDING_BYTES_LENGTH_DEFAULT))
+
+    SUPPRESS_CHARDET_OUTPUT = is_env_var_set_and_not_false(SUPPRESS_CHARDET_TABLE_ENV_VAR)
+    SUPPRESS_DECODES = is_env_var_set_and_not_false(SUPPRESS_DECODES_ENV_VAR)
+    MIN_CHARDET_CONFIDENCE = float(environ.get(MIN_CHARDET_CONFIDENCE_ENV_VAR, DEFAULT_MIN_CHARDET_CONFIDENCE))
+
+    HIGHLIGHT_STYLE = 'orange1'

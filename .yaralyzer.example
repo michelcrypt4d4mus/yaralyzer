@@ -1,0 +1,56 @@
+# If you place a filed called '.yaralyzer' in your home dir or the current dir environment variables specified
+# in that .yaralyzer file will be added to the environment each time yaralyzer is invoked. (See the `dotenv`
+# package for more details.) This file contains environment variables you can place in .yaralyzer to configure
+# the application above and beyond providing command line options.  Useful if you want to permanently
+# configure options you tend to reuse (e.g. '--maximize-width') so you can stop remembering to type them.
+# Easiest way to do this is probably to just copy this file to one in your home or working directory and customize.
+
+
+# Expand the width of the output to the fit the display window (same as the --maximize-width options)
+#    YARALYZER_MAXIMIZE_WIDTH=True
+
+# Suppress all PDF binary regex matching/scanning/etc
+#    YARALYZER_SUPPRESS_DECODE=False
+
+# Suppress the display of the table showing the the encoding assessments given by `chardet.detect()`
+# about a particular chunk of binary data. (The most important data in the chardet confidence table is
+# redunandant anyways. Only the low likelihood encodings are hidden from the usef)
+#    YARALYZER_SUPPRESS_CHARDET_TABLE=False
+# Minimum confidence to display an encoding in the chardet results table
+#    YARALYZER_MIN_CHARDET_CONFIDENCE=2.0
+
+# Configure how many bytes before and after any binary data should be included in scans and visualizations
+#    PDFAlYZER_SURROUNDING_BYTES=64
+
+# Size thresholds (in bytes) under/over which yaralyzer will NOT make attempts to decode a match.
+# Longer byte sequences are for obvious reasons slower to decode by force.
+# It may feel counterintuitive but larger chunks of random binary are also harder to examine and
+# (in my experience) less likely to be maningful. Consider it - two frontslash characters 20,000 lines apart
+# are more likely to be random than those same frontslashes when placed nearer to each other and
+# in the vicinity of lot of computerized sigils of internet power like `.', `+bacd*?`,. and other regexes.*
+# Keeping the max value number low will do more to affect the speed of the app than ay anything else you
+# can easily configure..
+#
+#    YARALYZER_MIN_DECODE_LENGTH=1
+#    YARALYZER_MAX_DECODE_LENGTH=256
+
+# Minimum bytes to run chardet.detect() on a sequence of bytes
+#     YARALYZER_MIN_BYTES_TO_DETECT_ENCODING
+
+# Directory to write application logs to. Must be an absolute path, not a relative one.
+# These logs are not normally written to a file and the default log level means that the standard behavior
+# is to more or less discard them. Be aware that if you configure this variable a few things will change:
+#
+#   1. Logs WILL NOT be written to STDOUT. They will stream ONLY to files in the configured directory.
+#      This is true even with the -D option.
+#   2. The default log_level will be decreased from WARN (extremely spartan) to INFO (fairly verbose).
+#      The -D option, which sets the log level to DEBUG, will be respected whether or not
+#      YARALYZER_LOG_DIR is configured.
+#
+#     YARALYZER_LOG_DIR=/path/to/yaralyzer/log_dir/
+
+# Log level
+#     YARALYZER_LOG_LEVEL='WARN'
+
+# Path to directory containing Didier Stevens's pdf-parser.py. Only required for extracting binary streams to files.
+#     YARALYZER_PDF_PARSER_PY_PATH=/path/to/pdfparserdotpy/

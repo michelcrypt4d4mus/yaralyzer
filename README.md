@@ -1,5 +1,5 @@
 # THE YARALYZER
-Visually inspect regex matches and their more cloak and dagger cousins, YARA matches, found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](#example-output).
+Visually inspect regex matches (and their sexier, more cloak and dagger cousins, the YARA matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](#example-output).
 
 **PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
 
@@ -24,6 +24,18 @@ yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.ex
 
 The Yaralyzer's functionality was extracted from [The Pdfalyzer](https://github.com/michelcrypt4d4mus/pdfalyzer) when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.
 
+YARA, for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, and more.  Maybe most importantly it provides a standard text based format for
+people to [i]share[/i] their 'roided regexes. All these features are particularly useful when analyzing or reverse engineering software.
+
+But... that's also all it does. Everything else is up to the user. YARA's just a match enginer. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:
+
+1. Bytes between escaped quotes (`\".+\"` and `\'.+\'`)
+1. Bytes between front slashes (`/.+/`). Fron slashes demarcate a regular expression in many implementations and I was trying to see if any of the bytes matching this pattern were _actually_ regexes.
+
+YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going in the _region_ of the matches and not just _in_ the matches. In other words I wanted to scope the bytes immediately before and after whatever got matched.
+
+Enter `The Yaralyzer`.
+
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
 
@@ -34,6 +46,9 @@ Bonus: see what `chardet.detect()` thinks about your bytes. It estimates how lik
 ![Font Scan Regex](doc/rendered_images/decoding_and_chardet_table_2.png)
 
 # Usage
-Run `yaralyzer -h` to see the command line options. Currently they are as follows:
+
+Run `yaralyzer -h` to see the command line options (screenshot below).
 
 ![Help](doc/rendered_images/yaralyze_help.png)
+
+[^1]: As I was until recently.

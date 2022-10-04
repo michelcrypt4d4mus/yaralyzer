@@ -1,5 +1,5 @@
 # Next Release
-* Add `--rules-dir` option for loading all `.yara` files in a directory
+* Add `--rules-dir` option for loading all `.yara` files in directories
 * Add `--regex_modifier` option
 
 # 0.2.0

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
-from os import environ, getcwd, path
+from os import getcwd, path
 
 from rich.console import Console
 from rich.terminal_theme import TerminalTheme

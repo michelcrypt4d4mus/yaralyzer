@@ -2,21 +2,17 @@
 Rich colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
-import re
 import time
 from numbers import Number
 from os import path
 from shutil import get_terminal_size
 from typing import List, Union
 
-from rich import box
 from rich.columns import Columns
 from rich.console import Console
 from rich.errors import MarkupError
-from rich.padding import Padding
 from rich.panel import Panel
 from rich.style import Style
-from rich.table import Table
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 from rich.theme import Theme

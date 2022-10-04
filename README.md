@@ -37,13 +37,13 @@ YARA just tells you the byte position and the matched string but it can't tell y
 
 Enter `The Yaralyzer`, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were interepreted as various character encoding.
 
-# Usage
+# Installation
 Install it with `pip3`, or `pipx`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
 ```
 pipx install yaralyzer
 ```
-`pip3 install yaralyzer` should also work, though
 
+# Usage
 Run `yaralyzer -h` to see the command line options (screenshot below).
 
 ![Help](doc/rendered_images/yaralyze_help.png)

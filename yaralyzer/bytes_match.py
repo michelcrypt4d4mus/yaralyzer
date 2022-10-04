@@ -26,7 +26,8 @@ class BytesMatch:
             length: int,
             label: str,
             ordinal: int,
-            match: Optional[re.Match] = None  # It's rough to get the regex from yara :(
+            match: Optional[re.Match] = None,  # It's rough to get the regex from yara :(
+            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> None:
         """
         Ordinal means it's the Nth match with this regex (not super important but useful)
@@ -47,19 +48,43 @@ class BytesMatch:
         # Adjust the highlighting start point in case this match is very early in the stream
         self.highlight_start_idx = start_idx - self.surrounding_start_idx
         self.highlight_end_idx = self.highlight_start_idx + self.length
-        self.highlight_style = YaralyzerConfig.HIGHLIGHT_STYLE
+        self.highlight_style = highlight_style
 
     @classmethod
-    def from_regex_match(cls, matched_against: bytes, match: re.Match, ordinal: int) -> 'BytesMatch':
-        return cls(matched_against, match.start(), len(match[0]), match.re.pattern, ordinal, match)
+    def from_regex_match(
+            cls,
+            matched_against: bytes,
+            match: re.Match,
+            ordinal: int,
+            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+        ) -> 'BytesMatch':
+        return cls(matched_against, match.start(), len(match[0]), match.re.pattern, ordinal, match, highlight_style)
 
     @classmethod
-    def from_yara_str(cls, matched_against: bytes, rule_name: str, yara_str: dict, ordinal: int) -> 'BytesMatch':
+    def from_yara_str(
+            cls,
+            matched_against: bytes,
+            rule_name: str,
+            yara_str: dict,
+            ordinal: int,
+            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+        ) -> 'BytesMatch':
         """Build a BytesMatch from a yara string match. matched_against is the set of bytes yara was run against"""
-        return cls(matched_against, yara_str[0], len(yara_str[2]), rule_name + ': ' + yara_str[1], ordinal)
+        return cls(
+            matched_against,
+            yara_str[0],
+            len(yara_str[2]),
+            rule_name + ': ' + yara_str[1],
+            ordinal,
+            highlight_style=highlight_style)
 
     @classmethod
-    def for_yara_strings_in_match(cls, matched_against: bytes, yara_match: dict) -> Iterator['BytesMatch']:
+    def for_yara_strings_in_match(
+            cls,
+            matched_against: bytes,
+            yara_match: dict,
+            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+        ) -> Iterator['BytesMatch']:
         """
         Iterator that constructs a BytesMatch for each strings returned as part of a YARA match result dict.
         YARA match result dicts looks like this:
@@ -73,7 +98,7 @@ class BytesMatch:
         }
         """
         for i, yara_str in enumerate(yara_match['strings']):
-            yield(cls.from_yara_str(matched_against, yara_match['rule'], yara_str, i + 1))
+            yield(cls.from_yara_str(matched_against, yara_match['rule'], yara_str, i + 1, highlight_style))
 
     def style_at_position(self, idx) -> str:
         """Get the style for the byte at position idx within the matched bytes"""

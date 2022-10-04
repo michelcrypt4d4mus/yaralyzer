@@ -19,7 +19,7 @@ from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
-from yaralyzer.config import YARALYZE
+from yaralyzer.config import YARALYZE, YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.helpers.file_helper import load_binary_data, load_file
 from yaralyzer.helpers.rich_text_helper import YARALYZER_THEME, console, dim_if, reverse_color
@@ -39,7 +39,8 @@ class Yaralyzer:
             rules: Union[str, yara.Rules],
             rules_label: str,
             scannable: Union[bytes, str],
-            bytes_label: Optional[str] = None
+            bytes_label: Optional[str] = None,
+            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> None:
         """
         If rules is a string it will be compiled by yara
@@ -51,15 +52,16 @@ class Yaralyzer:
             if bytes_label is None:
                 raise TypeError("Must provide bytes_label arg when yaralyzing raw bytes")
 
-            self.bytes = scannable
-            self.bytes_label = bytes_label
+            self.bytes: bytes = scannable
+            self.bytes_label: str = bytes_label
         else:
-            self.bytes = load_binary_data(scannable)
-            self.bytes_label = bytes_label or path.basename(scannable)
+            self.bytes: bytes = load_binary_data(scannable)
+            self.bytes_label: str = bytes_label or path.basename(scannable)
 
-        self.bytes_length = len(self.bytes)
+        self.bytes_length: int = len(self.bytes)
         self.rules: yara.Rules = rules if isinstance(rules, yara.Rules) else yara.compile(source=rules)
         self.rules_label: str = rules_label
+        self.highlight_style: str = highlight_style
         # Outcome racking variables
         self.suppression_notice_queue: list = []
         self.matches: List[YaraMatch] = []
@@ -111,7 +113,7 @@ class Yaralyzer:
         for yara_match in self.matches:
             console.print(yara_match, Text("\n"))
 
-            for match in BytesMatch.for_yara_strings_in_match(self.bytes, yara_match.match):
+            for match in BytesMatch.for_yara_strings_in_match(self.bytes, yara_match.match, self.highlight_style):
                 BytesDecoder(match, yara_match.rule_name).print_decode_attempts()
 
         self._print_non_matches()

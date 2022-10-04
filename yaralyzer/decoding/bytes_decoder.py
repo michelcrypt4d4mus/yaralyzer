@@ -106,7 +106,7 @@ class BytesDecoder:
         panel = Panel(headline, style='decode.subheading', expand=False)
         console.print(panel, justify=CENTER)
 
-    def _track_decode_stats(self):
+    def _track_decode_stats(self) -> None:
         "Track stats about successful vs. forced vs. failed decode attempts"
         for decoding in self.decodings:
             if decoding.failed_to_decode:
@@ -118,7 +118,7 @@ class BytesDecoder:
             if decoding.was_force_decoded:
                 self.was_match_force_decoded[decoding.encoding] += 1
 
-    def _row_from_decoding_attempt(self, decoding: DecodingAttempt) -> 'DecodingTableRow':
+    def _row_from_decoding_attempt(self, decoding: DecodingAttempt) -> DecodingTableRow:
         assessment = self.encoding_detector.get_encoding_assessment(decoding.encoding)
         plain_decoded_string = decoding.decoded_string.plain
         sort_score = assessment.confidence * SCORE_SCALER

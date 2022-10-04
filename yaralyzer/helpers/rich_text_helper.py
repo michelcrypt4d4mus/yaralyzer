@@ -295,7 +295,7 @@ def invoke_rich_export(export_method, output_file_basepath) -> str:
 
 def yaralyzer_show_color_theme() -> None:
     """Utility method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
-    console.print(Panel('The yaralyzer Color Theme', style='reverse'))
+    console.print(Panel('The Yaralyzer Color Theme', style='reverse'))
 
     colors = [
         prefix_with_plain_text_obj(name[:MAX_THEME_COL_SIZE], style=str(style)).append(' ')

@@ -39,6 +39,7 @@ class YaraMatch:
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        yield Text()
         yield Padding(Panel(self.label, expand=False, style=f"reverse"), MATCH_PADDING)
         yield Padding(Panel(_rich_yara_match(self.match)), MATCH_PADDING)
 

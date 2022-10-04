@@ -3,7 +3,7 @@ Tests for invoking yaralyze script from shell.
 """
 from argparse import ArgumentError
 from math import isclose
-from os import environ
+from os import environ, path
 from subprocess import CalledProcessError, check_output
 
 import pytest
@@ -21,9 +21,18 @@ def test_help_option():
     assert len(help_text.split('\n')) > 50
 
 
-def test_argument_exceptions(il_tulipano_path, tulips_yara_path):
+def test_no_rule_args(il_tulipano_path):
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path)
+
+
+def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
     with pytest.raises(CalledProcessError):
         _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
 
 
 def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):

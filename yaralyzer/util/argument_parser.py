@@ -42,9 +42,8 @@ EPILOG = "* Values for various config options can be set permanently by a .yaral
 
 # Positional args, version, help, etc
 parser = ArgumentParser(formatter_class=ExplicitDefaultsHelpFormatter, description=DESCRIPTION, epilog=EPILOG)
-parser.add_argument('--version', action='version', version=f"yaralyzer {version('yaralyzer')}")
+parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
-
 
 yara_r = parser.add_argument_group(
     'YARA RULES',
@@ -176,6 +175,10 @@ def parse_arguments(args: Optional[Namespace] = None):
     If args are passed neither rules nor a regex need be provided as it is assumed
     the constructor will instantiate a Yaralyzer object directly.
     """
+    if '--version' in sys.argv:
+        print(f"yaralyzer {version('yaralyzer')}")
+        sys.exit()
+
     used_as_library = args is not None
     args = args or parser.parse_args()
     args.invoked_at_str = timestamp_for_filename()

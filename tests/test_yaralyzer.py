@@ -1,5 +1,5 @@
 """
-Tests for the Yaralyzer class.
+Tests for the Yaralyzer class itself.
 """
 from os.path import dirname
 

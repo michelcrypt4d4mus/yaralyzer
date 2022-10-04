@@ -51,6 +51,25 @@ Run `yaralyzer -h` to see the command line options (screenshot below).
 ### Configuration
 If you place a filed called `.yaralyzer` in your home dir or the current dir environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked, permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
 
+### As A Library
+[`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class; it has a variety of constructors supporting:
+
+1. Creating a YARA rule from a string
+1. Loading YARA rules from files
+1. Loading YARA rules from all `.yara` file in a directory
+1. Scanning `bytes`
+1. Scanning a file
+
+Should you want to iterate over the `BytesMatch` (very slightly jazzed up `re.Match`) and `BytesDecoder` (tracks decoding attempt stats) objects returned by The Yaralyzer, you can do so like this:
+
+```python
+from yaralyzer.yaralyzer import Yaralyzer
+yaralyzer = Yaralyzer.for_rules_files(['/secret/rule.yara'], 'lacan_buys_the_dip.pdf')
+
+for bytes_match, bytes_decoder in yaralyzer.match_iterator():
+    do_stuff()
+```
+
 [^1]: As I was until recently.
 
 # Example Output

@@ -20,7 +20,6 @@ from rich.theme import Theme
 from yaralyzer.config import is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.logging import log, log_and_print
 
-
 # Colors
 BYTES = 'color(100) dim'
 BYTES_NO_DIM = 'color(100)'
@@ -28,20 +27,13 @@ BYTES_BRIGHTEST = 'color(220)'
 BYTES_BRIGHTER = 'orange1'
 BYTES_HIGHLIGHT = 'color(136)'
 DANGER_HEADER = 'color(88) on white'  # Red
-DEFAULT_LABEL_STYLE = 'yellow'
-FONT_OBJ_BLUE = 'deep_sky_blue4 bold'
 DARK_GREY = 'color(236)'
 GREY = 'color(241)'
 GREY_ADDRESS = 'color(238)'
 PEACH = 'color(215)'
 
-# PDF object styles
-PDF_ARRAY = 'color(120)'
-PDF_NON_TREE_REF = 'color(243)'
-
-
 # Theme used by main console
-YARALYZER_THEME = Theme({
+YARALYZER_THEME_DICT = {
     # colors
     'dark_orange': 'color(58)',
     'grey': GREY,
@@ -53,10 +45,6 @@ YARALYZER_THEME = Theme({
     'off_white': 'color(245)',
     'zero_bytes': 'color(20)',
     # data types
-    'address': GREY_ADDRESS,
-    'decode.section_header': 'color(100) reverse',
-    'decode.subheading': PEACH,
-    'decode.subheading_2': 'color(215) dim italic',
     'encoding': 'color(158) underline bold',
     'encoding.header': 'color(158) bold',
     'encoding.language': 'dark_green italic',
@@ -64,11 +52,10 @@ YARALYZER_THEME = Theme({
     'regex': 'color(218) dim',
     'no_attempt': "color(60) dim italic",
     # design elements
-    'subtable': 'color(8) on color(232)',
+    'decode.section_header': 'color(100) reverse',
+    'decode.subheading': PEACH,
+    'decode.subheading_2': 'color(215) dim italic',
     'headline': 'bold white underline',
-    'header.minor': 'color(249) bold',
-    'header.danger': DANGER_HEADER,
-    'header.danger_reverse': f'{DANGER_HEADER} reverse',
     # bytes
     'ascii': 'color(58)',
     'ascii_unprintable': 'color(131)',
@@ -76,18 +63,6 @@ YARALYZER_THEME = Theme({
     'bytes.title_dim': 'orange1 dim',
     'bytes.title': BYTES_BRIGHTER,
     'bytes.decoded': BYTES_BRIGHTEST,
-    # fonts
-    'font.property': 'color(135)',
-    'font.title': 'reverse dark_blue on color(253)',
-    # charmap
-    'charmap.title': 'color(18) reverse on white dim',
-    'charmap.prepared_title': 'color(23) reverse on white dim',
-    'charmap.prepared': 'color(106) dim',
-    'charmap.byte': 'color(58)',
-    'charmap.char': 'color(120) bold',
-    # PDF objects
-    'pdf.array': PDF_ARRAY,
-    'pdf.non_tree_ref': PDF_NON_TREE_REF,
     # yara
     'yara.key': DARK_GREY,
     'yara.match_var': 'color(156) italic',
@@ -98,31 +73,11 @@ YARALYZER_THEME = Theme({
     'yara.hex': 'color(98)',
     'yara.scanned': Style(color='yellow', underline=True, bold=True),
     'yara.rules':  Style(color='color(135)', underline=True, bold=True),
-    #'yara.rules': 'color(135) bold underline',
-    # neutral log events
-    'event.attn': 'bold bright_cyan',
-    'event.lowpriority': 'bright_black',
-    # good log events
-    'event.good': 'green4',
-    'event.better': 'turquoise4',
-    'event.reallygood': 'dark_cyan',
-    'event.reallygreat': 'spring_green1',
-    'event.great': 'sea_green2',
-    'event.evenbetter': 'chartreuse1',
-    'event.best': 'green1',
-    'event.siren': 'blink bright_white on red3',
-    # warn log events
-    'warn': 'bright_yellow',
-    'warn.mild': 'yellow2',
-    'warn.milder': 'dark_orange3',
-    'warn.harsh': 'reverse bright_yellow',
     # error log events
     'error': 'bright_red',
-    'milderror': 'red',
-    'fail': 'bold reverse red',
-    'red_alert': 'blink bold red reverse',
-})
+}
 
+YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))

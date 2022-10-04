@@ -9,12 +9,13 @@ from typing import Optional
 from rich_argparse import RichHelpFormatter
 
 from yaralyzer.config import (DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENGTH,
-     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, LOG_DIR_ENV_VAR, SURROUNDING_BYTES_LENGTH_DEFAULT,
+     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, LOG_DIR_ENV_VAR,
      YaralyzerConfig)
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.rich_text_helper import console, console_width_possibilities
+from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 
 
@@ -31,6 +32,7 @@ class ExplicitDefaultsHelpFormatter(RichHelpFormatter):
             return super()._get_help_string(action)
 
 
+YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'yara_patterns']
 DESCRIPTION = "Get a good hard look at all the byte sequences that make up a YARA rule match. "
 
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
@@ -44,23 +46,32 @@ parser = ArgumentParser(formatter_class=ExplicitDefaultsHelpFormatter, descripti
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 
-yara_r = parser.add_argument_group(
+source = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-yara_r.add_argument('--yara-rules', '-Y',
+source.add_argument('--yara-file', '-Y',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
-                    dest='yara_rules_files',
-                    metavar='FILE')
+                    metavar='FILE',
+                    dest='yara_rules_files')
 
-#parser.add_argument('--rules-dir', '-d', help='directory with YARA rules files (all will be checke)')
+source.add_argument('--rules-dir', '-dir',
+                    help='directory with .yara files (can be supplied more than once)',
+                    action='append',
+                    metavar='DIR',
+                    dest='yara_rules_dirs')
 
-yara_r.add_argument('--regex-pattern', '-re',
+source.add_argument('--regex-pattern', '-re',
                     help='build a rule from PATTERN and run it (can be supplied more than once)',
+                    action='append',
                     metavar='PATTERN',
-                    dest='yara_patterns',
-                    action='append')
+                    dest='yara_patterns')
+
+source.add_argument('--regex-modifier', '-mod',
+                    help='optional modifier keyword for regexes',
+                    metavar='MODIFIER',
+                    choices=YARA_REGEX_MODIFIERS)
 
 # Fine tuning
 tuning = parser.add_argument_group(
@@ -74,7 +85,7 @@ tuning.add_argument('--maximize-width', action='store_true',
 
 tuning.add_argument('--surrounding-bytes',
                     help="number of bytes to display/decode before and after YARA match start positions",
-                    default=SURROUNDING_BYTES_LENGTH_DEFAULT,
+                    default=DEFAULT_SURROUNDING_BYTES,
                     metavar='N',
                     type=int)
 
@@ -185,11 +196,13 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.debug:
         log.setLevel(logging.DEBUG)
 
+    yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
+
     if used_as_library:
         pass
-    elif args.yara_rules_files and args.yara_patterns:
-        raise ArgumentError(None, "Cannot specify both a regex and a YARA file (yet).")
-    elif not args.yara_rules_files and not args.yara_patterns:
+    elif len(yara_rules_args) > 1:
+        raise ArgumentError(None, "Cannot mix rules files, rules dirs, and regex patterns (for now).")
+    elif len(yara_rules_args) == 0:
         raise ArgumentError(None, "You must provide either a YARA rules file or a regex pattern")
     else:
         log_invocation()
@@ -197,10 +210,15 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.maximize_width:
         rich_text_helper.console.width = max(console_width_possibilities())
 
+    #### Check against defaults to avoid overriding env var configured optoins
     # Suppressing/limiting output
-    YaralyzerConfig.MIN_DECODE_LENGTH = args.min_decode_length
-    YaralyzerConfig.MAX_DECODE_LENGTH = args.max_decode_length
-    YaralyzerConfig.NUM_SURROUNDING_BYTES = args.surrounding_bytes
+    if args.min_decode_length != DEFAULT_MIN_DECODE_LENGTH:
+        YaralyzerConfig.MIN_DECODE_LENGTH = args.min_decode_length
+    if args.max_decode_length != DEFAULT_MAX_DECODE_LENGTH:
+        YaralyzerConfig.MAX_DECODE_LENGTH = args.max_decode_length
+
+    if args.surrounding_bytes != DEFAULT_SURROUNDING_BYTES:
+        YaralyzerConfig.NUM_SURROUNDING_BYTES = args.surrounding_bytes
 
     if args.suppress_decodes:
         YaralyzerConfig.SUPPRESS_DECODES = args.suppress_decodes
@@ -225,4 +243,5 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_argparse_result(args)
         log_current_config()
 
+    #import pdb;pdb.set_trace()
     return args

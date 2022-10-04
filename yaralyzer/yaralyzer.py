@@ -10,7 +10,7 @@ import re
 from collections import defaultdict
 from functools import partial
 from os import listdir, path
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import yara
 from rich.padding import Padding
@@ -101,13 +101,18 @@ class Yaralyzer:
             scannable: Union[bytes, str],
             bytes_label: Optional[str] = None
         ) -> 'Yaralyzer':
-        """Alternate constructor taking regex pattern strings as arguments. Label is comma separated patterns"""
+        """Constructor taking regex pattern strings. Rules label will be comma separated patterns"""
         yara_rule_strings = [yara_rule_string(p, f"{YARALYZE}_{i + 1}") for i, p in enumerate(patterns)]
         yara_rules = newline_join(yara_rule_strings)
         return cls(yara_rules, comma_join(patterns), scannable, bytes_label)
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them"""
+        for bytes_match in self.match_iterator():
+            log.debug(bytes_match)
+
+    def match_iterator(self) -> Iterator[BytesMatch]:
+        """Iterator version of yaralyze. Yields BytesMatches sequentially back to caller."""
         self.rules.match(data=self.bytes, callback=self._yara_callback)
 
         for yara_match in self.matches:
@@ -115,6 +120,7 @@ class Yaralyzer:
 
             for match in BytesMatch.for_yara_strings_in_match(self.bytes, yara_match.match, self.highlight_style):
                 BytesDecoder(match, yara_match.rule_name).print_decode_attempts()
+                yield(match)
 
         self._print_non_matches()
 

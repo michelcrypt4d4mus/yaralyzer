@@ -127,7 +127,7 @@ class BytesDecoder:
         if plain_decoded_string in self.decoded_strings.values():
             encoding_with_same_output = get_dict_key_by_value(self.decoded_strings, plain_decoded_string)
             display_text = Text('same output as ', style='color(66) dim italic')
-            display_text.append(encoding_with_same_output, style='encoding').append('...', style='white')
+            display_text.append(encoding_with_same_output, style=ENCODING).append('...', style='white')
         else:
             self.decoded_strings[decoding.encoding] = plain_decoded_string
             display_text = decoding.decoded_string

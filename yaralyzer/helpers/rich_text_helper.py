@@ -128,14 +128,6 @@ YARALYZER_THEME = Theme({
 })
 
 
-TYPE_STYLES = {
-    Number: 'bright_cyan bold',
-    dict: 'color(64)',
-    list: 'color(143)',
-    str: 'bright_white bold',
-}
-
-
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))
 METER_INTERVAL = (100 / float(len(METER_COLORS))) + 0.1
@@ -144,10 +136,7 @@ UNDERLINE_CONFIDENCE_THRESHOLD = 90
 BOLD_CONFIDENCE_THRESHOLD = 60
 DIM_COUNTRY_THRESHOLD = 25
 
-
 # Table stuff
-DEFAULT_SUBTABLE_COL_STYLES = ['white', 'bright_white']
-HEADER_PADDING = (1, 1)
 CENTER = 'center'
 FOLD = 'fold'
 LEFT = 'left'
@@ -157,15 +146,9 @@ RIGHT = 'right'
 # For the table shown by running yaralyzer_show_color_theme
 MAX_THEME_COL_SIZE = 35
 
-
 # Text object defaults mostly for table entries
 NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
 DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
-NOT_FOUND_MSG = Text('(not found)', style='grey.dark_italic')
-
-def na_txt(style: Union[str, Style] = 'white'):
-    return Text('N/A', style=style)
-
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -192,7 +175,6 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
         (255, 255, 255),
     ],
 )
-
 
 # Keys are export function names, values are options we always want to use w/that export function
 # Not meant for direct access; instead call invoke_rich_export().
@@ -249,32 +231,13 @@ def console_print_with_fallback(_string, style=None) -> None:
         print(_string.plain if isinstance(_string, Text) else _string)
 
 
-def get_label_style(label: str) -> str:
-    """Lookup a style based on the label string"""
-    return next((ls[1] for ls in LABEL_STYLES if ls[0].search(label)), DEFAULT_LABEL_STYLE)
-
-
-def get_type_style(klass) -> str:
-    """Style for various types of data (e.g. DictionaryObject)"""
-    return next((TYPE_STYLES[t] for t in TYPE_STYLES.keys() if issubclass(klass, t)), None)
-
-
-def get_type_string_style(klass) -> str:
-    """Dim version of get_type_style() for non primitives, white for primitives"""
-    if issubclass(klass, (str, Number)):
-        return 'white'
-    else:
-        return f"{get_type_style(klass)} dim"
+def na_txt(style: Union[str, Style] = 'white'):
+    return Text('N/A', style=style)
 
 
 def prefix_with_plain_text_obj(_str: str, style: str, root_style=None) -> Text:
     """Sometimes you need a Text() object to start plain lest the underline or whatever last forever"""
     return Text('', style=root_style or 'white') + Text(_str, style)
-
-
-def pad_header(header: str) -> Padding:
-    """Would pad anything, not just headers"""
-    return Padding(header, HEADER_PADDING)
 
 
 def meter_style(meter_pct):

@@ -1,7 +1,18 @@
 """
-Rich text decorator for YARA matches objects
+Rich text decorator for YARA match dicts, which look like this:
+
+{
+    'tags': ['foo', 'bar'],
+    'matches': True,
+    'namespace': 'default',
+    'rule': 'my_rule',
+    'meta': {},
+    'strings': [
+        (81L, '$a', 'abc'),
+        (141L, '$b', 'def')
+    ]
+}
 """
-from cmath import exp
 import re
 from numbers import Number
 from typing import Any, Dict
@@ -35,7 +46,7 @@ class YaraMatch:
     def __init__(self, match: dict, matched_against_bytes_label: Text) -> None:
         self.match: dict = match
         self.rule_name = match['rule']
-        self.label: Text = matched_against_bytes_label.copy().append(f" matched rule: '", style='on bright_black bold')
+        self.label: Text = matched_against_bytes_label.copy().append(f" matched rule: '", style='matched_rule')
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:

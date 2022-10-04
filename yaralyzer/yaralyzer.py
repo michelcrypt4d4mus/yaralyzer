@@ -132,7 +132,7 @@ class Yaralyzer:
         for yara_match in self.matches:
             console.print(yara_match, Text("\n"))
 
-            for match in BytesMatch.for_yara_strings_in_match(self.bytes, yara_match.match, self.highlight_style):
+            for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
                 decoder.print_decode_attempts()
                 yield match, decoder

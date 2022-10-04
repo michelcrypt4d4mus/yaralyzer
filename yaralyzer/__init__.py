@@ -23,7 +23,10 @@ def yaralyze():
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
     elif args.yara_patterns:
-        yaralyzer = Yaralyzer.for_patterns(args.yara_patterns, args.file_to_scan_path, regex_modifier=args.regex_modifier)
+        yaralyzer = Yaralyzer.for_patterns(
+            args.yara_patterns,
+            args.file_to_scan_path,
+            regex_modifier=args.regex_modifier)
     elif args.yara_rules_dirs:
         yaralyzer = Yaralyzer.for_rules_dirs(args.yara_rules_dirs, args.file_to_scan_path)
     else:

@@ -7,7 +7,7 @@ from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.yaralyzer import Yaralyzer
 
-EXPECTED_LINES = 814
+EXPECTED_LINES = 815
 
 
 def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):

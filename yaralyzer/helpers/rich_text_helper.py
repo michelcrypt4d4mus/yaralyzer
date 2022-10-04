@@ -64,6 +64,7 @@ YARALYZER_THEME_DICT = {
     'bytes.title': BYTES_BRIGHTER,
     'bytes.decoded': BYTES_BRIGHTEST,
     # yara
+    'matched_rule': 'on bright_black bold',
     'yara.key': DARK_GREY,
     'yara.match_var': 'color(156) italic',
     'yara.string': 'white',

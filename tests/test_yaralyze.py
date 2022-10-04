@@ -42,7 +42,7 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
     counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
-    assert all(c == 814 for c in counts) == True
+    assert all(c == 815 for c in counts) == True
 
 
 def _run_with_args(file_to_scan, *args) -> str:

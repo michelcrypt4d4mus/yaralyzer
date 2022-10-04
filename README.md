@@ -35,10 +35,10 @@ But... that's also all it does. Everything else is up to the user. YARA's just a
 
 YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going in the _region_ of the matches and not just _in_ the matches. In other words I wanted to scope the bytes immediately before and after whatever got matched.
 
-Enter `The Yaralyzer`, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were interepreted as various character encoding.
+Enter The Yaralyzer, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were interepreted as various character encoding.
 
 # Installation
-Install it with `pip3`, or `pipx`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
+Install it with [`pipx`](https://pypa.github.io/pipx/) or `pip3`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
 ```
 pipx install yaralyzer
 ```

@@ -62,8 +62,6 @@ class BytesDecoder:
 
     def _generate_decodings_table(self) -> Table:
         """First rows are the raw / hex views of the bytes, then attempted decodings"""
-        print("woop")
-        #import pdb;pdb.set_trace()
         if YaralyzerConfig.SUPPRESS_DECODES or \
                 self.bytes_match.match_length < YaralyzerConfig.MIN_DECODE_LENGTH or \
                 self.bytes_match.match_length > YaralyzerConfig.MAX_DECODE_LENGTH:

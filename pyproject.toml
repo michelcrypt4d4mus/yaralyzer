@@ -27,7 +27,6 @@ keywords = [
 ]
 
 classifiers = [
-    "Topic :: Artistic Software",
     "Topic :: Security",
     "Topic :: Scientific/Engineering :: Visualization",
 ]

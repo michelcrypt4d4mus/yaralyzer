@@ -15,6 +15,8 @@ from typing import Optional
 
 import yara
 
+from yaralyzer.util.logging import log
+
 RULE_TEMPLATE = """
 rule {rule_name} {{
     meta:
@@ -28,7 +30,9 @@ rule {rule_name} {{
 
 
 def yara_rule_string(pattern: str, rule_name: str, string_label: Optional[str] = 'pattern'):
-    return RULE_TEMPLATE.format(rule_name=rule_name, string_label=string_label, pattern=pattern)
+    rule = RULE_TEMPLATE.format(rule_name=rule_name, string_label=string_label, pattern=pattern)
+    log.debug(f"Built YARA rule: \n{rule}")
+    return rule
 
 
 def build_yara_rule(pattern: str, rule_name: str, string_label: Optional[str] = 'pattern'):

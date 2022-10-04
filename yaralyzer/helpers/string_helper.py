@@ -2,6 +2,10 @@ from functools import partial
 from typing import Any, Callable, List
 
 
+def escape_yara_pattern(pattern: str) -> str:
+    return pattern.replace('/', '\\/')
+
+
 def line_count(_string: str) -> int:
     return len(_string.split("\n"))
 

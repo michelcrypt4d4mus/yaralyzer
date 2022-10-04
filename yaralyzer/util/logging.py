@@ -24,12 +24,14 @@ Python log levels for reference:
     DEBUG 10
     NOTSET 0
 """
-
 import logging
+import sys
 from os import environ, path
 from rich.logging import RichHandler
 
 from yaralyzer.config import YaralyzerConfig
+
+ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
 
 
 def configure_logger(log_label: str) -> logging.Logger:
@@ -82,6 +84,28 @@ def log_current_config():
         msg += f"   {k: >35}  {config_dict[k]}\n"
 
     log.info(msg)
+
+
+def log_invocation() -> None:
+    """Log the command used to launch the yaralyzer to the invocation log"""
+    msg = f"THE INVOCATION: '{' '.join(sys.argv)}'"
+    log.info(msg)
+    invocation_log.info(msg)
+
+
+def log_argparse_result(args):
+    """Logs the result of argparse"""
+    args_dict = vars(args)
+    log_msg = 'argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+
+    for arg_var in sorted(args_dict.keys()):
+        arg_val = args_dict[arg_var]
+        row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
+        log_msg += row
+
+    log_msg += "\n"
+    invocation_log.info(log_msg)
+    log.info(log_msg)
 
 
 # Suppress annoying chardet library logs

@@ -15,7 +15,7 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.rich_text_helper import console, console_width_possibilities
-from yaralyzer.util.logging import invocation_log, log, log_current_config
+from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 
 
 # NamedTuple to keep our argument selection orderly
@@ -31,7 +31,6 @@ class ExplicitDefaultsHelpFormatter(RichHelpFormatter):
             return super()._get_help_string(action)
 
 
-ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
 DESCRIPTION = "Get a good hard look at all the byte sequences that make up a YARA rule match. "
 
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
@@ -193,7 +192,7 @@ def parse_arguments(args: Optional[Namespace] = None):
     elif not args.yara_rules_files and not args.yara_patterns:
         raise ArgumentError(None, "You must provide either a YARA rules file or a regex pattern")
     else:
-        _log_invocation()
+        log_invocation()
 
     if args.maximize_width:
         rich_text_helper.console.width = max(console_width_possibilities())
@@ -223,29 +222,7 @@ def parse_arguments(args: Optional[Namespace] = None):
         log.warning('--output-dir provided but no export option was chosen')
 
     if not used_as_library:
-        _log_argparse_result(args)
+        log_argparse_result(args)
         log_current_config()
 
     return args
-
-
-def _log_invocation() -> None:
-    """Log the command used to launch the yaralyzer to the invocation log"""
-    msg = f"THE INVOCATION: '{' '.join(sys.argv)}'"
-    log.info(msg)
-    invocation_log.info(msg)
-
-
-def _log_argparse_result(args):
-    """Logs the result of argparse"""
-    args_dict = vars(args)
-    log_msg = 'argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
-
-    for arg_var in sorted(args_dict.keys()):
-        arg_val = args_dict[arg_var]
-        row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
-        log_msg += row
-
-    log_msg += "\n"
-    invocation_log.info(log_msg)
-    log.info(log_msg)

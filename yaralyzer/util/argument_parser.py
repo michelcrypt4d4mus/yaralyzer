@@ -1,9 +1,10 @@
 import logging
 import sys
-from argparse import ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser
+from argparse import ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
 from os import environ, getcwd, path
+from typing import Optional
 
 from rich_argparse import RichHelpFormatter
 
@@ -14,7 +15,7 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.rich_text_helper import console, console_width_possibilities
-from yaralyzer.util.logging import invocation_log, log, log_and_print, log_current_config
+from yaralyzer.util.logging import invocation_log, log, log_current_config
 
 
 # NamedTuple to keep our argument selection orderly
@@ -169,21 +170,27 @@ debug.add_argument('-D', '--debug', action='store_true',
                     help='show verbose debug log output')
 
 
-# The Parsening Begins
-def parse_arguments():
-    """Parse command line args. Most settings are communicated to the app by setting env vars"""
-    args = parser.parse_args()
+def parse_arguments(args: Optional[Namespace] = None):
+    """
+    Parse command line args. Most settings can be communicated to the app by setting env vars.
+    If args are passed neither rules nor a regex need be provided as it is assumed
+    the constructor will instantiate a Yaralyzer object directly.
+    """
+    used_as_library = args is not None
+    args = args or parser.parse_args()
+    args.invoked_at_str = timestamp_for_filename()
 
     if args.debug:
         log.setLevel(logging.DEBUG)
 
-    _log_invocation()
-    args.invoked_at_str = timestamp_for_filename()
-
-    if args.yara_rules_files and args.yara_patterns:
+    if used_as_library:
+        pass
+    elif args.yara_rules_files and args.yara_patterns:
         raise ArgumentError(None, "Cannot specify both a regex and a YARA file (yet).")
     elif not args.yara_rules_files and not args.yara_patterns:
         raise ArgumentError(None, "You must provide either a YARA rules file or a regex pattern")
+    else:
+        _log_invocation()
 
     if args.maximize_width:
         rich_text_helper.console.width = max(console_width_possibilities())
@@ -212,8 +219,10 @@ def parse_arguments():
     elif args.output_dir:
         log.warning('--output-dir provided but no export option was chosen')
 
-    _log_argparse_result(args)
-    log_current_config()
+    if not used_as_library:
+        _log_argparse_result(args)
+        log_current_config()
+
     return args
 
 

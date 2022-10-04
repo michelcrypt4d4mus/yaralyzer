@@ -21,9 +21,9 @@ def yaralyze():
     args = parse_arguments()
 
     if args.yara_rules_files:
-        yaralyzer = Yaralyzer.for_rules_files(args.file_to_scan_path, args.yara_rules_files)
+        yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
     elif args.yara_patterns:
-        yaralyzer = Yaralyzer.for_patterns(args.file_to_scan_path, args.yara_patterns)
+        yaralyzer = Yaralyzer.for_patterns(args.yara_patterns, args.file_to_scan_path)
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")
 

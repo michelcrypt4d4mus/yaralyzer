@@ -28,6 +28,13 @@ class RegexMatchMetrics:
     def num_matches_skipped_for_being_too_big(self) -> int:
         return sum({k: v for k, v in self.skipped_matches_lengths.items() if k > 0}.values())
 
+    def __eq__(self, other):
+        for k, v in vars(self).items():
+            if v != vars(other)[k]:
+                return False
+
+        return True
+
     def __str__(self):
         return f"<matches: {self.match_count}, " + \
                f"bytes: {self.bytes_matched}, " + \

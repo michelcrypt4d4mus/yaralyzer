@@ -33,7 +33,7 @@ class ExplicitDefaultsHelpFormatter(RichHelpFormatter):
 
 
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'yara_patterns']
-DESCRIPTION = "Get a good hard look at all the byte sequences that make up a YARA rule match. "
+DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "
 
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
          "see the documentation for details.\n" + \
@@ -56,7 +56,7 @@ source.add_argument('--yara-file', '-Y',
                     metavar='FILE',
                     dest='yara_rules_files')
 
-source.add_argument('--rules-dir', '-dir',
+source.add_argument('--rule-dir', '-dir',
                     help='directory with .yara files (can be supplied more than once)',
                     action='append',
                     metavar='DIR',

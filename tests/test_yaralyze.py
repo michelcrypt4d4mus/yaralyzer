@@ -1,7 +1,6 @@
 """
 Tests for invoking yaralyze script from shell.
 """
-from argparse import ArgumentError
 from math import isclose
 from os import environ, path
 from subprocess import CalledProcessError, check_output
@@ -17,8 +16,7 @@ from yaralyzer.helpers.string_helper import line_count
 def test_help_option():
     help_text = _run_with_args('-h')
     assert 'maximize-width' in help_text
-    assert len(help_text) > 2000
-    assert len(help_text.split('\n')) > 50
+    _assert_line_count_within_range(103, help_text)
 
 
 def test_no_rule_args(il_tulipano_path):
@@ -44,9 +42,7 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
     counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
-    assert all([c == 814 for c in counts]) == True
-    assert line_count(with_pattern_output) == line_count(with_yara_file_output)
-    _assert_line_count_within_range(814, with_yara_file_output)
+    assert all(c == 814 for c in counts) == True
 
 
 def _run_with_args(file_to_scan, *args) -> str:

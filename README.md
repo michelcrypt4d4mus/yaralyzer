@@ -49,7 +49,7 @@ Run `yaralyzer -h` to see the command line options (screenshot below).
 ![Help](doc/rendered_images/yaralyze_help.png)
 
 ### Configuration
-If you place a filed called `.yaralyzer` in your home dir or the current dir environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked, permanently configuring various command line options so you can avoid typing them over and over. See the example file [.yaralyzer.example](.yaralyzer.example) to see which options can be configured this way.
+If you place a filed called `.yaralyzer` in your home dir or the current dir environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked, permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
 
 [^1]: As I was until recently.
 

@@ -41,7 +41,10 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
     # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
     with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
     # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
+    with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
+    counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
+    assert all([c == 814 for c in counts]) == True
     assert line_count(with_pattern_output) == line_count(with_yara_file_output)
     _assert_line_count_within_range(814, with_yara_file_output)
 

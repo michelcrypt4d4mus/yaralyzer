@@ -52,8 +52,9 @@ Run `yaralyzer -h` to see the command line options (screenshot below).
 If you place a filed called `.yaralyzer` in your home dir or the current dir environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked, permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
 
 ### As A Library
-[`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class; it has a variety of constructors supporting:
+[`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class. It has a variety of constructors supporting:
 
+1. Precompiled YARA rules
 1. Creating a YARA rule from a string
 1. Loading YARA rules from files
 1. Loading YARA rules from all `.yara` file in a directory

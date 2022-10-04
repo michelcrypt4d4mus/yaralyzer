@@ -1,8 +1,6 @@
 # THE YARALYZER
 Visually inspect regex matches (and their sexier, more cloak and dagger cousins, the YARA matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](#example-output).
 
-**PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
-
 #### Quick Start
 ```sh
 pipx install yaralyzer
@@ -13,6 +11,9 @@ yaralyze --yara-rules /secret/vault/sigmunds_malware_rules.yara lacan_buys_the_d
 # Scan against an arbitrary regular expression:
 yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.exe
 ```
+
+**PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
+
 
 #### What It Do
 1. **See the actual bytes your YARA rules are matching.** No more digging around copy/pasting the start positions reported by YARA into your favorite hex editor. Displays both the bytes matched by YARA as well as a configurable number of bytes before and after each match.

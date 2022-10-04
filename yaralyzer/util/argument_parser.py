@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
-from os import environ, getcwd, path
+from os import getcwd
 from typing import Optional
 
 from rich_argparse import RichHelpFormatter
@@ -15,6 +15,7 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.rich_text_helper import console, console_width_possibilities
+from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 
@@ -69,7 +70,7 @@ source.add_argument('--regex-pattern', '-re',
                     dest='yara_patterns')
 
 source.add_argument('--regex-modifier', '-mod',
-                    help='optional modifier keyword for regexes',
+                    help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
                     metavar='MODIFIER',
                     choices=YARA_REGEX_MODIFIERS)
 
@@ -114,17 +115,18 @@ tuning.add_argument('--max-decode-length',
                     type=int)
 
 tuning.add_argument('--force-display-threshold',
-                    help="encodings with chardet confidence below this number will not be displayed (range: 0-100)",
+                    help="encodings with chardet confidence below this number will neither be displayed nor " + \
+                         "decoded (range: 0-100)",
                     default=EncodingDetector.force_display_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,
                     choices=CONFIDENCE_SCORE_RANGE)
 
 tuning.add_argument('--force-decode-threshold',
-                    help="extremely high (AKA 'above this number') PCT_CONFIDENCE scores from chardet.detect() " + \
-                         "as to the likelihood some binary data was written with a particular encoding will cause " + \
-                         "the yaralyzer to do a force decode of that with that encoding. " + \
-                         "(chardet is a sophisticated libary; this is yaralyzer's way of harnessing that intelligence)",
+                    help="extremely high (AKA 'above this number') confidence scores from chardet.detect() " + \
+                         "as to the likelihood some bytes were written with a particular encoding will cause " + \
+                         "the yaralyzer to attempt decoding those bytes in that encoding even if it is not a " + \
+                         "configured encoding (range: 0-100)" ,
                     default=EncodingDetector.force_decode_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,

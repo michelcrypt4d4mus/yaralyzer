@@ -58,7 +58,7 @@ If you place a filed called `.yaralyzer` in your home dir or the current dir env
 1. Scanning `bytes`
 1. Scanning a file
 
-Should you want to iterate over the `BytesMatch` (very slightly jazzed up `re.Match`) and `BytesDecoder` (tracks decoding attempt stats) objects returned by The Yaralyzer, you can do so like this:
+Should you want to iterate over the `BytesMatch` (like a `re.Match` object for a YARA match) and `BytesDecoder` (tracks decoding attempt stats) objects returned by The Yaralyzer, you can do so like this:
 
 ```python
 from yaralyzer.yaralyzer import Yaralyzer
@@ -67,8 +67,6 @@ yaralyzer = Yaralyzer.for_rules_files(['/secret/rule.yara'], 'lacan_buys_the_dip
 for bytes_match, bytes_decoder in yaralyzer.match_iterator():
     do_stuff()
 ```
-
-[^1]: As I was until recently.
 
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
@@ -86,3 +84,6 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 #### Bonus: see what `chardet.detect()` thinks about the likelihood your bytes are in a given encoding/language:
 
 ![Font Scan Regex](doc/rendered_images/decoding_and_chardet_table_2.png)
+
+
+[^1]: As I was until recently.

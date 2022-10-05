@@ -94,8 +94,8 @@ def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: st
 
     # TODO: Somehow \' and ' don't always come out the same :(
     if highlight_idx == -1:
-        log.info(f"Failed to find highlighted_bytes in first pass so deleting single quotes and retrying." + \
-                "  Highlighting may be off by a few chars,")
+        log.info(f"Failed to find highlighted_bytes in first pass so deleting single quotes and retrying. " + \
+                  "Highlighting may be off by a few chars,")
 
         surrounding_bytes_str = surrounding_bytes_str.replace("\\'", "'")
         highlight_idx = surrounding_bytes_str.find(highlighted_bytes_str)

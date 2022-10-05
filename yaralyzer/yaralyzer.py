@@ -77,9 +77,10 @@ class Yaralyzer:
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
 
-        yara_rules_string = newline_join(yara_rules_files, func=load_file)
+        filepaths_arg = {path.basename(file): file for file in yara_rules_files}
+        yara_rules = yara.compile(filepaths=filepaths_arg)
         yara_rules_label = comma_join(yara_rules_files, func=path.basename)
-        return cls(yara_rules_string, yara_rules_label, scannable, bytes_label)
+        return cls(yara_rules, yara_rules_label, scannable, bytes_label)
 
     @classmethod
     def for_rules_dirs(

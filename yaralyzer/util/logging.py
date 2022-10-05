@@ -27,6 +27,7 @@ Python log levels for reference:
 import logging
 import sys
 from os import environ, path
+
 from rich.logging import RichHandler
 
 from yaralyzer.config import YaralyzerConfig

@@ -2,8 +2,10 @@
 Tests for invoking yaralyze script from shell.
 """
 from math import isclose
-from os import environ
-from subprocess import check_output
+from os import environ, path
+from subprocess import CalledProcessError, check_output
+
+import pytest
 
 from yaralyzer.config import YARALYZE
 from yaralyzer.helpers.rich_text_helper import console
@@ -14,8 +16,21 @@ from yaralyzer.helpers.string_helper import line_count
 def test_help_option():
     help_text = _run_with_args('-h')
     assert 'maximize-width' in help_text
-    assert len(help_text) > 2000
-    assert len(help_text.split('\n')) > 50
+    _assert_line_count_within_range(103, help_text)
+
+
+def test_no_rule_args(il_tulipano_path):
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path)
+
+
+def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
 
 
 def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
@@ -23,8 +38,11 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
     with_yara_file_output = _run_with_args(il_tulipano_path, '-Y', tulips_yara_path)
     # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
     with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
-    assert line_count(with_pattern_output) == line_count(with_yara_file_output)
-    _assert_line_count_within_range(814, with_yara_file_output)
+    # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
+    with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
+
+    counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
+    assert all(c == 815 for c in counts) == True
 
 
 def _run_with_args(file_to_scan, *args) -> str:

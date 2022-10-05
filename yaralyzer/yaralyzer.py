@@ -6,9 +6,7 @@ Alternate constructors are provided depending on whether:
     3. YARA rules should be read from a file
     4. YARA rules should be read from a directory of .yara files
 """
-import re
 from collections import defaultdict
-from functools import partial
 from os import listdir, path
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, Union
 
@@ -84,14 +82,23 @@ class Yaralyzer:
         return cls(yara_rules_string, yara_rules_label, scannable, bytes_label)
 
     @classmethod
-    def for_rules_dir(
+    def for_rules_dirs(
             cls,
-            yara_rules_dir: str,
+            dirs: List[str],
             scannable: Union[bytes, str],
             bytes_label: Optional[str] = None
         ) -> 'Yaralyzer':
         """Alternate constructor that will load all .yara files in yara_rules_dir"""
-        rules_files = [path.join(yara_rules_dir, f) for f in listdir(yara_rules_dir) if f.endswith(YARA_EXT)]
+        if not isinstance(dirs, list):
+            raise TypeError(f"'{dirs}' is not a list of directories")
+
+        rules_files = [
+            path.join(dir, f)
+            for dir in dirs
+            for f in listdir(dir)
+            if f.endswith(YARA_EXT)
+        ]
+
         return cls.for_rules_files(rules_files, scannable, bytes_label)
 
     @classmethod
@@ -100,11 +107,12 @@ class Yaralyzer:
             patterns: List[str],
             scannable: Union[bytes, str],
             bytes_label: Optional[str] = None,
-            pattern_label: Optional[str] = None  # TODO: actually use the pattern label in the generated rule
+            pattern_label: Optional[str] = None,  # TODO: actually use the pattern label in the generated rule
+            regex_modifier: Optional[str] = None
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
         rule_strings = [
-            yara_rule_string(p, f"{YARALYZE}_{i + 1}")
+            yara_rule_string(p, f"{YARALYZE}_{i + 1}", modifier=regex_modifier)
             for i, p in enumerate(patterns)
         ]
 
@@ -124,7 +132,7 @@ class Yaralyzer:
         for yara_match in self.matches:
             console.print(yara_match, Text("\n"))
 
-            for match in BytesMatch.for_yara_strings_in_match(self.bytes, yara_match.match, self.highlight_style):
+            for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
                 decoder.print_decode_attempts()
                 yield match, decoder

@@ -21,6 +21,12 @@ def test_yara_rule_string():
     assert rule_string == EXPECTED_RULE_STRING
 
 
+def test_yara_rule_modifier():
+    rule_string = yara_rule_string('Scott.*Storch', 'Just_A_Piano_Man', 'hilton_producer', 'wide')
+    print(rule_string)
+    assert rule_string == EXPECTED_RULE_STRING.replace('Storch/', 'Storch/ wide')
+
+
 def test_build_yara_rule():
     try:
         rule = build_yara_rule('Scott.*Storch', 'Just_A_Piano_Man', 'hilton_producer')

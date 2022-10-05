@@ -71,32 +71,21 @@ class BytesMatch:
         ) -> 'BytesMatch':
         """Build a BytesMatch from a yara string match. matched_against is the set of bytes yara was run against"""
         return cls(
-            matched_against,
-            yara_str[0],
-            len(yara_str[2]),
-            rule_name + ': ' + yara_str[1],
-            ordinal,
+            matched_against=matched_against,
+            start_idx=yara_str[0],
+            length=len(yara_str[2]),
+            label=rule_name + ': ' + yara_str[1],
+            ordinal=ordinal,
             highlight_style=highlight_style)
 
     @classmethod
-    def for_yara_strings_in_match(
+    def from_yara_match(
             cls,
             matched_against: bytes,
             yara_match: dict,
             highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> Iterator['BytesMatch']:
-        """
-        Iterator that constructs a BytesMatch for each strings returned as part of a YARA match result dict.
-        YARA match result dicts looks like this:
-        {
-            'tags': ['foo', 'bar'],
-            'matches': True,
-            'namespace': 'default',
-            'rule': 'my_rule',
-            'meta': {},
-            'strings': [(81L, '$a', 'abc'), (141L, '$b', 'def')]
-        }
-        """
+        """Iterator w/a BytesMatch for each string returned as part of a YARA match result dict."""
         for i, yara_str in enumerate(yara_match['strings']):
             yield(cls.from_yara_str(matched_against, yara_match['rule'], yara_str, i + 1, highlight_style))
 

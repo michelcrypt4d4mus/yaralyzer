@@ -18,7 +18,7 @@ from yaralyzer.encoding_detection.encoding_assessment import ENCODING, EncodingA
 from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.util.logging import log
 
-CONFIDENCE_SCORE_RANGE = range(0, 100)
+CONFIDENCE_SCORE_RANGE = range(0, 101)
 
 
 class EncodingDetector:

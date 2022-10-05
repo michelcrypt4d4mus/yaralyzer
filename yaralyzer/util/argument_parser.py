@@ -1,6 +1,6 @@
 import logging
 import sys
-from argparse import ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
+from argparse import Action, ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
 from os import getcwd
@@ -24,13 +24,21 @@ from yaralyzer.util.logging import log, log_argparse_result, log_current_config,
 OutputSection = namedtuple('OutputSection', ['argument', 'method'])
 
 # Class to enable defaults to only be printed when they are not None or False
-class ExplicitDefaultsHelpFormatter(RichHelpFormatter):
-#class ExplicitDefaultsHelpFormatter(ArgumentDefaultsHelpFormatter):
-    def _get_help_string(self, action):
-        if 'default' in vars(action) and action.default in (None, False):
-            return action.help
+class ExplicitDefaultsHelpFormatter(RichHelpFormatter, ArgumentDefaultsHelpFormatter):
+    def _get_help_string(self, action: Action):
+        action_vars = vars(action)
+
+        if 'default' in action_vars and action.default in (None, False):
+            help_string = action.help
         else:
-            return super()._get_help_string(action)
+            help_string = super()._get_help_string(action)
+
+        if 'choices' in action_vars and isinstance(action_vars['choices'], range):
+            help_string = help_string or ''
+            choices_range = action_vars['choices']
+            help_string += f" (valid values: {min(choices_range)}-{max(choices_range)})"
+
+        return help_string
 
 
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'yara_patterns']
@@ -116,7 +124,7 @@ tuning.add_argument('--max-decode-length',
 
 tuning.add_argument('--force-display-threshold',
                     help="encodings with chardet confidence below this number will neither be displayed nor " + \
-                         "decoded (range: 0-100)",
+                         "decoded",
                     default=EncodingDetector.force_display_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,
@@ -126,7 +134,7 @@ tuning.add_argument('--force-decode-threshold',
                     help="extremely high (AKA 'above this number') confidence scores from chardet.detect() " + \
                          "as to the likelihood some bytes were written with a particular encoding will cause " + \
                          "the yaralyzer to attempt decoding those bytes in that encoding even if it is not a " + \
-                         "configured encoding (range: 0-100)" ,
+                         "configured encoding",
                     default=EncodingDetector.force_decode_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,

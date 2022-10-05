@@ -1,5 +1,8 @@
 # Next Release
 
+# 0.3.2
+* help screen displays defaults and valid ranges for int types
+
 # 0.3.1
 * yara-python compiles files directly
 

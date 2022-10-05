@@ -62,6 +62,7 @@ Should you want to iterate over the `BytesMatch` (like a `re.Match` object for a
 
 ```python
 from yaralyzer.yaralyzer import Yaralyzer
+
 yaralyzer = Yaralyzer.for_rules_files(['/secret/rule.yara'], 'lacan_buys_the_dip.pdf')
 
 for bytes_match, bytes_decoder in yaralyzer.match_iterator():

@@ -10,6 +10,7 @@ import pytest
 from yaralyzer.config import YARALYZE
 from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.helpers.string_helper import line_count
+from tests.test_yaralyzer import EXPECTED_LINES
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
@@ -42,7 +43,7 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
     counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
-    assert all(c == 815 for c in counts) == True
+    assert all(c == EXPECTED_LINES for c in counts) == True
 
 
 def _run_with_args(file_to_scan, *args) -> str:

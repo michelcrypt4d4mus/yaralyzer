@@ -38,7 +38,7 @@ def yara_rule_string(
         modifier: Optional[str] = None
     ) -> str:
     """Build a YARA rule string for a given pattern"""
-    if not (modifier == None or modifier in YARA_REGEX_MODIFIERS):
+    if not (modifier is None or modifier in YARA_REGEX_MODIFIERS):
         raise TypeError(f"Modifier '{modifier}' is not one of {YARA_REGEX_MODIFIERS}")
 
     rule = RULE_TEMPLATE.format(

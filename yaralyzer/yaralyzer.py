@@ -112,8 +112,8 @@ class Yaralyzer:
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
         rule_strings = [
-            yara_rule_string(p, f"{YARALYZE}_{i + 1}", modifier=regex_modifier)
-            for i, p in enumerate(patterns)
+            yara_rule_string(pattern, f"{YARALYZE}_{i + 1}", modifier=regex_modifier)
+            for i, pattern in enumerate(patterns)
         ]
 
         rules_string = newline_join(rule_strings)
@@ -169,7 +169,7 @@ class Yaralyzer:
         styles = [reverse_color(YARALYZER_THEME.styles[f"yara.{s}"]) for s in ('scanned', 'rules')]
         return self._text_rep(*styles)
 
-    def _text_rep(self, byte_style: Optional[Style] = None, rule_style: Optional[Style] = None) -> Text:
+    def _text_rep(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
         """Text representation of this YARA scan"""
         txt = Text('').append(self.bytes_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')

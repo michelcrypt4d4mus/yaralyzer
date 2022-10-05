@@ -1,5 +1,5 @@
 import logging
-from os import environ, path
+from os import environ
 
 YARALYZE = 'yaralyze'
 PYTEST_FLAG = 'INVOKED_BY_PYTEST'
@@ -49,8 +49,8 @@ class YaralyzerConfig:
 
     MIN_BYTES_FOR_ENCODING_DETECTION = int(environ.get(
         MIN_BYTES_TO_DETECT_ENCODING_ENV_VAR,
-        DEFAULT_MIN_BYTES_TO_DETECT_ENCODING)
-    )
+        DEFAULT_MIN_BYTES_TO_DETECT_ENCODING
+    ))
 
     MIN_DECODE_LENGTH = int(environ.get(MIN_DECODE_LENGTH_ENV_VAR, DEFAULT_MIN_DECODE_LENGTH))
     MAX_DECODE_LENGTH = int(environ.get(MAX_DECODE_LENGTH_ENV_VAR, DEFAULT_MAX_DECODE_LENGTH))

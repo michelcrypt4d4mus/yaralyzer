@@ -35,7 +35,7 @@
 #    YARALYZER_MAX_DECODE_LENGTH=256
 
 # Minimum bytes to run chardet.detect() on a sequence of bytes
-#     YARALYZER_MIN_BYTES_TO_DETECT_ENCODING
+#    YARALYZER_MIN_BYTES_TO_DETECT_ENCODING
 
 # Directory to write application logs to. Must be an absolute path, not a relative one.
 # These logs are not normally written to a file and the default log level means that the standard behavior
@@ -47,10 +47,10 @@
 #      The -D option, which sets the log level to DEBUG, will be respected whether or not
 #      YARALYZER_LOG_DIR is configured.
 #
-#     YARALYZER_LOG_DIR=/path/to/yaralyzer/log_dir/
+#    YARALYZER_LOG_DIR=/path/to/yaralyzer/log_dir/
 
 # Log level
-#     YARALYZER_LOG_LEVEL='WARN'
+#    YARALYZER_LOG_LEVEL='WARN'
 
 # Path to directory containing Didier Stevens's pdf-parser.py. Only required for extracting binary streams to files.
-#     YARALYZER_PDF_PARSER_PY_PATH=/path/to/pdfparserdotpy/
+#    YARALYZER_PDF_PARSER_PY_PATH=/path/to/pdfparserdotpy/

@@ -1,9 +1,11 @@
 from os import environ, path
+
 import pytest
 
 environ['INVOKED_BY_PYTEST'] = 'True'
 
 from yaralyzer.yaralyzer import Yaralyzer
+
 FILE_FIXTURE_PATH = path.join(path.dirname(__file__), 'file_fixtures')
 
 

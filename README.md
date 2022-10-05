@@ -1,5 +1,5 @@
 # THE YARALYZER
-Visually inspect regex matches (and their sexier, more cloak and dagger cousins, the YARA matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](#example-output).
+Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the YARA matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](https://github.com/michelcrypt4d4mus/yaralyzer#example-output).
 
 #### Quick Start
 ```sh
@@ -12,9 +12,6 @@ yaralyze --yara-rules /secret/vault/sigmunds_malware_rules.yara lacan_buys_the_d
 yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.exe
 ```
 
-**PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
-
-
 #### What It Do
 1. **See the actual bytes your YARA rules are matching.** No more digging around copy/pasting the start positions reported by YARA into your favorite hex editor. Displays both the bytes matched by YARA as well as a configurable number of bytes before and after each match in hexadecimal and "raw" python string representation.
 1. **Display bytes matching arbitrary regular expressions.** If, say, you were trying to determine whether there's a regular expression hidden somewhere in the file you could scan for the pattern `'/.+/'` and immediately get a window into all the bytes in the file that live between front slashes. Same story for quotes, BOMs, etc. Any regex YARA can handle is supported so sky's the limit.
@@ -23,7 +20,6 @@ yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.ex
 1. **Export the matched regions/decodings to SVG, HTML, and colored text files.** Show off your ASCII art.
 
 #### Why It Do
-
 The Yaralyzer's functionality was extracted from [The Pdfalyzer](https://github.com/michelcrypt4d4mus/pdfalyzer) when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.
 
 YARA, for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, and more.  Maybe most importantly it provides a standard text based format for
@@ -76,6 +72,8 @@ for bytes_match, bytes_decoder in yaralyzer.match_iterator():
 
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
+
+**PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
 
 #### Raw YARA match result:
 

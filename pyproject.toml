@@ -40,7 +40,7 @@ include = [
 [tool.poetry.dependencies]
 python = "^3.9"
 chardet = "^5.0.0"
-plyara = "^2.1.1"
+#plyara = "^2.1.1"
 python-dotenv = "^0.21.0"
 rich = "^12.5.1"
 rich-argparse = "^0.3.0"

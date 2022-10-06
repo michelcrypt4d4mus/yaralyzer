@@ -9,7 +9,7 @@ from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, console
+from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
 from yaralyzer.util.logging import log
 
 # String constants
@@ -69,19 +69,6 @@ def unprintable_byte_to_text(code: str, style='') -> Text:
     return txt
 
 
-def yaralyzer_show_color_theme() -> None:
-    """Utility method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
-    console.print(Panel('The Yaralyzer Color Theme', style='reverse'))
-
-    colors = [
-        prefix_with_plain_text_obj(name[:MAX_THEME_COL_SIZE], style=str(style)).append(' ')
-        for name, style in YARALYZER_THEME.styles.items()
-        if name not in ['reset', 'repr_url']
-    ]
-
-    console.print(Columns(colors, column_first=True, padding=(0,3)))
-
-
 def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None]=None):
     """Apply 'dim' style if 'is_dim'. 'style' overrides for Text and applies for strings."""
     txt = txt.copy() if isinstance(txt, Text) else Text(txt, style=style or '')
@@ -92,16 +79,24 @@ def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None]=None):
     return txt
 
 
-def print_section_header(headline: str, style: str = '') -> None:
-    print_section_subheader(headline, f"{style} reverse", True)
-
-
-def print_section_subheader(headline: str, style: str = '', expand: bool = False) -> None:
-    console.line(2)
-    console.print(Panel(headline, style=style, expand=expand))
-    console.line()
-
-
 def reverse_color(style: Style) -> Style:
     """Reverses the color for a given style"""
     return Style(color=style.bgcolor, bgcolor=style.color, underline=style.underline, bold=style.bold)
+
+
+def yaralyzer_show_color_theme() -> None:
+    """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
+    show_color_theme(YARALYZER_THEME_DICT)
+
+
+def show_color_theme(styles: dict) -> None:
+    """Print all colors in 'styles' to screen in a grid"""
+    console.print(Panel('The Yaralyzer Color Theme', style='reverse'))
+
+    colors = [
+        prefix_with_plain_text_obj(name[:MAX_THEME_COL_SIZE], style=str(style)).append(' ')
+        for name, style in styles.items()
+        if name not in ['reset', 'repr_url']
+    ]
+
+    console.print(Columns(colors, column_first=True, padding=(0,5), equal=True))

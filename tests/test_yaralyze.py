@@ -64,6 +64,10 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
         remove(file)
 
 
+def assert_output_line_count(shell_cmd: list, expected_line_count: int):
+    _assert_line_count_within_range(expected_line_count, check_output(shell_cmd).decode())
+
+
 def _run_with_args(file_to_scan, *args) -> str:
     """check_output() technically returns bytes so we decode before returning STDOUT output"""
     return check_output([YARALYZE, file_to_scan, *args], env=environ).decode()

@@ -1,9 +1,26 @@
 from datetime import datetime
+from os import listdir, path
+from typing import List, Optional
 
 
 def timestamp_for_filename() -> str:
     """Returns a string showing current time in a file name friendly format"""
     return datetime.now().strftime("%Y-%m-%dT%H.%M.%S")
+
+
+def files_in_dir(dir: str, with_extname: Optional[str] = None) -> List[str]:
+    """paths for non dot files, optionally ending in 'with_extname'"""
+    files = [path.join(dir, file) for file in listdir(dir)]
+    files = [file for file in files if not (path.isdir(file) or file.startswith('.'))]
+
+    if with_extname:
+        return files_with_extname(files, with_extname)
+    else:
+        return files
+
+
+def files_with_extname(files: List[str], extname: str) -> List[str]:
+    return [f for f in files if f.endswith(f".{extname}")]
 
 
 def load_word_list(file_path):

@@ -98,3 +98,4 @@ def console_print_with_fallback(_string, style=None) -> None:
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:
     return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
+

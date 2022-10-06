@@ -1,9 +1,10 @@
-from os import environ, path
+from os import environ, getcwd, listdir, path, remove
 
 import pytest
 
 environ['INVOKED_BY_PYTEST'] = 'True'
 
+from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.yaralyzer import Yaralyzer
 
 FILE_FIXTURE_PATH = path.join(path.dirname(__file__), 'file_fixtures')
@@ -33,5 +34,16 @@ def tulips_yara_regex():
 
 # A Yaralyzer
 @pytest.fixture(scope="session")
-def yaralyzer(il_tulipano_path, tulips_yara_path):
+def a_yaralyzer(il_tulipano_path, tulips_yara_path):
     return Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
+
+
+@pytest.fixture
+def tmp_dir():
+    """Clear the tmp dir when fixture is loaded"""
+    tmpdir = path.join(path.dirname(__file__), 'tmp')
+
+    for file in files_in_dir(tmpdir):
+        remove(file)
+
+    return tmpdir

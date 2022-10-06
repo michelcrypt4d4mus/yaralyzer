@@ -174,6 +174,10 @@ class Yaralyzer:
         txt = Text('').append(self.bytes_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
 
+    def _filename_string(self):
+        """The string to use when exporting this yaralyzer to SVG?HTML/etc"""
+        return str(self).replace('>', '').replace('<', '').replace(' ', '_')
+
     def __rich__(self) -> Text:
         return self._text_rep()
 

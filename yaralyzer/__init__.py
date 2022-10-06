@@ -11,47 +11,44 @@ if not environ.get('INVOKED_BY_PYTEST', False):
             break
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.rich_text_helper import invoke_rich_export
+from yaralyzer.output.file_export import invoke_rich_export
 from yaralyzer.output.rich_console import console
-from yaralyzer.util.argument_parser import parse_arguments
-from yaralyzer.util.logging import log, log_and_print
+from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
+from yaralyzer.util.logging import log
 from yaralyzer.yaralyzer import Yaralyzer
 
 
 def yaralyze():
     args = parse_arguments()
+    output_basepath = None
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
+    elif args.yara_rules_dirs:
+        yaralyzer = Yaralyzer.for_rules_dirs(args.yara_rules_dirs, args.file_to_scan_path)
     elif args.yara_patterns:
         yaralyzer = Yaralyzer.for_patterns(
             args.yara_patterns,
             args.file_to_scan_path,
             regex_modifier=args.regex_modifier)
-    elif args.yara_rules_dirs:
-        yaralyzer = Yaralyzer.for_rules_dirs(args.yara_rules_dirs, args.file_to_scan_path)
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")
 
     if args.output_dir:
-        file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
-        args.output_basename =  f"{file_prefix}{yaralyzer}"
-        args.output_basename += f"_maxdecode{YaralyzerConfig.MAX_DECODE_LENGTH}"
-        args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
-        args.output_basepath = path.join(args.output_dir, args.output_basename + f"___yaralyzed_{args.invoked_at_str}")
+        output_basepath = get_export_basepath(args, yaralyzer)
+        console.print(f"Will render yaralyzer data to '{output_basepath}'...", style='yellow')
         console.record = True
-        print(f'Exporting yaralyzer data to {args.output_basepath}...')
 
     yaralyzer.yaralyze()
 
     if args.export_txt:
-        invoke_rich_export(console.save_text, args.output_basepath)
+        invoke_rich_export(console.save_text, output_basepath)
 
     if args.export_html:
-        invoke_rich_export(console.save_html, args.output_basepath)
+        invoke_rich_export(console.save_html, output_basepath)
 
     if args.export_svg:
-        invoke_rich_export(console.save_svg, args.output_basepath)
+        invoke_rich_export(console.save_svg, output_basepath)
 
     # Drop into interactive shell if requested
     if args.interact:

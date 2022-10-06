@@ -2,12 +2,13 @@
 Tests for invoking yaralyze script from shell.
 """
 from math import isclose
-from os import environ, path
+from os import environ, path, remove
 from subprocess import CalledProcessError, check_output
 
 import pytest
 
 from yaralyzer.config import YARALYZE
+from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from tests.test_yaralyzer import EXPECTED_LINES
@@ -50,6 +51,17 @@ def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_
     assert line_count(with_pattern_output) == 814
     with_pattern_output = _run_with_args(binary_file_path, '-re', '3Hl0')
     assert line_count(with_pattern_output) == 67
+
+
+def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
+    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-svg', '-html', '-txt', '-out', tmp_dir)
+    rendered_files = files_in_dir(tmp_dir)
+    assert len(rendered_files) == 3
+    file_sizes = [path.getsize(f) for f in rendered_files]
+    assert sorted(file_sizes) == [37039, 63751, 201001]
+
+    for file in rendered_files:
+        remove(file)
 
 
 def _run_with_args(file_to_scan, *args) -> str:

@@ -3,7 +3,7 @@ import sys
 from argparse import Action, ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
-from os import getcwd
+from os import getcwd, path
 from typing import Optional
 
 from rich_argparse import RichHelpFormatter
@@ -17,6 +17,7 @@ from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
+from yaralyzer.yaralyzer import Yaralyzer
 
 
 # NamedTuple to keep our argument selection orderly
@@ -252,5 +253,12 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_argparse_result(args)
         log_current_config()
 
-    #import pdb;pdb.set_trace()
     return args
+
+
+def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
+    file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
+    args.output_basename =  f"{file_prefix}{yaralyzer._filename_string()}"
+    args.output_basename += f"__maxdecode{YaralyzerConfig.MAX_DECODE_LENGTH}"
+    args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
+    return path.join(args.output_dir, args.output_basename + f"__at_{args.invoked_at_str}")

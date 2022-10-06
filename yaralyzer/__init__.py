@@ -30,6 +30,7 @@ def yaralyze():
         yaralyzer = Yaralyzer.for_patterns(
             args.yara_patterns,
             args.file_to_scan_path,
+            pattern_label=args.regex_patterns_label,
             regex_modifier=args.regex_modifier)
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")

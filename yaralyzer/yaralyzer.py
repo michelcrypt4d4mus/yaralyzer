@@ -55,8 +55,13 @@ class Yaralyzer:
             self.bytes: bytes = load_binary_data(scannable)
             self.bytes_label: str = bytes_label or path.basename(scannable)
 
+        if isinstance(rules, yara.Rules):
+            self.rules: yara.Rules = rules
+        else:
+            log.info(f"Compiling YARA rules from provided string:\n{rules}")
+            self.rules: yara.Rules =  yara.compile(source=rules)
+
         self.bytes_length: int = len(self.bytes)
-        self.rules: yara.Rules = rules if isinstance(rules, yara.Rules) else yara.compile(source=rules)
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
         # Outcome racking variables
@@ -107,12 +112,17 @@ class Yaralyzer:
             patterns: List[str],
             scannable: Union[bytes, str],
             bytes_label: Optional[str] = None,
-            pattern_label: Optional[str] = None,  # TODO: actually use the pattern label in the generated rule
+            pattern_label: Optional[str] = None,
             regex_modifier: Optional[str] = None
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
         rule_strings = [
-            yara_rule_string(pattern, f"{YARALYZE}_{i + 1}", modifier=regex_modifier)
+            yara_rule_string(
+                pattern,
+                f"{YARALYZE}_{i + 1}",
+                f"{pattern_label}_{i + 1}" if pattern_label else None,
+                regex_modifier
+            )
             for i, pattern in enumerate(patterns)
         ]
 

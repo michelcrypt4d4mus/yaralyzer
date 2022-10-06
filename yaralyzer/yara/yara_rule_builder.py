@@ -24,9 +24,9 @@ rule {rule_name} {{
     meta:
         author = "The Yaralyzer"
     strings:
-        ${string_label} = /{pattern}/{modifier}
+        ${pattern_label} = /{pattern}/{modifier}
     condition:
-        ${string_label}
+        ${pattern_label}
 }}
 """
 
@@ -34,7 +34,7 @@ rule {rule_name} {{
 def yara_rule_string(
         pattern: str,
         rule_name: str,
-        string_label: Optional[str] = 'pattern',
+        pattern_label: Optional[str] = 'pattern',
         modifier: Optional[str] = None
     ) -> str:
     """Build a YARA rule string for a given pattern"""
@@ -43,7 +43,7 @@ def yara_rule_string(
 
     rule = RULE_TEMPLATE.format(
         rule_name=rule_name,
-        string_label=string_label,
+        pattern_label=pattern_label,
         pattern=pattern,
         modifier='' if modifier is None else f" {modifier}")
 
@@ -54,8 +54,8 @@ def yara_rule_string(
 def build_yara_rule(
         pattern: str,
         rule_name: str,
-        string_label: Optional[str] = 'pattern',
+        pattern_label: Optional[str] = 'pattern',
         modifier: Optional[str] = None
     ) -> yara.Rule:
     """Build a compiled YARA rule"""
-    return yara.compile(source=yara_rule_string(pattern, rule_name, string_label, modifier))
+    return yara.compile(source=yara_rule_string(pattern, rule_name, pattern_label, modifier))

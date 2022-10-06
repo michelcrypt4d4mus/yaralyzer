@@ -1,5 +1,5 @@
 # THE YARALYZER
-Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the YARA matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](https://github.com/michelcrypt4d4mus/yaralyzer#example-output).
+Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the [YARA](https://github.com/VirusTotal/yara-python) matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](https://github.com/michelcrypt4d4mus/yaralyzer#example-output).
 
 #### Quick Start
 ```sh
@@ -22,7 +22,7 @@ yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.ex
 #### Why It Do
 The Yaralyzer's functionality was extracted from [The Pdfalyzer](https://github.com/michelcrypt4d4mus/pdfalyzer) when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.
 
-YARA, for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, and more.  Maybe most importantly it provides a standard text based format for
+[YARA](https://github.com/VirusTotal/yara-python), for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, and more.  Maybe most importantly it provides a standard text based format for
 people to [i]share[/i] their 'roided regexes. All these features are particularly useful when analyzing or reverse engineering software.
 
 But... that's also all it does. Everything else is up to the user. YARA's just a match enginer. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:

@@ -13,7 +13,7 @@ from rich.style import Style
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 
-from yaralyzer.output.rich_console import BYTES_BRIGHTEST, console
+from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, console
 from yaralyzer.output.layout import console_width
 from yaralyzer.util.logging import log, log_and_print
 

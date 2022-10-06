@@ -9,7 +9,7 @@ from yaralyzer.yaralyzer import Yaralyzer
 FILE_FIXTURE_PATH = path.join(path.dirname(__file__), 'file_fixtures')
 
 
-# Full paths to PDF test fixtures
+# Full paths to file fixtures
 @pytest.fixture(scope='session')
 def il_tulipano_path():
     return path.join(FILE_FIXTURE_PATH, 'il_tulipano_nero.txt')
@@ -18,6 +18,11 @@ def il_tulipano_path():
 @pytest.fixture(scope='session')
 def tulips_yara_path():
     return path.join(FILE_FIXTURE_PATH, 'tulips.yara')
+
+
+@pytest.fixture(scope='session')
+def binary_file_path ():
+    return path.join(FILE_FIXTURE_PATH, 'random_bytes.bin')
 
 
 @pytest.fixture(scope='session')

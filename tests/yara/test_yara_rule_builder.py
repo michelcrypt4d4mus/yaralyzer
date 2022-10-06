@@ -1,6 +1,6 @@
 import yara
 
-from yaralyzer.yara.yara_rule_builder import build_yara_rule, yara_rule_string
+from yaralyzer.yara.yara_rule_builder import REGEX, build_yara_rule, yara_rule_string
 
 TEST_BYTES = b"I'm a real producer but you're just a piano man, Scotty Storch"
 
@@ -15,21 +15,28 @@ rule Just_A_Piano_Man {
 }
 """
 
+BUILD_RULE_KWARGS = {
+    'pattern': 'Scott.*Storch',
+    'pattern_type': REGEX,
+    'rule_name': 'Just_A_Piano_Man',
+    'pattern_label': 'hilton_producer',
+}
+
 
 def test_yara_rule_string():
-    rule_string = yara_rule_string('Scott.*Storch', 'Just_A_Piano_Man', 'hilton_producer')
+    rule_string = yara_rule_string(**BUILD_RULE_KWARGS)
     assert rule_string == EXPECTED_RULE_STRING
 
 
 def test_yara_rule_modifier():
-    rule_string = yara_rule_string('Scott.*Storch', 'Just_A_Piano_Man', 'hilton_producer', 'wide')
+    rule_string = yara_rule_string(modifier='wide', **BUILD_RULE_KWARGS)
     print(rule_string)
     assert rule_string == EXPECTED_RULE_STRING.replace('Storch/', 'Storch/ wide')
 
 
 def test_build_yara_rule():
     try:
-        rule = build_yara_rule('Scott.*Storch', 'Just_A_Piano_Man', 'hilton_producer')
+        rule = build_yara_rule(**BUILD_RULE_KWARGS)
     except:
         assert False, f"Failed to compile rule"
 

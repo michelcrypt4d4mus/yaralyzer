@@ -34,17 +34,22 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
         _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
 
 
-def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
+def test_yaralyze(il_tulipano_path, tulips_yara_path):
     # yaralyze -y tests/file_fixtures/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
     with_yara_file_output = _run_with_args(il_tulipano_path, '-Y', tulips_yara_path)
-    # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
-    with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
     # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
     counts = [line_count(output) for output in [with_yara_file_output, with_dir_output]]
     assert all(c == EXPECTED_LINES for c in counts) == True
+
+
+def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_regex):
+    # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
+    with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
     assert line_count(with_pattern_output) == 814
+    with_pattern_output = _run_with_args(binary_file_path, '-re', '3Hl0')
+    assert line_count(with_pattern_output) == 67
 
 
 def _run_with_args(file_to_scan, *args) -> str:

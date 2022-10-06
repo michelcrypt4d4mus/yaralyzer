@@ -1,5 +1,6 @@
 # NEXT RELEASE
-* Add `--regex-patterns-label` command line option
+* Add `--hex-pattern` command line option
+* Add `--patterns-label` command line option
 
 # 0.3.3
 * Refactor `file_export` and `rich_console`

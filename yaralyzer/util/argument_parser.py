@@ -42,7 +42,7 @@ class ExplicitDefaultsHelpFormatter(RichHelpFormatter, ArgumentDefaultsHelpForma
         return help_string
 
 
-YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'yara_patterns']
+YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 YARA_PATTERN_REGEX = re.compile('^\\w+$')
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "
 
@@ -77,10 +77,16 @@ source.add_argument('--regex-pattern', '-re',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
-                    dest='yara_patterns')
+                    dest='regex_patterns')
 
-source.add_argument('--regex-patterns-label', '-rpl',
-                    help='supplying an optional STRING to label your YARA --regex-patterns makes it easier to scan results',
+source.add_argument('--hex-pattern', '-hex',
+                    help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
+                    action='append',
+                    metavar='HEX_STRING',
+                    dest='hex_patterns')
+
+source.add_argument('--patterns-label', '-rpl',
+                    help='supplying an optional STRING to label your YARA patterns makes it easier to scan results',
                     metavar='STRING')
 
 source.add_argument('--regex-modifier', '-mod',
@@ -226,7 +232,7 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.maximize_width:
         rich_console.console.width = max(rich_console.console_width_possibilities())
 
-    if args.regex_patterns_label and not YARA_PATTERN_REGEX.match(args.regex_patterns_label):
+    if args.patterns_label and not YARA_PATTERN_REGEX.match(args.patterns_label):
         raise ArgumentError(None, '--regex-patterns-label can only include alphanumeric and underscore')
 
     #### Check against defaults to avoid overriding env var configured optoins

@@ -27,12 +27,12 @@ def yaralyze():
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
     elif args.yara_rules_dirs:
         yaralyzer = Yaralyzer.for_rules_dirs(args.yara_rules_dirs, args.file_to_scan_path)
-    elif args.yara_patterns:
+    elif args.regex_patterns or args.hex_patterns:
         yaralyzer = Yaralyzer.for_patterns(
-            args.yara_patterns,
-            REGEX,
+            args.regex_patterns or args.hex_patterns,
+            HEX if args.hex_patterns else REGEX,
             args.file_to_scan_path,
-            pattern_label=args.regex_patterns_label,
+            pattern_label=args.patterns_label,
             regex_modifier=args.regex_modifier)
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")

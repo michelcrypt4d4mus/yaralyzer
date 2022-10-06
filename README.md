@@ -22,17 +22,19 @@ yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.ex
 #### Why It Do
 The Yaralyzer's functionality was extracted from [The Pdfalyzer](https://github.com/michelcrypt4d4mus/pdfalyzer) when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.
 
-[YARA](https://github.com/VirusTotal/yara-python), for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, and more.  Maybe most importantly it provides a standard text based format for
-people to [i]share[/i] their 'roided regexes. All these features are particularly useful when analyzing or reverse engineering software.
+[YARA](https://github.com/VirusTotal/yara-python), for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, check for `base64` and other encodings of the pattern, and more.  Maybe most importantly of all YARA provides a standard text based format for
+people to _share_ their 'roided regexes with the world. All these features are particularly useful when analyzing or reverse engineering software.
 
-But... that's also all it does. Everything else is up to the user. YARA's just a match enginer. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:
+But... that's also all YARA does. Everything else is up to the user. YARA's just a match engine and if you don't know what to match (or even what character encoding you might be able to match in) it only gets you so far. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:
 
 1. Bytes between escaped quotes (`\".+\"` and `\'.+\'`)
 1. Bytes between front slashes (`/.+/`). Front slashes demarcate a regular expression in many implementations and I was trying to see if any of the bytes matching this pattern were _actually_ regexes.
 
-YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going _in the region_ of the matches and not just _in_ the matches. In other words I wanted to scope the bytes immediately before and after whatever got matched.
+YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going _in the region_ of the matched bytes and not just _in_ the matched bytes. In other words I wanted to scope the bytes immediately before and after whatever got matched.
 
-Enter The Yaralyzer, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were forced into various character encodings.
+Enter **The Yaralyzer**, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were forced into various character encodings.
+
+It's important to note that **The Yaralyzer** isn't a full on malware reversing tool. It can't do all the things a tool like [CyberChef](https://gchq.github.io/CyberChef/) does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool like [CyberChef](https://gchq.github.io/CyberChef/).
 
 # Installation
 Install it with [`pipx`](https://pypa.github.io/pipx/) or `pip3`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.

@@ -15,6 +15,7 @@ from yaralyzer.output.file_export import invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
 from yaralyzer.util.logging import log
+from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 
@@ -29,6 +30,7 @@ def yaralyze():
     elif args.yara_patterns:
         yaralyzer = Yaralyzer.for_patterns(
             args.yara_patterns,
+            REGEX,
             args.file_to_scan_path,
             pattern_label=args.regex_patterns_label,
             regex_modifier=args.regex_modifier)

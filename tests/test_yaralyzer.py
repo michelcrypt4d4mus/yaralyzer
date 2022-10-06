@@ -5,6 +5,7 @@ from os.path import dirname
 
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
+from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 EXPECTED_LINES = 817
@@ -18,7 +19,7 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
-    _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_regex], il_tulipano_path), 814)
+    _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path), 814)
 
 
 def test_yaralyzer_for_rules_dir(il_tulipano_path):

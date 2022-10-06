@@ -61,4 +61,3 @@ def test_yara_hex_rule(binary_file_bytes):
     matches = []
     rule.match(data=binary_file_bytes, callback=lambda match: matches.append(match))
     assert len(matches) == 1
-    #assert matches[0]['strings'] == [(49, '$hilton_producer', b'Scotty Storch')]

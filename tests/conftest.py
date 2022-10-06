@@ -22,7 +22,7 @@ def tulips_yara_path():
 
 
 @pytest.fixture(scope='session')
-def binary_file_path ():
+def binary_file_path():
     return path.join(FILE_FIXTURE_PATH, 'random_bytes.bin')
 
 

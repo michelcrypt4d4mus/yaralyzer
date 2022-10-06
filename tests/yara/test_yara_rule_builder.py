@@ -3,7 +3,7 @@ import yara
 from yaralyzer.yara.yara_rule_builder import HEX, PATTERN, REGEX, build_yara_rule, yara_rule_string
 
 TEST_BYTES = b"I'm a real producer but you're just a piano man, Scotty Storch"
-HEX_STRING = 'A1 B2 C3'
+HEX_STRING = 'e0 9a 3f 51 dd 25 ce 4c'
 
 EXPECTED_RULE = """
 rule Just_A_Piano_Man {
@@ -47,9 +47,18 @@ def test_build_yara_rule():
     assert matches[0]['strings'] == [(49, '$hilton_producer', b'Scotty Storch')]
 
 
-def test_yara_hex_rule(binary_file_path):
+def test_yara_hex_rule(binary_file_bytes):
     rule_kwargs = REGEX_RULE_KWARGS.copy()
     rule_kwargs.update({'pattern_type': HEX, PATTERN: HEX_STRING})
     rule_string = yara_rule_string(**rule_kwargs)
-    expected_rule = EXPECTED_RULE.replace(f"/{REGEX_RULE_KWARGS[PATTERN]}/", f"{{{HEX_STRING}}}")
-    assert rule_string == expected_rule
+    assert rule_string == EXPECTED_RULE.replace(f"/{REGEX_RULE_KWARGS[PATTERN]}/", f"{{{HEX_STRING}}}")
+
+    try:
+        rule = build_yara_rule(**rule_kwargs)
+    except:
+        assert False, f"Failed to compile rule"
+
+    matches = []
+    rule.match(data=binary_file_bytes, callback=lambda match: matches.append(match))
+    assert len(matches) == 1
+    #assert matches[0]['strings'] == [(49, '$hilton_producer', b'Scotty Storch')]

@@ -1,6 +1,5 @@
 # NEXT RELEASE
 
-
 # 0.4.0
 * Add `--hex-pattern` command line option
 * Add `--patterns-label` command line option

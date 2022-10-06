@@ -12,10 +12,9 @@ from yaralyzer.config import (DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENG
      DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, LOG_DIR_ENV_VAR,
      YaralyzerConfig)
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
-from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
-from yaralyzer.output.rich_console import console, console_width_possibilities
+from yaralyzer.output import rich_console
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 
@@ -218,7 +217,7 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_invocation()
 
     if args.maximize_width:
-        rich_text_helper.console.width = max(console_width_possibilities())
+        rich_console.console.width = max(rich_console.console_width_possibilities())
 
     #### Check against defaults to avoid overriding env var configured optoins
     # Suppressing/limiting output

@@ -23,7 +23,7 @@ from rich.panel import Panel
 from rich.text import Text
 
 from yaralyzer.helpers.bytes_helper import clean_byte_string
-from yaralyzer.output.rich_console import console_width
+from yaralyzer.output.layout import console_width
 from yaralyzer.util.logging import log
 
 MATCH_PADDING = (0, 0, 0, 1)

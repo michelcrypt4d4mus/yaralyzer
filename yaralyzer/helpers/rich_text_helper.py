@@ -13,7 +13,8 @@ from rich.style import Style
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 
-from yaralyzer.output.rich_console import BYTES_BRIGHTEST, console, console_width
+from yaralyzer.output.rich_console import BYTES_BRIGHTEST, console
+from yaralyzer.output.layout import console_width
 from yaralyzer.util.logging import log, log_and_print
 
 # String constants
@@ -78,10 +79,6 @@ _EXPORT_KWARGS = {
         'styles': True,
     },
 }
-
-
-def subheading_width() -> int:
-    return int(console_width() * 0.75)
 
 
 def na_txt(style: Union[str, Style] = 'white'):
@@ -169,10 +166,13 @@ def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None]=None):
     return txt
 
 
-def print_section_header(headline: str, style=None) -> None:
-    style = style or ''
+def print_section_header(headline: str, style: str = '') -> None:
+    print_section_subheader(headline, f"{style} reverse", True)
+
+
+def print_section_subheader(headline: str, style: str = '', expand: bool = False) -> None:
     console.line(2)
-    console.print(Panel(headline, style=f"{style} reverse"))
+    console.print(Panel(headline, style=style, expand=expand))
     console.line()
 
 

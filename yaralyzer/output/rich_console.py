@@ -84,13 +84,7 @@ else:
 
 # Many bytes take 4 chars to print (e.g. '\xcc') so this is the max bytes we can safely print in a line
 CONSOLE_PRINT_BYTE_WIDTH = int(CONSOLE_WIDTH / 4.0)
-
 console = Console(theme=YARALYZER_THEME, color_system='256', highlight=False, width=CONSOLE_WIDTH)
-
-
-def console_width() -> int:
-    """Current width set in console obj"""
-    return console._width or 40
 
 
 def console_print_with_fallback(_string, style=None) -> None:

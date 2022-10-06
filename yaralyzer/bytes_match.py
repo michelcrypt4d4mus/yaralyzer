@@ -71,11 +71,17 @@ class BytesMatch:
             highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> 'BytesMatch':
         """Build a BytesMatch from a yara string match. matched_against is the set of bytes yara was run against"""
+        # Don't duplicate the labeling if rule_name and yara_str are the same
+        if yara_str[1] == '$' + rule_name:
+            label = rule_name
+        else:
+            label = rule_name + ': ' + yara_str[1]
+
         return cls(
             matched_against=matched_against,
             start_idx=yara_str[0],
             length=len(yara_str[2]),
-            label=rule_name + ': ' + yara_str[1],
+            label=label,
             ordinal=ordinal,
             highlight_style=highlight_style)
 

@@ -59,7 +59,7 @@ class Yaralyzer:
             self.rules: yara.Rules = rules
         else:
             log.info(f"Compiling YARA rules from provided string:\n{rules}")
-            self.rules: yara.Rules =  yara.compile(source=rules)
+            self.rules: yara.Rules = yara.compile(source=rules)
 
         self.bytes_length: int = len(self.bytes)
         self.rules_label: str = rules_label

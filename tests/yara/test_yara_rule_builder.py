@@ -1,6 +1,6 @@
 import yara
 
-from yaralyzer.yara.yara_rule_builder import HEX, PATTERN, REGEX, build_yara_rule, yara_rule_string
+from yaralyzer.yara.yara_rule_builder import HEX, PATTERN, REGEX, build_yara_rule, safe_label, yara_rule_string
 
 TEST_BYTES = b"I'm a real producer but you're just a piano man, Scotty Storch"
 HEX_STRING = 'e0 9a 3f 51 dd 25 ce 4c'
@@ -61,3 +61,8 @@ def test_yara_hex_rule(binary_file_bytes):
     matches = []
     rule.match(data=binary_file_bytes, callback=lambda match: matches.append(match))
     assert len(matches) == 1
+
+
+def test_safe_label():
+    assert safe_label('/F') == '__FRONTSLASH__F'
+    assert safe_label('UTF-7 BOM') == 'UTF_7_BOM'

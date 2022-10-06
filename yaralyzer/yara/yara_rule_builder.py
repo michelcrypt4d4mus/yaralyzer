@@ -11,7 +11,8 @@ rule Just_A_Piano_Man {
 }
 
 """
-from typing import Optional, Type
+import re
+from typing import Optional
 
 import yara
 
@@ -22,7 +23,18 @@ HEX = 'hex'
 REGEX = 'regex'
 RULE = 'rule'
 PATTERN = 'pattern'
+UNDERSCORE = '_'
 YARA_REGEX_MODIFIERS = ['nocase', 'ascii', 'wide', 'fullword']
+
+SAFE_LABEL_REPLACEMENTS = {
+    '/': 'frontslash',
+    '\\': 'backslash',
+    "'": 'singlequote',
+    '"': 'doublequote',
+    '`': 'backtick',
+    '-': UNDERSCORE,
+    ' ': UNDERSCORE,
+}
 
 RULE_TEMPLATE = """
 rule {rule_name} {{
@@ -86,3 +98,24 @@ def build_yara_rule(
     """Build a compiled YARA rule"""
     rule_string = yara_rule_string(pattern, pattern_type, rule_name, pattern_label, modifier)
     return yara.compile(source=rule_string)
+
+
+def safe_label(_label: str) -> str:
+    """YARA rule and pattern names can only contain alphanumeric chars"""
+    label = _label
+
+    for char, replacement in SAFE_LABEL_REPLACEMENTS.items():
+        if replacement != UNDERSCORE:
+            label = label.replace(char, f"__{replacement.upper()}__")
+        else:
+            label = label.replace(char, replacement)
+
+    if re.match('^\\d', label):
+        label = '_' + label
+
+    if not re.match('\\w+', label):
+        msg = f"'{label}' is invalid: YARA labels must be alphanumeric/underscore and cannot start with a number"
+        raise ValueError(msg)
+
+    log.debug(f"Built safe label {label} from {_label}")
+    return label

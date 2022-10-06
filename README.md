@@ -10,6 +10,9 @@ yaralyze --yara-rules /secret/vault/sigmunds_malware_rules.yara lacan_buys_the_d
 
 # Scan against an arbitrary regular expression:
 yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.exe
+
+# Scan against a YARA hex pattern
+yaralyze --hex-pattern 'A1 B2 C3 [-] D4' one_day_in_the_life_of_ivan_cryptosovich.bin
 ```
 
 #### What It Do

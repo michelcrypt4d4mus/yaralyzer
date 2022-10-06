@@ -8,20 +8,19 @@ Alternate constructors are provided depending on whether:
 """
 from collections import defaultdict
 from os import listdir, path
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Type, Union
+from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
 from rich.padding import Padding
-from rich.panel import Panel
-from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YARALYZE, YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
-from yaralyzer.helpers.file_helper import load_binary_data, load_file
-from yaralyzer.helpers.rich_text_helper import YARALYZER_THEME, console, dim_if, reverse_color
+from yaralyzer.helpers.file_helper import load_binary_data
+from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
+from yaralyzer.output.rich_console import YARALYZER_THEME, console
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch

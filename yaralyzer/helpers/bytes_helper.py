@@ -7,7 +7,7 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE
-from yaralyzer.helpers.rich_text_helper import GREY, console
+from yaralyzer.output.rich_console import GREY, console
 from yaralyzer.util.logging import log
 
 HEX_CHARS_PER_GROUP = 8

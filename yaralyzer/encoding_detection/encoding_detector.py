@@ -15,7 +15,6 @@ from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_assessment import ENCODING, EncodingAssessment
-from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.util.logging import log
 
 CONFIDENCE_SCORE_RANGE = range(0, 101)

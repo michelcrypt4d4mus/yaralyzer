@@ -11,7 +11,8 @@ if not environ.get('INVOKED_BY_PYTEST', False):
             break
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.rich_text_helper import console, invoke_rich_export
+from yaralyzer.helpers.rich_text_helper import invoke_rich_export
+from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.logging import log, log_and_print
 from yaralyzer.yaralyzer import Yaralyzer

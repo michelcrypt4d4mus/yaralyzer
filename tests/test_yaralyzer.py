@@ -3,8 +3,8 @@ Tests for the Yaralyzer class itself.
 """
 from os.path import dirname
 
-from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.helpers.string_helper import line_count
+from yaralyzer.output.rich_console import console
 from yaralyzer.yaralyzer import Yaralyzer
 
 EXPECTED_LINES = 814

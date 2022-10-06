@@ -8,8 +8,8 @@ from subprocess import CalledProcessError, check_output
 import pytest
 
 from yaralyzer.config import YARALYZE
-from yaralyzer.helpers.rich_text_helper import console
 from yaralyzer.helpers.string_helper import line_count
+from yaralyzer.output.rich_console import console
 from tests.test_yaralyzer import EXPECTED_LINES
 
 

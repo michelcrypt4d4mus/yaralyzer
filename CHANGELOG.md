@@ -1,4 +1,6 @@
-# Next Release
+# NEXT RELEASE
+
+# 0.3.3
 * Refactor `file_export` and `rich_console`
 
 # 0.3.2

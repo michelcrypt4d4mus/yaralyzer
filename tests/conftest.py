@@ -4,7 +4,7 @@ import pytest
 
 environ['INVOKED_BY_PYTEST'] = 'True'
 
-from yaralyzer.helpers.file_helper import files_in_dir
+from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
 from yaralyzer.yaralyzer import Yaralyzer
 
 FILE_FIXTURE_PATH = path.join(path.dirname(__file__), 'file_fixtures')
@@ -22,8 +22,13 @@ def tulips_yara_path():
 
 
 @pytest.fixture(scope='session')
-def binary_file_path ():
+def binary_file_path():
     return path.join(FILE_FIXTURE_PATH, 'random_bytes.bin')
+
+
+@pytest.fixture(scope='session')
+def binary_file_bytes(binary_file_path):
+    return load_binary_data(binary_file_path)
 
 
 @pytest.fixture(scope='session')

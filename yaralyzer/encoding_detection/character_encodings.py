@@ -21,10 +21,10 @@ WINDOWS_1252 = 'windows-1252'
 BOMS = {
     b'\x2b\x2f\x76':     'UTF-7 BOM',
     b'\xef\xbb\xbf':     'UTF-8 BOM',
-    b'\xfe\xff':         'UTF-16 BOM, big-endian',
-    b'\xff\xfe':         'UTF-16 BOM, little-endian',
-    b'\xff\xfe\x00\x00': 'UTF-32 BOM, little-endian',
-    b'\x00\x00\xfe\xff': 'UTF-32 BOM, big-endian',
+    b'\xfe\xff':         'UTF-16 BOM big-endian',
+    b'\xff\xfe':         'UTF-16 BOM little-endian',
+    b'\xff\xfe\x00\x00': 'UTF-32 BOM little-endian',
+    b'\x00\x00\xfe\xff': 'UTF-32 BOM big-endian',
     b'\x0e\xfe\xff':     'SCSU BOM',
 }
 

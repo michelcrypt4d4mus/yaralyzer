@@ -15,6 +15,7 @@ from yaralyzer.output.file_export import invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
 from yaralyzer.util.logging import log
+from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 
@@ -26,10 +27,12 @@ def yaralyze():
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
     elif args.yara_rules_dirs:
         yaralyzer = Yaralyzer.for_rules_dirs(args.yara_rules_dirs, args.file_to_scan_path)
-    elif args.yara_patterns:
+    elif args.regex_patterns or args.hex_patterns:
         yaralyzer = Yaralyzer.for_patterns(
-            args.yara_patterns,
+            args.regex_patterns or args.hex_patterns,
+            HEX if args.hex_patterns else REGEX,
             args.file_to_scan_path,
+            pattern_label=args.patterns_label,
             regex_modifier=args.regex_modifier)
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")

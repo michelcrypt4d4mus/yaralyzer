@@ -12,6 +12,7 @@ from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from tests.test_yaralyzer import EXPECTED_LINES
+from tests.yara.test_yara_rule_builder import HEX_STRING
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
@@ -33,6 +34,8 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
         _run_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
         _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
+    with pytest.raises(CalledProcessError):
+        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
 
 
 def test_yaralyze(il_tulipano_path, tulips_yara_path):
@@ -51,6 +54,8 @@ def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_
     assert line_count(with_pattern_output) == 814
     with_pattern_output = _run_with_args(binary_file_path, '-re', '3Hl0')
     assert line_count(with_pattern_output) == 67
+    with_pattern_output = _run_with_args(binary_file_path, '-hex', HEX_STRING)
+    assert line_count(with_pattern_output) == 74
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):

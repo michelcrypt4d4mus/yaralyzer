@@ -36,27 +36,32 @@ class Yaralyzer:
             rules: Union[str, yara.Rules],
             rules_label: str,
             scannable: Union[bytes, str],
-            bytes_label: Optional[str] = None,
+            scannable_label: Optional[str] = None,
             highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> None:
         """
         If rules is a string it will be compiled by yara
-        If scannable is bytes then bytes_label must be provided.
+        If scannable is bytes then scannable_label must be provided.
         If scannable is a string it is assumed to be a file that bytes should be read from
-        and the bytes_label will be set to the file's basename.
+        and the scannable_label will be set to the file's basename.
         """
         if isinstance(scannable, bytes):
-            if bytes_label is None:
-                raise TypeError("Must provide bytes_label arg when yaralyzing raw bytes")
+            if scannable_label is None:
+                raise TypeError("Must provide scannable_label arg when yaralyzing raw bytes")
 
             self.bytes: bytes = scannable
-            self.bytes_label: str = bytes_label
+            self.scannable_label: str = scannable_label
         else:
             self.bytes: bytes = load_binary_data(scannable)
-            self.bytes_label: str = bytes_label or path.basename(scannable)
+            self.scannable_label: str = scannable_label or path.basename(scannable)
+
+        if isinstance(rules, yara.Rules):
+            self.rules: yara.Rules = rules
+        else:
+            log.info(f"Compiling YARA rules from provided string:\n{rules}")
+            self.rules: yara.Rules = yara.compile(source=rules)
 
         self.bytes_length: int = len(self.bytes)
-        self.rules: yara.Rules = rules if isinstance(rules, yara.Rules) else yara.compile(source=rules)
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
         # Outcome racking variables
@@ -70,7 +75,7 @@ class Yaralyzer:
             cls,
             yara_rules_files: List[str],
             scannable: Union[bytes, str],
-            bytes_label: Optional[str] = None
+            scannable_label: Optional[str] = None
         ) -> 'Yaralyzer':
         """Alternate constructor loads yara rules from files, labels rules w/filenames"""
         if not isinstance(yara_rules_files, list):
@@ -79,14 +84,14 @@ class Yaralyzer:
         filepaths_arg = {path.basename(file): file for file in yara_rules_files}
         yara_rules = yara.compile(filepaths=filepaths_arg)
         yara_rules_label = comma_join(yara_rules_files, func=path.basename)
-        return cls(yara_rules, yara_rules_label, scannable, bytes_label)
+        return cls(yara_rules, yara_rules_label, scannable, scannable_label)
 
     @classmethod
     def for_rules_dirs(
             cls,
             dirs: List[str],
             scannable: Union[bytes, str],
-            bytes_label: Optional[str] = None
+            scannable_label: Optional[str] = None
         ) -> 'Yaralyzer':
         """Alternate constructor that will load all .yara files in yara_rules_dir"""
         if not isinstance(dirs, list):
@@ -99,26 +104,36 @@ class Yaralyzer:
             if f.endswith(YARA_EXT)
         ]
 
-        return cls.for_rules_files(rules_files, scannable, bytes_label)
+        return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod
     def for_patterns(
             cls,
             patterns: List[str],
+            patterns_type: str,
             scannable: Union[bytes, str],
-            bytes_label: Optional[str] = None,
-            pattern_label: Optional[str] = None,  # TODO: actually use the pattern label in the generated rule
-            regex_modifier: Optional[str] = None
+            scannable_label: Optional[str] = None,
+            rules_label: Optional[str] = None,
+            pattern_label: Optional[str] = None,
+            regex_modifier: Optional[str] = None,
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
-        rule_strings = [
-            yara_rule_string(pattern, f"{YARALYZE}_{i + 1}", modifier=regex_modifier)
-            for i, pattern in enumerate(patterns)
-        ]
+        rule_strings = []
+
+        for i, pattern in enumerate(patterns):
+            suffix = f"_{i + 1}" if len(patterns) > 1 else ''
+
+            rule_strings.append(yara_rule_string(
+                pattern=pattern,
+                pattern_type=patterns_type,
+                rule_name=f"{rules_label or YARALYZE}{suffix}",
+                pattern_label=f"{pattern_label}{suffix}" if pattern_label else None,
+                modifier=regex_modifier
+            ))
 
         rules_string = newline_join(rule_strings)
         rules_label = comma_join(patterns)
-        return cls(rules_string, rules_label, scannable, bytes_label)
+        return cls(rules_string, rules_label, scannable, scannable_label)
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them"""
@@ -171,7 +186,7 @@ class Yaralyzer:
 
     def _text_rep(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
         """Text representation of this YARA scan"""
-        txt = Text('').append(self.bytes_label, style=byte_style or 'yara.scanned')
+        txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
 
     def _filename_string(self):

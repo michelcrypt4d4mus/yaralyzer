@@ -9,6 +9,8 @@ from rich.theme import Theme
 
 from yaralyzer.config import is_env_var_set_and_not_false, is_invoked_by_pytest
 
+DEFAULT_CONSOLE_WIDTH = 160
+
 # Colors
 BYTES = 'color(100) dim'
 BYTES_NO_DIM = 'color(100)'
@@ -68,11 +70,17 @@ YARALYZER_THEME_DICT = {
 }
 
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
-DEFAULT_CONSOLE_WIDTH = 160
+
 
 def console_width_possibilities():
     # Subtract 2 from terminal cols just as a precaution in case things get weird
     return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
+
+
+def console_width() -> int:
+    """Current width set in console obj"""
+    return console._width or 40
+
 
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)
 if is_invoked_by_pytest():

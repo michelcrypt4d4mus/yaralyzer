@@ -9,8 +9,8 @@ from yaralyzer.bytes_match import ALERT_STYLE, BytesMatch
 from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEMPT, SINGLE_BYTE_ENCODINGS,
      UTF_8, UTF_16, UTF_32)
 from yaralyzer.helpers.bytes_helper import clean_byte_string
-from yaralyzer.helpers.rich_text_helper import (BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS,
-     prefix_with_plain_text_obj, unprintable_byte_to_text)
+from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj, unprintable_byte_to_text
+from yaralyzer.output.rich_console import BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS
 from yaralyzer.util.logging import log
 
 

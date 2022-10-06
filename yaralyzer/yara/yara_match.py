@@ -18,12 +18,12 @@ from numbers import Number
 from typing import Any, Dict
 
 from rich.console import Console, ConsoleOptions, RenderResult
-from rich.panel import Panel
 from rich.padding import Padding
+from rich.panel import Panel
 from rich.text import Text
 
 from yaralyzer.helpers.bytes_helper import clean_byte_string
-from yaralyzer.helpers.rich_text_helper import console, console_width, subheading_width
+from yaralyzer.output.rich_console import console_width
 from yaralyzer.util.logging import log
 
 MATCH_PADDING = (0, 0, 0, 1)

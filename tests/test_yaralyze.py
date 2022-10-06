@@ -2,14 +2,15 @@
 Tests for invoking yaralyze script from shell.
 """
 from math import isclose
-from os import environ, path
+from os import environ, path, remove
 from subprocess import CalledProcessError, check_output
 
 import pytest
 
 from yaralyzer.config import YARALYZE
-from yaralyzer.helpers.rich_text_helper import console
+from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.helpers.string_helper import line_count
+from yaralyzer.output.rich_console import console
 from tests.test_yaralyzer import EXPECTED_LINES
 
 
@@ -34,16 +35,37 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
         _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
 
 
-def test_yaralyze(il_tulipano_path, tulips_yara_path, tulips_yara_regex):
+def test_yaralyze(il_tulipano_path, tulips_yara_path):
     # yaralyze -y tests/file_fixtures/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
     with_yara_file_output = _run_with_args(il_tulipano_path, '-Y', tulips_yara_path)
-    # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
-    with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
     # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
-    counts = [line_count(output) for output in [with_yara_file_output, with_pattern_output, with_dir_output]]
+    counts = [line_count(output) for output in [with_yara_file_output, with_dir_output]]
     assert all(c == EXPECTED_LINES for c in counts) == True
+
+
+def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_regex):
+    # yaralyze -r 'tulip.{1,2500}tulip' tests/file_fixtures/il_tulipano_nero.txt
+    with_pattern_output = _run_with_args(il_tulipano_path, '-re', tulips_yara_regex)
+    assert line_count(with_pattern_output) == 814
+    with_pattern_output = _run_with_args(binary_file_path, '-re', '3Hl0')
+    assert line_count(with_pattern_output) == 67
+
+
+def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
+    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-svg', '-html', '-txt', '-out', tmp_dir)
+    rendered_files = files_in_dir(tmp_dir)
+    assert len(rendered_files) == 3
+    file_sizes = [path.getsize(f) for f in rendered_files]
+    assert sorted(file_sizes) == [37039, 63751, 201001]
+
+    for file in rendered_files:
+        remove(file)
+
+
+def assert_output_line_count(shell_cmd: list, expected_line_count: int):
+    _assert_line_count_within_range(expected_line_count, check_output(shell_cmd).decode())
 
 
 def _run_with_args(file_to_scan, *args) -> str:

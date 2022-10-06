@@ -3,7 +3,7 @@ import sys
 from argparse import Action, ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
-from os import getcwd
+from os import getcwd, path
 from typing import Optional
 
 from rich_argparse import RichHelpFormatter
@@ -12,12 +12,12 @@ from yaralyzer.config import (DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENG
      DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, LOG_DIR_ENV_VAR,
      YaralyzerConfig)
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
-from yaralyzer.helpers import rich_text_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
-from yaralyzer.helpers.rich_text_helper import console, console_width_possibilities
 from yaralyzer.helpers.string_helper import comma_join
+from yaralyzer.output import rich_console
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
+from yaralyzer.yaralyzer import Yaralyzer
 
 
 # NamedTuple to keep our argument selection orderly
@@ -218,7 +218,7 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_invocation()
 
     if args.maximize_width:
-        rich_text_helper.console.width = max(console_width_possibilities())
+        rich_console.console.width = max(rich_console.console_width_possibilities())
 
     #### Check against defaults to avoid overriding env var configured optoins
     # Suppressing/limiting output
@@ -253,5 +253,12 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_argparse_result(args)
         log_current_config()
 
-    #import pdb;pdb.set_trace()
     return args
+
+
+def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
+    file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
+    args.output_basename =  f"{file_prefix}{yaralyzer._filename_string()}"
+    args.output_basename += f"__maxdecode{YaralyzerConfig.MAX_DECODE_LENGTH}"
+    args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
+    return path.join(args.output_dir, args.output_basename + f"__at_{args.invoked_at_str}")

@@ -19,9 +19,10 @@ from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.helpers.dict_helper import get_dict_key_by_value
-from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG, console
+from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
      build_decoding_attempts_table, decoding_table_row)
+from yaralyzer.output.rich_console import console
 from yaralyzer.util.logging import log
 
 # Messages used in the table to show true vs. false (a two element array can be indexed by booleans)

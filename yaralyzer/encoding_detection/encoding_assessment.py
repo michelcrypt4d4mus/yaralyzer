@@ -6,7 +6,7 @@ from typing import Any
 from rich.text import Text
 
 from yaralyzer.encoding_detection.character_encodings import ENCODING
-from yaralyzer.helpers.rich_text_helper import (DIM_COUNTRY_THRESHOLD, console, meter_style,
+from yaralyzer.helpers.rich_text_helper import (DIM_COUNTRY_THRESHOLD, meter_style,
      prefix_with_plain_text_obj)
 
 CONFIDENCE = 'confidence'

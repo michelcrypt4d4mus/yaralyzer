@@ -11,7 +11,8 @@ from typing import Iterator, Optional
 from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.rich_text_helper import GREY_ADDRESS, prefix_with_plain_text_obj
+from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
+from yaralyzer.output.rich_console import GREY_ADDRESS
 from yaralyzer.util.logging import log
 
 # Regex Capture used when extracting quoted chunks of bytes

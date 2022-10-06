@@ -1,4 +1,5 @@
 # Next Release
+* Refactor `file_export` and `rich_console`
 
 # 0.3.2
 * help screen displays defaults and valid ranges for int types

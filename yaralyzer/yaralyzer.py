@@ -118,16 +118,18 @@ class Yaralyzer:
             regex_modifier: Optional[str] = None,
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
-        rule_strings = [
-            yara_rule_string(
+        rule_strings = []
+
+        for i, pattern in enumerate(patterns):
+            suffix = f"_{i + 1}" if len(patterns) > 1 else ''
+
+            rule_strings.append(yara_rule_string(
                 pattern=pattern,
                 pattern_type=patterns_type,
-                rule_name=f"{rules_label or YARALYZE}_{i + 1}",
-                pattern_label=f"{pattern_label}_{i + 1}" if pattern_label else None,
+                rule_name=f"{rules_label or YARALYZE}{suffix}",
+                pattern_label=f"{pattern_label}{suffix}" if pattern_label else None,
                 modifier=regex_modifier
-            )
-            for i, pattern in enumerate(patterns)
-        ]
+            ))
 
         rules_string = newline_join(rule_strings)
         rules_label = comma_join(patterns)

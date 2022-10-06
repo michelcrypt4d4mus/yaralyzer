@@ -112,14 +112,16 @@ class Yaralyzer:
             patterns: List[str],
             scannable: Union[bytes, str],
             bytes_label: Optional[str] = None,
+            rules_label: Optional[str] = None,
             pattern_label: Optional[str] = None,
-            regex_modifier: Optional[str] = None
+            regex_modifier: Optional[str] = None,
+
         ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
         rule_strings = [
             yara_rule_string(
                 pattern,
-                f"{YARALYZE}_{i + 1}",
+                f"{rules_label or YARALYZE}_{i + 1}",
                 f"{pattern_label}_{i + 1}" if pattern_label else None,
                 regex_modifier
             )

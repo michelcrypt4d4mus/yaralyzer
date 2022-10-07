@@ -1,5 +1,6 @@
 # NEXT RELEASE
-* Increase max returned bytes
+* Add `--max-match-length` and `--yara-stack-size` args
+* Increase max returned bytes (was stuck at 512)
 * Tweak unprintable char format for ASCII C1 control range, minor style changes
 * Show color key for raw YARA match panel
 

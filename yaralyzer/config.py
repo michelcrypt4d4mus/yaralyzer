@@ -4,6 +4,9 @@ from os import environ
 YARALYZE = 'yaralyze'
 PYTEST_FLAG = 'INVOKED_BY_PYTEST'
 
+KILOBYTE = 1024
+MEGABYTE = 1024 * KILOBYTE
+
 # Configuring YARALYZER_LOG_DIR has side effects; see .yaralyzer.example in repo for specifics.
 LOG_LEVEL_ENV_VAR = 'YARALYZER_LOG_LEVEL'
 LOG_DIR_ENV_VAR = 'YARALYZER_LOG_DIR'
@@ -11,6 +14,12 @@ LOG_DIR_ENV_VAR = 'YARALYZER_LOG_DIR'
 # Output suppression
 SUPPRESS_CHARDET_TABLE_ENV_VAR = 'YARALYZER_SUPPRESS_CHARDET_TABLE'
 SUPPRESS_DECODES_ENV_VAR = 'YARALYZER_SUPPRESS_DECODE'
+
+# Passed through to yara.set_config()
+DEFAULT_MAX_MATCH_LENGTH = 100 * KILOBYTE
+DEFAULT_YARA_STACK_SIZE = 2 * 65536
+MAX_MATCH_LENGTH_ENV_VAR = 'YARALYZER_MAX_MATCH_LENGTH'
+YARA_STACK_SIZE_ENV_VAR = 'YARALYZER_YARA_STACK_SIZE'
 
 # Skip decoding binary matches over this length
 DEFAULT_MIN_DECODE_LENGTH = 1
@@ -46,6 +55,9 @@ def is_invoked_by_pytest():
 class YaralyzerConfig:
     LOG_DIR = environ.get(LOG_DIR_ENV_VAR)
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
+
+    MAX_MATCH_LENGTH = int(environ.get(MAX_MATCH_LENGTH_ENV_VAR, DEFAULT_MAX_MATCH_LENGTH))
+    YARA_STACK_SIZE = int(environ.get(YARA_STACK_SIZE_ENV_VAR, DEFAULT_YARA_STACK_SIZE))
 
     MIN_BYTES_FOR_ENCODING_DETECTION = int(environ.get(
         MIN_BYTES_TO_DETECT_ENCODING_ENV_VAR,

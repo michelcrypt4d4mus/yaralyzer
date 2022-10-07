@@ -9,8 +9,8 @@ from typing import Optional
 
 from rich_argparse import RichHelpFormatter
 
-from yaralyzer.config import (DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENGTH,
-     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, LOG_DIR_ENV_VAR,
+from yaralyzer.config import (DEFAULT_MAX_MATCH_LENGTH, DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENGTH,
+     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, DEFAULT_YARA_STACK_SIZE, LOG_DIR_ENV_VAR,
      YaralyzerConfig)
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.helpers.file_helper import timestamp_for_filename
@@ -151,6 +151,18 @@ tuning.add_argument('--force-decode-threshold',
                     type=int,
                     choices=CONFIDENCE_SCORE_RANGE)
 
+tuning.add_argument('--max-match-length',
+                    help="max bytes YARA will return for a match",
+                    default=DEFAULT_MAX_MATCH_LENGTH,
+                    metavar='N',
+                    type=int)
+
+tuning.add_argument('--yara-stack-size',
+                    help="YARA matching engine internal stack size",
+                    default=DEFAULT_YARA_STACK_SIZE,
+                    metavar='N',
+                    type=int)
+
 
 # Export options
 export = parser.add_argument_group(
@@ -246,6 +258,13 @@ def parse_arguments(args: Optional[Namespace] = None):
 
     if args.suppress_decodes:
         YaralyzerConfig.SUPPRESS_DECODES = args.suppress_decodes
+
+    # Yara args
+    if args.yara_stack_size != DEFAULT_YARA_STACK_SIZE:
+        YaralyzerConfig.YARA_STACK_SIZE = args.yara_stack_size
+
+    if args.max_match_length != DEFAULT_MAX_MATCH_LENGTH:
+        YaralyzerConfig.MAX_MATCH_LENGTH = args.max_match_length
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:

@@ -9,6 +9,10 @@
 # Expand the width of the output to the fit the display window (same as the --maximize-width options)
 #    YARALYZER_MAXIMIZE_WIDTH=True
 
+# Passed through to yara.set_config as the stack_size and
+#    YARALYZER_STACK_SIZE=10485760
+#    YARALYZER_MAX_MATCH_LENGTH=10737418240
+
 # Suppress all PDF binary regex matching/scanning/etc
 #    YARALYZER_SUPPRESS_DECODE=False
 

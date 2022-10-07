@@ -46,6 +46,8 @@ class Yaralyzer:
         If scannable is a string it is assumed to be a file that bytes should be read from
         and the scannable_label will be set to the file's basename.
         """
+        yara.set_config(stack_size=YaralyzerConfig.YARA_STACK_SIZE, max_match_data=YaralyzerConfig.MAX_MATCH_LENGTH)
+
         if isinstance(scannable, bytes):
             if scannable_label is None:
                 raise TypeError("Must provide scannable_label arg when yaralyzing raw bytes")
@@ -55,8 +57,6 @@ class Yaralyzer:
         else:
             self.bytes: bytes = load_binary_data(scannable)
             self.scannable_label: str = scannable_label or path.basename(scannable)
-
-        yara.set_config(stack_size=len(self.bytes), max_match_data=len(self.bytes))
 
         if isinstance(rules, yara.Rules):
             self.rules: yara.Rules = rules

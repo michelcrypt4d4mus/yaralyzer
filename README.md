@@ -46,7 +46,7 @@ pipx install yaralyzer
 ```
 
 # Usage
-Run `yaralyzer -h` to see the command line options (screenshot below).
+Run `yaralyze -h` to see the command line options (screenshot below).
 
 ![Help](doc/rendered_images/yaralyzer_help.png)
 

@@ -41,9 +41,8 @@ class ExplicitDefaultsHelpFormatter(RichHelpFormatter, ArgumentDefaultsHelpForma
 
         return help_string
 
-
+YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
-YARA_PATTERN_REGEX = re.compile('^\\w+$')
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "
 
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
@@ -232,8 +231,8 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.maximize_width:
         rich_console.console.width = max(rich_console.console_width_possibilities())
 
-    if args.patterns_label and not YARA_PATTERN_REGEX.match(args.patterns_label):
-        raise ArgumentError(None, '--regex-patterns-label can only include alphanumeric and underscore')
+    if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
+        raise ArgumentError(None, 'Pattern can only include alphanumeric chars and underscore')
 
     #### Check against defaults to avoid overriding env var configured optoins
     # Suppressing/limiting output

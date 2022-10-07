@@ -17,7 +17,7 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YARALYZE, YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
-from yaralyzer.helpers.file_helper import load_binary_data
+from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
 from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.rich_console import YARALYZER_THEME, console
@@ -26,7 +26,7 @@ from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
-YARA_EXT = '.yara'
+YARA_EXT = 'yara'
 
 
 class Yaralyzer:
@@ -94,16 +94,10 @@ class Yaralyzer:
             scannable_label: Optional[str] = None
         ) -> 'Yaralyzer':
         """Alternate constructor that will load all .yara files in yara_rules_dir"""
-        if not isinstance(dirs, list):
-            raise TypeError(f"'{dirs}' is not a list of directories")
+        if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
+            raise TypeError(f"'{dirs}' is not a list of valid directories")
 
-        rules_files = [
-            path.join(dir, f)
-            for dir in dirs
-            for f in listdir(dir)
-            if f.endswith(YARA_EXT)
-        ]
-
+        rules_files = [path.join(dir, f) for dir in dirs for f in files_in_dir(dir, YARA_EXT)]
         return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod

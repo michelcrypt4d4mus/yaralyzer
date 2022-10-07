@@ -43,7 +43,6 @@ def test_yaralyze(il_tulipano_path, tulips_yara_path):
     with_yara_file_output = _run_with_args(il_tulipano_path, '-Y', tulips_yara_path)
     # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
     with_dir_output = _run_with_args(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
-
     counts = [line_count(output) for output in [with_yara_file_output, with_dir_output]]
     assert all(c == EXPECTED_LINES for c in counts) == True
 

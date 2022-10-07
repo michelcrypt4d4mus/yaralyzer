@@ -26,7 +26,7 @@ yaralyze --hex-pattern 'A1 B2 C3 [-] D4' one_day_in_the_life_of_ivan_cryptosovic
 The Yaralyzer's functionality was extracted from [The Pdfalyzer](https://github.com/michelcrypt4d4mus/pdfalyzer) when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.
 
 [YARA](https://github.com/VirusTotal/yara-python), for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, check for `base64` and other encodings of the pattern, and more.  Maybe most importantly of all YARA provides a standard text based format for
-people to _share_ their 'roided regexes with the world. All these features are particularly useful when analyzing or reverse engineering software.
+people to _share_ their 'roided regexes with the world. All these features are particularly useful when analyzing or reverse engineering malware, whose authors tend to invest a great deal of time into making stuff hard to find.
 
 But... that's also all YARA does. Everything else is up to the user. YARA's just a match engine and if you don't know what to match (or even what character encoding you might be able to match in) it only gets you so far. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:
 
@@ -50,8 +50,12 @@ Run `yaralyzer -h` to see the command line options (screenshot below).
 
 ![Help](doc/rendered_images/yaralyzer_help.png)
 
+For info on exporting SVG images, HTML, etc., see [Example Output](#example-output).
+
 ### Configuration
-If you place a filed called `.yaralyzer` in your home dir or the current dir environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked, permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
+If you place a filed called `.yaralyzer` in your home directory or the current working directory then environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked. This provides a mechanism for permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
+
+Only one `.yaralyzer` file will be loaded and the working directory's `.yaralyzer` takes precedence over the home directory's `.yaralyzer`.
 
 ### As A Library
 [`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class. It has a variety of constructors supporting:
@@ -75,7 +79,7 @@ for bytes_match, bytes_decoder in yaralyzer.match_iterator():
 ```
 
 # Example Output
-The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like `inkscape` or `cairosvg` (Inkscape works a lot better in our experience).
+The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich). SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or `cairosvg`. In our experience they both work though we've seen some glitchiness with `cairosvg`.
 
 **PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
 

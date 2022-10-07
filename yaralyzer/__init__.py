@@ -2,6 +2,7 @@ import code
 from os import environ, getcwd, path
 
 from dotenv import load_dotenv
+from rich.text import Text
 
 # load_dotenv() should be called as soon as possible (before parsing local classes) but not for pytest
 if not environ.get('INVOKED_BY_PYTEST', False):
@@ -17,6 +18,11 @@ from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
+
+PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in The Pdfalyzer, birthplace of The Yaralyzer:"
+PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold')
+PDFALYZER_MSG_TXT.append('\n -> ', style='bright_white')
+PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', style='bright_cyan underline')
 
 
 def yaralyze():
@@ -52,6 +58,9 @@ def yaralyze():
 
     if args.export_svg:
         invoke_rich_export(console.save_svg, output_basepath)
+
+    if args.file_to_scan_path.endswith('.pdf'):
+        console.print(PDFALYZER_MSG_TXT)
 
     # Drop into interactive shell if requested
     if args.interact:

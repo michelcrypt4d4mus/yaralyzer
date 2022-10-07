@@ -1,8 +1,10 @@
 # NEXT RELEASE
 
 # 0.5.2
+* Properly escape bytes previews for rich
 
 # 0.5.1
+* Add Pdfalyzer info message when scanning PDFs
 
 # 0.5.0
 * Show MD5, SHA1, and SHA256 hashes for each match

@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Show MD5, SHA1, and SHA256 hashes for each match
 
 # 0.4.0
 * Add `--hex-pattern` command line option

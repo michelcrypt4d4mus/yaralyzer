@@ -1,4 +1,6 @@
+import hashlib
 import re
+from collections import namedtuple
 from io import StringIO
 
 from rich.console import Console
@@ -12,6 +14,22 @@ from yaralyzer.util.logging import log
 
 HEX_CHARS_PER_GROUP = 8
 HEX_GROUPS_PER_LINE = 4
+
+BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
+
+
+def get_bytes_info(_bytes: bytes) -> BytesInfo:
+    return BytesInfo(
+        size=len(_bytes),
+        md5=hashlib.md5(_bytes).hexdigest().upper(),
+        sha1=hashlib.sha1(_bytes).hexdigest().upper(),
+        sha256=hashlib.sha256(_bytes).hexdigest().upper()
+    )
+
+
+def get_bytes_info_for_file(file_path) -> BytesInfo:
+    with open(file_path, 'rb') as file:
+        return get_bytes_info(file.read())
 
 
 def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:

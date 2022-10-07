@@ -7,7 +7,7 @@ Alternate constructors are provided depending on whether:
     4. YARA rules should be read from a directory of .yara files
 """
 from collections import defaultdict
-from os import listdir, path
+from os import path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
@@ -18,10 +18,11 @@ from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YARALYZE, YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
-from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
+from yaralyzer.helpers.rich_text_helper import CENTER, dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
-from yaralyzer.output.rich_console import YARALYZER_THEME, console
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
+from yaralyzer.output.rich_console import YARALYZER_THEME, console
+from yaralyzer.output.rich_layout_elements import bytes_hashes_table
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
@@ -131,6 +132,8 @@ class Yaralyzer:
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them"""
+        console.print(bytes_hashes_table(self.bytes, self.scannable_label))
+
         for bytes_match, bytes_decoder in self.match_iterator():
             log.debug(bytes_match)
 
@@ -144,6 +147,7 @@ class Yaralyzer:
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
                 decoder.print_decode_attempts()
+                console.print(bytes_hashes_table(match.bytes, match.location().plain, CENTER), justify=CENTER, style='dim')
                 yield match, decoder
 
         self._print_non_matches()

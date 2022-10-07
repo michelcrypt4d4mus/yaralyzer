@@ -1,4 +1,5 @@
 """
+Methods to handle turning various objects into Rich text/table/etc representations
 Rich colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
@@ -100,3 +101,16 @@ def show_color_theme(styles: dict) -> None:
     ]
 
     console.print(Columns(colors, column_first=True, padding=(0,5), equal=True))
+
+
+def size_text(num_bytes: int) -> Text:
+    """Convert a number of bytes into (e.g.) 54,213 bytes (52 KB)"""
+    kb_txt = prefix_with_plain_text_obj("{:,.1f}".format(num_bytes / 1024), style='bright_cyan', root_style='white')
+    kb_txt.append(' kb ')
+    bytes_txt = Text('(', 'white') + size_in_bytes_text(num_bytes) + Text(')')
+
+    return kb_txt + bytes_txt
+
+
+def size_in_bytes_text(num_bytes: int) -> Text:
+    return  Text(f"{num_bytes:,d}", 'number').append(' bytes', style='white')

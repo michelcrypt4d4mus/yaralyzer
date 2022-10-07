@@ -105,6 +105,15 @@ class BytesMatch:
         else:
             return self.highlight_style
 
+    def location(self) -> Text:
+        """Returns a Text obj like '(start idx: 348190, end idx: 348228)'"""
+        location_txt = prefix_with_plain_text_obj(f"(start idx: ", style='off_white', root_style='decode.subheading')
+        location_txt.append(str(self.start_idx), style='number')
+        location_txt.append(', end idx: ', style='off_white')
+        location_txt.append(str(self.end_idx), style='number')
+        location_txt.append(')', style='off_white')
+        return location_txt
+
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
         num_after = num_after or num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES
@@ -118,12 +127,7 @@ class BytesMatch:
         headline.append(f" bytes matching ")
         headline.append(f"{self.label} ", style=ALERT_STYLE if self.highlight_style == ALERT_STYLE else 'regex')
         headline.append('at ')
-        headline.append(f"(start idx: ", style='off_white')
-        headline.append(str(self.start_idx), style='number')
-        headline.append(', end idx: ', style='off_white')
-        headline.append(str(self.end_idx), style='number')
-        headline.append(')', style='off_white')
-        return headline
+        return headline + self.location()
 
     def __str__(self):
         return self.__rich__().plain

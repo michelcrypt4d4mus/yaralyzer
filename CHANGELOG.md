@@ -1,9 +1,9 @@
 # NEXT RELEASE
 
-# 0.5.2
+### 0.5.2
 * Properly escape bytes previews for rich
 
-# 0.5.1
+### 0.5.1
 * Add Pdfalyzer info message when scanning PDFs
 
 # 0.5.0
@@ -13,13 +13,13 @@
 * Add `--hex-pattern` command line option
 * Add `--patterns-label` command line option
 
-# 0.3.3
+### 0.3.3
 * Refactor `file_export` and `rich_console`
 
-# 0.3.2
+### 0.3.2
 * help screen displays defaults and valid ranges for int types
 
-# 0.3.1
+### 0.3.1
 * yara-python compiles files directly
 
 # 0.3.0

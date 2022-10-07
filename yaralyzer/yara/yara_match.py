@@ -102,7 +102,7 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
 
         txt += end_indent + Text('}', style='white')
     else:
-        log.warn(f"Unknown yara return of type {type(element)}: {element}")
+        log.warning(f"Unknown yara return of type {type(element)}: {element}")
         txt = indent + Text(str(element))
 
     return txt

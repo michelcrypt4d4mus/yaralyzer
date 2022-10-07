@@ -170,7 +170,8 @@ class Yaralyzer:
         # Only show the non matches if there were valid ones, otherwise just show the number
         if len(self.matches) == 0:
             non_match_desc = f" did not match any of the {len(self.non_matches)} yara rules"
-            console.print(dim_if(self.__rich__()  + Text(non_match_desc, style='grey.dark'), True))
+            console.print(dim_if(self.__rich__()  + Text(non_match_desc, style='grey'), True))
+            console.line()
             return
 
         non_match_desc = f" did not match the other {len(self.non_matches)} yara rules"
@@ -188,7 +189,7 @@ class Yaralyzer:
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
 
     def _filename_string(self):
-        """The string to use when exporting this yaralyzer to SVG?HTML/etc"""
+        """The string to use when exporting this yaralyzer to SVG/HTML/etc"""
         return str(self).replace('>', '').replace('<', '').replace(' ', '_')
 
     def __rich__(self) -> Text:

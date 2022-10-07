@@ -68,11 +68,13 @@ UNPRINTABLE_ASCII = {
 }
 
 
-# Fill in a dict with integer keys/values corresponding to where a given chr encoding has no chars bc
-# this range is for C1 control chars. AKA # The 'undefined' part of the character map.
 def scrub_c1_control_chars(char_map):
+    """
+    Fill in a dict with integer keys/values corresponding to where a given char encoding has no chars
+    because this range is for C1 control chars (AKA the 'undefined' part of the character map)
+    """
     for i in range(128, 160):
-        char_map[i] = f"C1_{i}"
+        char_map[i] = f"C1.CHAR{i}"
 
 
 # ISO-8859-1 AKA "Latin-1". Basically ASCII but using more of 128-256    http://www.gammon.com.au/unicode/
@@ -88,10 +90,9 @@ UNPRINTABLE_ISO_8859_1.update({
 
 
 # UTF-8 Makes no use of 128-256 on their own, only as continuation bytes.
+# The C1 bytes can appear but only as continuations
 # https://en.wikipedia.org/wiki/UTF-8
 UNPRINTABLE_UTF_8 = UNPRINTABLE_ASCII.copy()
-# The C1 bytes can appear but only as continuations
-#scrub_c1_control_chars(UNPRINTABLE_UTF_8)
 
 # C0, C1, FE, and FF, etc. *never* appear in UTF-8
 UNPRINTABLE_UTF_8.update({

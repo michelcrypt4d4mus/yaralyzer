@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Tweak unprintable char format for ASCII C1 control range, minor style changes
 
 ### 0.5.2
 * Properly escape bytes previews for rich

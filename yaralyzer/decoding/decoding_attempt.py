@@ -35,7 +35,7 @@ class DecodingAttempt:
         except UnicodeDecodeError:
             log.info(f"{self.encoding} failed on 1st pass decoding {self.bytes_match} capture; custom decoding...")
         except LookupError as e:
-            log.warn(f"Unknown encoding: {self.encoding}")
+            log.warning(f"Unknown encoding: {self.encoding}. {e}")
             return self._failed_to_decode(e)
 
         self.was_force_decoded = True
@@ -135,10 +135,9 @@ class DecodingAttempt:
     def _to_rich_text(self, _string: str, bytes_offset: int=0) -> Text:
         """Convert a decoded string to highlighted Text representation"""
         # Adjust where we start the highlighting given the multibyte nature of the encodings
-        highlight_byte_start_idx = self.bytes_match.highlight_start_idx + bytes_offset
+        log.debug(f"Stepping through {self.encoding} encoded string...")
         txt = Text('', style=self.bytes_match.style_at_position(0))
         current_byte_idx = 0
-        log.debug(f"Stepping through {self.encoding} encoded string...")
 
         # Prevent unprintable chars other than newline. Some of them disfigure the terminal output permanently
         if self.encoding in SINGLE_BYTE_ENCODINGS:

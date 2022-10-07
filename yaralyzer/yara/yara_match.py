@@ -23,7 +23,8 @@ from rich.panel import Panel
 from rich.text import Text
 
 from yaralyzer.helpers.bytes_helper import clean_byte_string
-from yaralyzer.output.rich_console import console_width
+from yaralyzer.helpers.rich_text_helper import CENTER
+from yaralyzer.output.rich_console import console_width, theme_colors_with_prefix
 from yaralyzer.util.logging import log
 
 MATCH_PADDING = (0, 0, 0, 1)
@@ -41,6 +42,10 @@ YARA_STRING_STYLES: Dict[re.Pattern, str] = {
     MATCHER_VAR_REGEX: 'yara.match_var'
 }
 
+RAW_YARA_THEME_COLORS = [color[len('yara') + 1:] for color in theme_colors_with_prefix('yara')]
+RAW_YARA_THEME_TXT = Text('\nColor Code: ') + Text(' ').join(RAW_YARA_THEME_COLORS)
+RAW_YARA_THEME_TXT.justify = CENTER
+
 
 class YaraMatch:
     def __init__(self, match: dict, matched_against_bytes_label: Text) -> None:
@@ -50,7 +55,9 @@ class YaraMatch:
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
-        yield Padding(Panel(self.label, expand=False, style=f"reverse"), MATCH_PADDING)
+        yield(Text("\n"))
+        yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse"), MATCH_PADDING)
+        yield(RAW_YARA_THEME_TXT)
         yield Padding(Panel(_rich_yara_match(self.match)), MATCH_PADDING)
 
 

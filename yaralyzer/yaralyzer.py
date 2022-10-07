@@ -142,7 +142,8 @@ class Yaralyzer:
         self.rules.match(data=self.bytes, callback=self._yara_callback)
 
         for yara_match in self.matches:
-            console.print(yara_match, Text("\n"))
+            console.print(yara_match)
+            console.line()
 
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
@@ -171,7 +172,6 @@ class Yaralyzer:
         if len(self.matches) == 0:
             non_match_desc = f" did not match any of the {len(self.non_matches)} yara rules"
             console.print(dim_if(self.__rich__()  + Text(non_match_desc, style='grey'), True))
-            console.line()
             return
 
         non_match_desc = f" did not match the other {len(self.non_matches)} yara rules"

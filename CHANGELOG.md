@@ -1,5 +1,7 @@
 # NEXT RELEASE
+* Increase max returned bytes
 * Tweak unprintable char format for ASCII C1 control range, minor style changes
+* Show color key for raw YARA match panel
 
 ### 0.5.2
 * Properly escape bytes previews for rich

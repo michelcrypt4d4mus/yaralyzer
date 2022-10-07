@@ -56,6 +56,8 @@ class Yaralyzer:
             self.bytes: bytes = load_binary_data(scannable)
             self.scannable_label: str = scannable_label or path.basename(scannable)
 
+        yara.set_config(stack_size=len(self.bytes), max_match_data=len(self.bytes))
+
         if isinstance(rules, yara.Rules):
             self.rules: yara.Rules = rules
         else:

@@ -38,7 +38,7 @@ def build_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
 
     add_col('Encoding', justify=RIGHT, width=12)
     add_col('Detect Odds', width=len('Detect'))
-    add_col('Force?', width=len('Force?'))
+    add_col('Used\nForce?', width=len('Force?'))
     add_col('Decoded Output', justify='left')
 
     na = na_txt(style=HEX.style)

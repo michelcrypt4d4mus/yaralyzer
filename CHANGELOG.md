@@ -1,5 +1,7 @@
 # NEXT RELEASE
 
+# 0.5.1
+
 # 0.5.0
 * Show MD5, SHA1, and SHA256 hashes for each match
 

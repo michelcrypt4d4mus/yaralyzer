@@ -85,7 +85,7 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 
 #### Raw YARA match result:
 
-![YARA match](doc/rendered_images/yara_match_result.png)
+![YARA match](doc/rendered_images/yara_match_result.jpg)
 
 #### Display hex, raw python string, and various attempted decodings of both the match and the bytes before and after the match (configurable):
 

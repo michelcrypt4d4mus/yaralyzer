@@ -4,6 +4,7 @@ from collections import namedtuple
 from io import StringIO
 
 from rich.console import Console
+from rich.markup import escape
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
@@ -99,7 +100,7 @@ def hex_string(_bytes: bytes) -> str:
 def print_bytes(bytes_array: bytes, style=None) -> None:
     """Convert bytes to a string representation and print to console"""
     for line in bytes_array.split(NEWLINE_BYTE):
-        console.print(clean_byte_string(line), style=style or 'bytes')
+        console.print(escape(clean_byte_string(line)), style=style or 'bytes')
 
 
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):

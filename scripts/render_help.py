@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 from rich.theme import Theme
-from rich_argparse import RichHelpFormatter
+from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.util.argument_parser import parser
 
@@ -40,7 +40,7 @@ TERMINAL_THEME = TerminalTheme(
 
 def _render_help(program_name: str, export_format: str, output_dir: str) -> str:
     """Render the contents of the help screen to an HTML, SVG, or colored text file"""
-    console = Console(record=True, theme=Theme(RichHelpFormatter.styles))
+    console = Console(record=True, theme=Theme(RichHelpFormatterPlus.styles))
     export_method_name = f"save_{export_format}"
     export_method = getattr(console, export_method_name)
     extension = 'txt' if export_format == 'text' else export_format

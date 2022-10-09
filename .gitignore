@@ -132,3 +132,5 @@ dmypy.json
 .vscode/
 .DS_Store
 
+# Misc
+test_yaralyze.sh

@@ -7,7 +7,7 @@ from importlib.metadata import version
 from os import getcwd, path
 from typing import Optional
 
-from rich_argparse import RichHelpFormatter
+from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.config import (DEFAULT_MAX_MATCH_LENGTH, DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENGTH,
      DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, DEFAULT_YARA_STACK_SIZE, LOG_DIR_ENV_VAR,
@@ -25,7 +25,7 @@ from yaralyzer.yaralyzer import Yaralyzer
 OutputSection = namedtuple('OutputSection', ['argument', 'method'])
 
 # Class to enable defaults to only be printed when they are not None or False
-class ExplicitDefaultsHelpFormatter(RichHelpFormatter, ArgumentDefaultsHelpFormatter):
+class ExplicitDefaultsHelpFormatter(RichHelpFormatterPlus):
     def _get_help_string(self, action: Action):
         action_vars = vars(action)
 
@@ -52,7 +52,8 @@ EPILOG = "* Values for various config options can be set permanently by a .yaral
 
 
 # Positional args, version, help, etc
-parser = ArgumentParser(formatter_class=ExplicitDefaultsHelpFormatter, description=DESCRIPTION, epilog=EPILOG)
+RichHelpFormatterPlus.choose_theme('prince')
+parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=EPILOG)
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 

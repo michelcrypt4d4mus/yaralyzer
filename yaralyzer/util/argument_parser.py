@@ -24,23 +24,6 @@ from yaralyzer.yaralyzer import Yaralyzer
 # NamedTuple to keep our argument selection orderly
 OutputSection = namedtuple('OutputSection', ['argument', 'method'])
 
-# Class to enable defaults to only be printed when they are not None or False
-class ExplicitDefaultsHelpFormatter(RichHelpFormatterPlus):
-    def _get_help_string(self, action: Action):
-        action_vars = vars(action)
-
-        if 'default' in action_vars and action.default in (None, False):
-            help_string = action.help
-        else:
-            help_string = super()._get_help_string(action)
-
-        if 'choices' in action_vars and isinstance(action_vars['choices'], range):
-            help_string = help_string or ''
-            choices_range = action_vars['choices']
-            help_string += f" (valid values: {min(choices_range)}-{max(choices_range)})"
-
-        return help_string
-
 YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "

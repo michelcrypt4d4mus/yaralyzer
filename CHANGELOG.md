@@ -1,6 +1,7 @@
 # NEXT RELEASE
 
 # 0.6.1
+* Use `rich_argparse_plus` for help formatting
 
 # 0.6.0
 * Add `--max-match-length` and `--yara-stack-size` args

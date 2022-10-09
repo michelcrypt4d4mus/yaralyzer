@@ -1,4 +1,4 @@
-<!-- ![Tests](https://img.shields.io/github/workflow/status/hamdanal/yaralyzer/tests?label=tests) -->
+<!-- ![Tests](https://img.shields.io/github/workflow/status/michelcrypt4d4mus/yaralyzer/tests?label=tests) -->
 ![Python Version](https://img.shields.io/pypi/pyversions/yaralyzer)
 ![Release](https://img.shields.io/github/v/release/michelcrypt4d4mus/yaralyzer?sort=semver)
 ![Downloads](https://img.shields.io/pypi/dm/yaralyzer)

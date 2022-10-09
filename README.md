@@ -1,3 +1,8 @@
+<!-- ![Tests](https://img.shields.io/github/workflow/status/hamdanal/yaralyzer/tests?label=tests) -->
+![Python Version](https://img.shields.io/pypi/pyversions/yaralyzer)
+![Release](https://img.shields.io/github/v/release/michelcrypt4d4mus/yaralyzer?sort=semver)
+![Downloads](https://img.shields.io/pypi/dm/yaralyzer)
+
 # THE YARALYZER
 Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the [YARA](https://github.com/VirusTotal/yara-python) matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](https://github.com/michelcrypt4d4mus/yaralyzer#example-output).
 

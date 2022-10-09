@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+# 0.6.2
 * Remove `cairosvg` dependency
 
 # 0.6.1

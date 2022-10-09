@@ -1,5 +1,7 @@
 # NEXT RELEASE
 
+# 0.6.1
+
 # 0.6.0
 * Add `--max-match-length` and `--yara-stack-size` args
 * Increase max returned bytes (was stuck at 512)

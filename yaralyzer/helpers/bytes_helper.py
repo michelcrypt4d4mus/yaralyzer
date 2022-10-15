@@ -11,6 +11,7 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE
+from yaralyzer.helpers.rich_text_helper import newline_join
 from yaralyzer.output.rich_console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST,
      BYTES_HIGHLIGHT, GREY, console, console_width)
 from yaralyzer.util.logging import log
@@ -91,7 +92,7 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     highlight_end_idx = bytes_match.highlight_end_idx * 3
     hex_str.stylize(bytes_match.highlight_style, highlight_start_idx, highlight_end_idx)
     lines = hex_str.wrap(console, HEX_CHARS_PER_LINE * 3)
-    return Text("\n").join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
+    return newline_join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
 
 
 def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
@@ -123,7 +124,7 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
         for i in range(0, len(segments), HEX_GROUPS_PER_LINE)
     ]
 
-    return Text("\n").join(lines)
+    return newline_join(lines)
 
 
 def hex_text(_bytes: bytes) -> Text:

@@ -3,7 +3,7 @@ Methods to handle turning various objects into Rich text/table/etc representatio
 Rich colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
-from typing import Union
+from typing import List, Union
 
 from rich.columns import Columns
 from rich.panel import Panel
@@ -113,3 +113,7 @@ def size_text(num_bytes: int) -> Text:
 
 def size_in_bytes_text(num_bytes: int) -> Text:
     return  Text(f"{num_bytes:,d}", 'number').append(' bytes', style='white')
+
+
+def newline_join(texts: List[Text]) -> Text:
+    return Text("\n").join(texts)

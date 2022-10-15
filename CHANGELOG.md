@@ -1,9 +1,9 @@
 # NEXT RELEASE
 
-# 0.6.2
+### 0.6.2
 * Remove `cairosvg` dependency
 
-# 0.6.1
+### 0.6.1
 * Use `rich_argparse_plus` for help formatting
 
 # 0.6.0

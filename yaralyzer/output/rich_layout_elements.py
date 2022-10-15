@@ -23,7 +23,7 @@ def bytes_hashes_table(
     table = Table(
         'Size',
         Column(size_text(bytes_info.size)),
-        title=title + ' Bytes Info' if title else None,
+        title=f" {title} Bytes Info" if title else None,
         title_style=GREY,
         title_justify=title_justify
     )

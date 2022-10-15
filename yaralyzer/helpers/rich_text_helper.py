@@ -10,7 +10,8 @@ from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
+from yaralyzer.output.rich_console import (BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT,
+     console)
 from yaralyzer.util.logging import log
 
 # String constants

@@ -49,12 +49,13 @@ RAW_YARA_THEME_TXT.justify = CENTER
 
 class YaraMatch:
     def __init__(self, match: dict, matched_against_bytes_label: Text) -> None:
-        self.match: dict = match
+        self.match = match
         self.rule_name = match['rule']
-        self.label: Text = matched_against_bytes_label.copy().append(f" matched rule: '", style='matched_rule')
+        self.label = matched_against_bytes_label.copy().append(f" matched rule: '", style='matched_rule')
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        """Renders a panel showing the color highlighted raw YARA match info."""
         yield(Text("\n"))
         yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse"), MATCH_PADDING)
         yield(RAW_YARA_THEME_TXT)
@@ -62,7 +63,7 @@ class YaraMatch:
 
 
 def _rich_yara_match(element: Any, depth: int = 0) -> Text:
-    """Mildly painful/hacky way of coloring a yara result hash"""
+    """Mildly painful/hacky way of coloring a yara result hash."""
     indent = Text((depth + 1) * 4 * ' ')
     end_indent = Text(depth * 4 * ' ')
 
@@ -78,7 +79,7 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
         if len(element) == 0:
             txt = Text('[]', style='white')
         else:
-            total_length = sum([len(str(e)) for e in element]) + ((len(element) - 1) * 2) + + len(indent) + 2
+            total_length = sum([len(str(e)) for e in element]) + ((len(element) - 1) * 2) + len(indent) + 2
             elements_txt = [_rich_yara_match(e, depth + 1) for e in element]
             list_txt = Text('[', style='white')
 

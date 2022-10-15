@@ -10,7 +10,7 @@ from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 CLOSENESS_THRESHOLD = 0.05
-EXPECTED_LINES = 942
+EXPECTED_LINES = 1002
 
 
 def test_filename_string(a_yaralyzer):
@@ -22,7 +22,7 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
-    _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path), 942)
+    _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path), EXPECTED_LINES)
 
 
 def test_yaralyzer_for_rules_dir(il_tulipano_path):
@@ -30,7 +30,7 @@ def test_yaralyzer_for_rules_dir(il_tulipano_path):
 
 
 def test_hex_rules(binary_file_path, tulips_yara_path):
-    _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 95)
+    _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 102)
 
 
 def _check_output_linecount(yaralzyer: Yaralyzer, expected_line_count: int = EXPECTED_LINES) -> None:

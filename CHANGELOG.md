@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Show hex and ascii side by side in decodes table
 
 ### 0.6.2
 * Remove `cairosvg` dependency

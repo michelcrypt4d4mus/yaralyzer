@@ -2,6 +2,7 @@ import hashlib
 import re
 from collections import namedtuple
 from io import StringIO
+from sys import byteorder
 
 from rich.console import Console
 from rich.markup import escape
@@ -10,13 +11,17 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE
-from yaralyzer.output.rich_console import GREY, console
+from yaralyzer.output.rich_console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST,
+     BYTES_HIGHLIGHT, GREY, console, console_width)
 from yaralyzer.util.logging import log
 
-HEX_CHARS_PER_GROUP = 8
-HEX_GROUPS_PER_LINE = 4
-
 BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
+
+HEX_CHARS_PER_GROUP = 8
+SUBTABLE_MAX_WIDTH = console_width() - 35 - 5  # 35 for first 3 cols, 5 for in between hex and ascii
+HEX_UNIT_LENGTH = (HEX_CHARS_PER_GROUP * 3) + HEX_CHARS_PER_GROUP + 4  # 4 for padding between groups
+HEX_GROUPS_PER_LINE = divmod(SUBTABLE_MAX_WIDTH, HEX_UNIT_LENGTH)[0]
+HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
 
 
 def get_bytes_info(_bytes: bytes) -> BytesInfo:
@@ -85,8 +90,40 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     highlight_start_idx = bytes_match.highlight_start_idx * 3
     highlight_end_idx = bytes_match.highlight_end_idx * 3
     hex_str.stylize(bytes_match.highlight_style, highlight_start_idx, highlight_end_idx)
-    lines = hex_str.wrap(console, HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE * 3)
+    lines = hex_str.wrap(console, HEX_CHARS_PER_LINE * 3)
     return Text("\n").join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
+
+
+def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
+    txt = Text('', style=BYTES)
+
+    for i, b in enumerate(_bytes):
+        if i < bytes_match.highlight_start_idx or i > bytes_match.highlight_end_idx:
+            style1 = 'color(246)'
+            style2 = 'color(234)'
+        else:
+            style1 = None
+            style2 = None
+
+        _byte = b.to_bytes(1, byteorder)
+
+        if b < 32:
+            txt.append('*', style=style2 or BYTES_BRIGHTER)
+        elif b < 127:
+            txt.append(_byte.decode('UTF-8'), style1 or BYTES_BRIGHTEST)
+        elif b <= 160:
+            txt.append('*', style=style2 or BYTES_HIGHLIGHT)
+        else:
+            txt.append('*', style=style2 or BYTES)
+
+    segments = [txt[i:i + HEX_CHARS_PER_GROUP] for i in range(0, len(txt), HEX_CHARS_PER_GROUP)]
+
+    lines = [
+        Text('  ').join(segments[i:min(len(segments), i + HEX_GROUPS_PER_LINE)])
+        for i in range(0, len(segments), HEX_GROUPS_PER_LINE)
+    ]
+
+    return Text("\n").join(lines)
 
 
 def hex_text(_bytes: bytes) -> Text:

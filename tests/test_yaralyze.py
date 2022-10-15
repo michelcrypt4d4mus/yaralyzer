@@ -51,9 +51,9 @@ def test_yaralyze_with_files(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_regex):
-    _assert_output_line_count_is_close(942, il_tulipano_path, '-re', tulips_yara_regex)
-    _assert_output_line_count_is_close(83, binary_file_path, '-re', '3Hl0')
-    _assert_output_line_count_is_close(90, binary_file_path, '-hex', HEX_STRING)
+    _assert_output_line_count_is_close(999, il_tulipano_path, '-re', tulips_yara_regex)
+    _assert_output_line_count_is_close(90, binary_file_path, '-re', '3Hl0')
+    _assert_output_line_count_is_close(96, binary_file_path, '-hex', HEX_STRING)
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
@@ -61,7 +61,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     rendered_files = files_in_dir(tmp_dir)
     assert len(rendered_files) == 3
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [40867, 69127, 216719])
+    _assert_array_is_close(sorted(file_sizes), [45191, 78832, 240046])
 
     for file in rendered_files:
         remove(file)

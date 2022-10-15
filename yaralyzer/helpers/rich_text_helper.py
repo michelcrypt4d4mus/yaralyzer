@@ -108,7 +108,6 @@ def size_text(num_bytes: int) -> Text:
     kb_txt = prefix_with_plain_text_obj("{:,.1f}".format(num_bytes / 1024), style='bright_cyan', root_style='white')
     kb_txt.append(' kb ')
     bytes_txt = Text('(', 'white') + size_in_bytes_text(num_bytes) + Text(')')
-
     return kb_txt + bytes_txt
 
 

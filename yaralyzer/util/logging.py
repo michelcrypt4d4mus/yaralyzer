@@ -27,6 +27,7 @@ Python log levels for reference:
 import logging
 import sys
 from os import environ, path
+from typing import Union
 
 from rich.logging import RichHandler
 
@@ -107,6 +108,12 @@ def log_argparse_result(args):
     log_msg += "\n"
     invocation_log.info(log_msg)
     log.info(log_msg)
+
+
+def set_log_level(level: Union[str, int]) -> None:
+    """Set the log level at any time."""
+    for handler in log.handlers + [log]:
+        handler.setLevel(level)
 
 
 # Suppress annoying chardet library logs

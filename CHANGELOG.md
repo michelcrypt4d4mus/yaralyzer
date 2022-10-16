@@ -1,5 +1,7 @@
 # NEXT RELEASE
 
+### 0.7.1
+
 # 0.7.0
 * Show hex and ascii side by side in decodes table
 

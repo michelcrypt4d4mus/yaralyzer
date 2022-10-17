@@ -20,13 +20,18 @@ class RegexMatchMetrics:
         self.was_match_decodable = defaultdict(lambda: 0)
         self.was_match_force_decoded = defaultdict(lambda: 0)
         self.was_match_undecodable = defaultdict(lambda: 0)
-        self.bytes_match_objs = []
+        self.bytes_match_objs = []  # Keep a copy of all matches in memory
 
     def num_matches_skipped_for_being_empty(self) -> int:
         return self.skipped_matches_lengths[0]
 
     def num_matches_skipped_for_being_too_big(self) -> int:
         return sum({k: v for k, v in self.skipped_matches_lengths.items() if k > 0}.values())
+
+    def tally_match(self, bytes_match: 'BytesMatch') -> None:
+        self.match_count += 1
+        self.bytes_matched += bytes_match.match_length
+        self.bytes_match_objs.append(bytes_match)
 
     def __eq__(self, other):
         for k, v in vars(self).items():

@@ -71,7 +71,8 @@ class Yaralyzer:
         self.suppression_notice_queue: list = []
         self.matches: List[YaraMatch] = []
         self.non_matches: List[dict] = []
-        self.regex_extraction_stats: defaultdict = defaultdict(lambda: RegexMatchMetrics())
+        #self.regex_extraction_stats: defaultdict = defaultdict(lambda: RegexMatchMetrics())
+        self.extraction_stats = RegexMatchMetrics()
 
     @classmethod
     def for_rules_files(
@@ -137,6 +138,7 @@ class Yaralyzer:
         console.print(bytes_hashes_table(self.bytes, self.scannable_label))
 
         for bytes_match, bytes_decoder in self.match_iterator():
+            self.extraction_stats.tally_match(bytes_match, bytes_decoder)
             log.debug(bytes_match)
 
     def match_iterator(self) -> Iterator[Tuple[BytesMatch, BytesDecoder]]:

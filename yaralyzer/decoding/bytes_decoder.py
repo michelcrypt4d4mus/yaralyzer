@@ -63,12 +63,14 @@ class BytesDecoder:
 
     def _generate_decodings_table(self) -> Table:
         """First rows are the raw / hex views of the bytes, then attempted decodings"""
-        if YaralyzerConfig.SUPPRESS_DECODES or \
-                self.bytes_match.match_length < YaralyzerConfig.MIN_DECODE_LENGTH or \
-                self.bytes_match.match_length > YaralyzerConfig.MAX_DECODE_LENGTH:
+        if not self.bytes_match.is_decodable():
+            log.debug(f"{self.bytes_match} is not decodable")
             return self.table
 
-        self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT.keys()]
+        self.decodings = [
+            DecodingAttempt(self.bytes_match, encoding)
+            for encoding in ENCODINGS_TO_ATTEMPT.keys()
+        ]
 
         # Attempt decodings we don't usually attempt if chardet is insistent enough
         forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
@@ -77,7 +79,7 @@ class BytesDecoder:
         # If we still haven't decoded chardets top choice, decode it
         if len(self._forced_displays()) > 0 and not self._was_decoded(self._forced_displays()[0].encoding):
             chardet_top_encoding = self._forced_displays()[0].encoding
-            log.debug(f"Decoding {chardet_top_encoding} because it's chardet top choice...")
+            log.info(f"Decoding {chardet_top_encoding} because it's chardet top choice...")
             self.decodings.append(DecodingAttempt(self.bytes_match, chardet_top_encoding))
 
         rows = [self._row_from_decoding_attempt(decoding) for decoding in self.decodings]
@@ -145,6 +147,7 @@ class BytesDecoder:
 
         was_forced = WAS_DECODABLE_YES_NO[int(decoding.was_force_decoded)]
         return decoding_table_row(assessment, was_forced, display_text, sort_score)
+
 
 
 def _build_encodings_metric_dict():

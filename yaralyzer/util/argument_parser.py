@@ -195,6 +195,10 @@ debug.add_argument('-I', '--interact', action='store_true',
 debug.add_argument('-D', '--debug', action='store_true',
                     help='show verbose debug log output')
 
+debug.add_argument('-L', '--log-level',
+                    help='set the log level',
+                    choices=['DEBUG', 'INFO', 'WARN', 'ERROR'])
+
 
 def parse_arguments(args: Optional[Namespace] = None):
     """
@@ -212,6 +216,8 @@ def parse_arguments(args: Optional[Namespace] = None):
 
     if args.debug:
         log.setLevel(logging.DEBUG)
+    elif args.log_level:
+        log.setLevel(args.log_level)
 
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 

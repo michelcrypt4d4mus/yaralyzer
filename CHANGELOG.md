@@ -1,6 +1,12 @@
 # NEXT RELEASE
 
+# 0.8.0
+* Add `--log-level` option
+* `BytesMatch.is_decodable()` method
+
+
 ### 0.7.1
+* Bump deps
 
 # 0.7.0
 * Show hex and ascii side by side in decodes table

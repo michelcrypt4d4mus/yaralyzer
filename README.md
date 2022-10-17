@@ -101,4 +101,8 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 ![Font Scan Regex](doc/rendered_images/decoding_and_chardet_table_2.png)
 
 
+# TODO
+* highlight decodes done at `chardet`s behest
+* deal with repetitive matches
+
 [^1]: As I was until recently.

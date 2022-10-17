@@ -114,6 +114,11 @@ class BytesMatch:
         location_txt.append(')', style='off_white')
         return location_txt
 
+    def is_decodable(self) -> bool:
+        return self.match_length >= YaralyzerConfig.MIN_DECODE_LENGTH \
+           and self.match_length <= YaralyzerConfig.MAX_DECODE_LENGTH \
+           and not YaralyzerConfig.SUPPRESS_DECODES
+
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
         num_after = num_after or num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES

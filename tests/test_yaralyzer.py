@@ -37,4 +37,5 @@ def _check_output_linecount(yaralzyer: Yaralyzer, expected_line_count: int = EXP
     with console.capture() as capture:
         yaralzyer.yaralyze()
 
+    import pdb;pdb.set_trace()
     assert isclose(line_count(capture.get()), expected_line_count, rel_tol=CLOSENESS_THRESHOLD)

@@ -67,7 +67,7 @@ class Yaralyzer:
         self.bytes_length: int = len(self.bytes)
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
-        # Outcome racking variables
+        # Outcome tracking variables
         self.suppression_notice_queue: list = []
         self.matches: List[YaraMatch] = []
         self.non_matches: List[dict] = []
@@ -152,7 +152,6 @@ class Yaralyzer:
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
                 decoder.print_decode_attempts()
-                console.print(bytes_hashes_table(match.bytes, match.location().plain, CENTER), justify=CENTER, style='dim')
                 yield match, decoder
 
         self._print_non_matches()

@@ -23,6 +23,7 @@ from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_D
 from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
      build_decoding_attempts_table, decoding_table_row)
 from yaralyzer.output.rich_console import console
+from yaralyzer.output.rich_layout_elements import bytes_hashes_table
 from yaralyzer.util.logging import log
 
 # A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
@@ -39,7 +40,6 @@ class BytesDecoder:
         self.label = label or bytes_match.label
 
         # Empty table/metrics/etc
-        self.table = build_decoding_attempts_table(bytes_match)
         self.was_match_decodable = _build_encodings_metric_dict()
         self.was_match_force_decoded = _build_encodings_metric_dict()
         self.was_match_undecodable = _build_encodings_metric_dict()
@@ -50,7 +50,7 @@ class BytesDecoder:
         self.encoding_detector = EncodingDetector(self.bytes)
 
     def print_decode_attempts(self) -> None:
-        """Print the DecodingAttemptsTable."""
+        """Called from yaralyze() method via match iterator to create/print the DecodingAttemptsTable."""
         console.line(2)
         self._print_decode_attempt_subheading()
 
@@ -60,12 +60,16 @@ class BytesDecoder:
             console.line()
 
         console.print(self._generate_decodings_table())
+        hashes_table = bytes_hashes_table(self.bytes_match.bytes, self.bytes_match.location().plain, CENTER)
+        console.print(hashes_table, justify=CENTER, style='dim')
 
     def _generate_decodings_table(self) -> Table:
-        """First rows are the raw / hex views of the bytes, then attempted decodings"""
+        """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
         if not self.bytes_match.is_decodable():
             log.debug(f"{self.bytes_match} is not decodable")
             return self.table
+
+        self.table = build_decoding_attempts_table(self.bytes_match)
 
         self.decodings = [
             DecodingAttempt(self.bytes_match, encoding)

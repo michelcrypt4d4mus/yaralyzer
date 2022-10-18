@@ -5,6 +5,8 @@ Class to  measure what we enounter as we iterate over every single match of a re
 Things like how much many of our matched bytes were we able to decode easily vs. by force vs. not at all,
 were some encodings have a higher pct of success than others (indicating part of our mystery data might be encoded
 that way?
+
+TODO: use @dataclass decorator https://realpython.com/python-data-classes/
 """
 from collections import defaultdict
 

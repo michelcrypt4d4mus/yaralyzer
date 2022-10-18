@@ -15,6 +15,7 @@ def bytes_hashes_table(
         title: Optional[str] = None,
         title_justify: str = LEFT
     ) -> Table:
+    """Build a table to show the MD5, SHA1, SHA256, etc."""
     if isinstance(bytes_or_bytes_info, bytes):
         bytes_info = get_bytes_info(bytes_or_bytes_info)
     else:

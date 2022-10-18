@@ -8,7 +8,10 @@ from collections import defaultdict
 from operator import attrgetter
 from typing import List, Optional
 
+from rich.align import Align
+from rich.console import Console, ConsoleOptions, NewLine, RenderResult, RenderableType
 from rich.panel import Panel
+from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
 
@@ -51,17 +54,28 @@ class BytesDecoder:
 
     def print_decode_attempts(self) -> None:
         """Called from yaralyze() method via match iterator to create/print the DecodingAttemptsTable."""
-        console.line(2)
-        self._print_decode_attempt_subheading()
+        for renderable in self.__rich_console__(console, console.options):
+            console.print(renderable)
+
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        """Rich object generator (see Rich console docs)"""
+        yield NewLine(2)
+        yield Align(self._decode_attempt_subheading(), CENTER)
 
         if not YaralyzerConfig.SUPPRESS_CHARDET_OUTPUT:
-            console.line()
-            console.print(self.encoding_detector, justify='center')
-            console.line()
+            yield NewLine()
+            yield Align(self.encoding_detector, CENTER)
+            yield NewLine()
 
-        console.print(self._generate_decodings_table())
-        hashes_table = bytes_hashes_table(self.bytes_match.bytes, self.bytes_match.location().plain, CENTER)
-        console.print(hashes_table, justify=CENTER, style='dim')
+        yield self._generate_decodings_table()
+
+        hashes_table = bytes_hashes_table(
+            self.bytes_match.bytes,
+            self.bytes_match.location().plain,
+            CENTER
+        )
+
+        yield Align(hashes_table, CENTER, style='dim')
 
     def _generate_decodings_table(self) -> Table:
         """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
@@ -107,11 +121,10 @@ class BytesDecoder:
         """Check whether a given encoding is in the table already"""
         return any(row.encoding == encoding for row in self.decodings)
 
-    def _print_decode_attempt_subheading(self) -> None:
+    def _decode_attempt_subheading(self) -> Panel:
         """Generate a rich.Panel for decode attempts"""
         headline = Text(f"Found ", style='decode.subheading') + self.bytes_match.__rich__()
-        panel = Panel(headline, style='decode.subheading', expand=False)
-        console.print(panel, justify=CENTER)
+        return Panel(headline, style='decode.subheading', expand=False)
 
     def _track_decode_stats(self) -> None:
         """Track stats about successful vs. forced vs. failed decode attempts"""
@@ -151,7 +164,6 @@ class BytesDecoder:
 
         was_forced = WAS_DECODABLE_YES_NO[int(decoding.was_force_decoded)]
         return decoding_table_row(assessment, was_forced, display_text, sort_score)
-
 
 
 def _build_encodings_metric_dict():

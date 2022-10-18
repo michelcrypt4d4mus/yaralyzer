@@ -11,7 +11,9 @@ from os import path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
+from rich.console import Console, ConsoleOptions, RenderResult, RenderableType
 from rich.padding import Padding
+from rich.panel import Panel
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
@@ -138,8 +140,21 @@ class Yaralyzer:
         console.print(bytes_hashes_table(self.bytes, self.scannable_label))
 
         for bytes_match, bytes_decoder in self.match_iterator():
+            bytes_decoder.print_decode_attempts()
             self.extraction_stats.tally_match(bytes_match, bytes_decoder)
             log.debug(bytes_match)
+
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        """Does the stuff. TODO: not the best place to put the core logic"""
+        yield bytes_hashes_table(self.bytes, self.scannable_label)
+
+        for bytes_match, bytes_decoder in self.match_iterator():
+            for attempt in bytes_decoder.__rich_console__(_console, options):
+                yield attempt
+
+            self.extraction_stats.tally_match(bytes_match, bytes_decoder)
+            log.debug(bytes_match)
+
 
     def match_iterator(self) -> Iterator[Tuple[BytesMatch, BytesDecoder]]:
         """Iterator version of yaralyze. Yields match and decode data tuple back to caller."""
@@ -150,9 +165,7 @@ class Yaralyzer:
             console.line()
 
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
-                decoder = BytesDecoder(match, yara_match.rule_name)
-                decoder.print_decode_attempts()
-                yield match, decoder
+                yield match, BytesDecoder(match, yara_match.rule_name)
 
         self._print_non_matches()
 

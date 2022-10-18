@@ -9,13 +9,12 @@ from operator import attrgetter
 from typing import List, Optional
 
 from rich.align import Align
-from rich.console import Console, ConsoleOptions, NewLine, RenderResult, RenderableType
+from rich.console import Console, ConsoleOptions, NewLine, RenderResult
 from rich.panel import Panel
-from rich.padding import Padding
 from rich.table import Table
 from rich.text import Text
 
-from yaralyzer.bytes_match import BytesMatch
+#from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.decoding_attempt import DecodingAttempt
 from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
@@ -25,8 +24,6 @@ from yaralyzer.helpers.dict_helper import get_dict_key_by_value
 from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
      build_decoding_attempts_table, decoding_table_row)
-from yaralyzer.output.rich_console import console
-from yaralyzer.output.rich_layout_elements import bytes_hashes_table
 from yaralyzer.util.logging import log
 
 # A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
@@ -37,7 +34,7 @@ SCORE_SCALER = 100.0
 
 
 class BytesDecoder:
-    def __init__(self, bytes_match: BytesMatch, label: Optional[str] = None) -> None:
+    def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
         self.bytes_match = bytes_match
         self.bytes = bytes_match.surrounding_bytes
         self.label = label or bytes_match.label
@@ -52,11 +49,6 @@ class BytesDecoder:
         # Note we send both the match and surrounding bytes used when detecting the encoding
         self.encoding_detector = EncodingDetector(self.bytes)
 
-    def print_decode_attempts(self) -> None:
-        """Called from yaralyze() method via match iterator to create/print the DecodingAttemptsTable."""
-        for renderable in self.__rich_console__(console, console.options):
-            console.print(renderable)
-
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
         """Rich object generator (see Rich console docs)"""
         yield NewLine(2)
@@ -68,14 +60,8 @@ class BytesDecoder:
             yield NewLine()
 
         yield self._generate_decodings_table()
-
-        hashes_table = bytes_hashes_table(
-            self.bytes_match.bytes,
-            self.bytes_match.location().plain,
-            CENTER
-        )
-
-        yield Align(hashes_table, CENTER, style='dim')
+        bytes_hashes_table = self.bytes_match.bytes_hashes_table()
+        yield Align(bytes_hashes_table, CENTER, style='dim')
 
     def _generate_decodings_table(self) -> Table:
         """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""

@@ -12,6 +12,7 @@ from yaralyzer.config import is_env_var_set_and_not_false, is_invoked_by_pytest
 DEFAULT_CONSOLE_WIDTH = 160
 
 # Colors
+ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 BYTES = 'color(100) dim'
 BYTES_NO_DIM = 'color(100)'
 BYTES_BRIGHTEST = 'color(220)'

@@ -8,15 +8,14 @@ e.g. a regex like '123(.*)x:' would have pre_capture_len of 3 and post_capture_l
 import re
 from typing import Iterator, Optional
 
+from rich.table import Table
 from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
-from yaralyzer.output.rich_console import GREY_ADDRESS
+from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
+from yaralyzer.output.rich_layout_elements import bytes_hashes_table
 from yaralyzer.util.logging import log
-
-# Regex Capture used when extracting quoted chunks of bytes
-ALERT_STYLE = 'error'
 
 
 class BytesMatch:
@@ -107,7 +106,11 @@ class BytesMatch:
 
     def location(self) -> Text:
         """Returns a Text obj like '(start idx: 348190, end idx: 348228)'"""
-        location_txt = prefix_with_plain_text_obj(f"(start idx: ", style='off_white', root_style='decode.subheading')
+        location_txt = prefix_with_plain_text_obj(
+            f"(start idx: ",
+            style='off_white',
+            root_style='decode.subheading'
+        )
         location_txt.append(str(self.start_idx), style='number')
         location_txt.append(', end idx: ', style='off_white')
         location_txt.append(str(self.end_idx), style='number')
@@ -115,9 +118,18 @@ class BytesMatch:
         return location_txt
 
     def is_decodable(self) -> bool:
+        """True if SUPPRESS_DECODES is false and length of self.bytes is between MIN/MAX_DECODE_LENGTH"""
         return self.match_length >= YaralyzerConfig.MIN_DECODE_LENGTH \
            and self.match_length <= YaralyzerConfig.MAX_DECODE_LENGTH \
            and not YaralyzerConfig.SUPPRESS_DECODES
+
+    def bytes_hashes_table(self) -> Table:
+        """Helper function to build the MD5/SHA table for self.bytes"""
+        return bytes_hashes_table(
+            self.bytes,
+            self.location().plain,
+            'center'
+        )
 
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""

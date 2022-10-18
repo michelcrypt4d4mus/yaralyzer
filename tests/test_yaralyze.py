@@ -8,12 +8,12 @@ from subprocess import CalledProcessError, check_output
 
 import pytest
 
+from tests.test_yaralyzer import CLOSENESS_THRESHOLD
+from tests.yara.test_yara_rule_builder import HEX_STRING
 from yaralyzer.config import YARALYZE
 from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
-from tests.test_yaralyzer import CLOSENESS_THRESHOLD, EXPECTED_LINES
-from tests.yara.test_yara_rule_builder import HEX_STRING
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.

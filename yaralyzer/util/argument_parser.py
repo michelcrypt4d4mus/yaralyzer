@@ -91,15 +91,6 @@ tuning.add_argument('--surrounding-bytes',
                     metavar='N',
                     type=int)
 
-tuning.add_argument('--suppress-chardet', action='store_true',
-                    help="suppress the display of the full table of chardet's encoding likelihood scores")
-
-tuning.add_argument('--min-chardet-bytes',
-                    help="minimum number of bytes to run chardet.detect() and the decodings it suggests",
-                    default=YaralyzerConfig.DEFAULT_MIN_CHARDET_BYTES,
-                    metavar='N',
-                    type=int)
-
 tuning.add_argument('--suppress-decodes-table', action='store_true',
                     help='suppress decodes table entirely (including hex/raw output)')
 
@@ -118,9 +109,25 @@ tuning.add_argument('--max-decode-length',
                     metavar='N',
                     type=int)
 
+tuning.add_argument('--suppress-chardet', action='store_true',
+                    help="suppress the display of the full table of chardet's encoding likelihood scores")
+
+tuning.add_argument('--min-chardet-bytes',
+                    help="minimum number of bytes to run chardet.detect() and the decodings it suggests",
+                    default=YaralyzerConfig.DEFAULT_MIN_CHARDET_BYTES,
+                    metavar='N',
+                    type=int)
+
+tuning.add_argument('--min-chardet-table-confidence',
+                    help="minimum chardet confidence to display the encoding name/score in the character " + \
+                         "decection scores table",
+                    default=YaralyzerConfig.DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE,
+                    metavar='N',
+                    type=int)
+
 tuning.add_argument('--force-display-threshold',
                     help="encodings with chardet confidence below this number will neither be displayed nor " + \
-                         "decoded",
+                         "decoded in the decodings table",
                     default=EncodingDetector.force_display_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,

@@ -73,9 +73,8 @@ class EncodingDetector:
         already_seen_encodings = {}
 
         for i, result in enumerate(self.assessments):
-            # TODO: unimplemented option
-            # if result.confidence < YaralyzerConfig.args.min_chardet_confidence:
-            #     continue
+            if result.confidence < YaralyzerConfig.args.min_chardet_table_confidence:
+                continue
 
             self.table.add_row(f"{i + 1}", result.encoding_text, result.confidence_text)
 

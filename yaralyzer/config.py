@@ -46,8 +46,8 @@ class YaralyzerConfig:
     DEFAULT_MAX_DECODE_LENGTH = 256
 
     # chardet.detect() related
+    DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE = 2
     DEFAULT_MIN_CHARDET_BYTES = 9
-    DEFAULT_MIN_CHARDET_CONFIDENCE = 2.0  # TODO: unused
 
     # Number of bytes to show before/after byte previews and decodes. Configured by command line or env var
     DEFAULT_SURROUNDING_BYTES = 64
@@ -56,23 +56,6 @@ class YaralyzerConfig:
     LOG_DIR = environ.get(LOG_DIR_ENV_VAR)
     LOG_LEVEL_ENV_VAR = f"{YARALYZER}_LOG_LEVEL"
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
-
-    # MAX_MATCH_LENGTH = int(environ.get(MAX_MATCH_LENGTH_ENV_VAR, DEFAULT_MAX_MATCH_LENGTH))
-    # YARA_STACK_SIZE = int(environ.get(YARA_STACK_SIZE_ENV_VAR, DEFAULT_YARA_STACK_SIZE))
-
-    # MIN_BYTES_FOR_ENCODING_DETECTION = int(environ.get(
-    #     MIN_BYTES_TO_DETECT_ENCODING_ENV_VAR,
-    #     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING
-    # ))
-
-    # MIN_DECODE_LENGTH = int(environ.get(MIN_DECODE_LENGTH_ENV_VAR, DEFAULT_MIN_DECODE_LENGTH))
-    # MAX_DECODE_LENGTH = int(environ.get(MAX_DECODE_LENGTH_ENV_VAR, DEFAULT_MAX_DECODE_LENGTH))
-    # NUM_SURROUNDING_BYTES = int(environ.get(SURROUNDING_BYTES_ENV_VAR, DEFAULT_SURROUNDING_BYTES))
-
-    # SUPPRESS_CHARDET_OUTPUT = is_env_var_set_and_not_false(SUPPRESS_CHARDET_TABLE_ENV_VAR)
-    # SUPPRESS_DECODES_TABLE = is_env_var_set_and_not_false(SUPPRESS_DECODES_TABLE_ENV_VAR)
-    # SUPPRESS_DECODING_ATTEMPTS = is_env_var_set_and_not_false(SUPPRESS_DECODING_ATTEMPTS_ENV_VAR)
-    # MIN_CHARDET_CONFIDENCE = float(environ.get(MIN_CHARDET_CONFIDENCE_ENV_VAR, DEFAULT_MIN_CHARDET_CONFIDENCE))
 
     HIGHLIGHT_STYLE = 'orange1'
 

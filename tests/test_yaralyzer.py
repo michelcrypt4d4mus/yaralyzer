@@ -11,12 +11,11 @@ from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 CLOSENESS_THRESHOLD = 0.05
-EXPECTED_LINES = 1265
+EXPECTED_LINES = 1002
 
 
 def test_filename_string(a_yaralyzer):
-    result = a_yaralyzer._filename_string() == 'il_tulipano_nero.txt_scanned_with_tulips.yara'
-    assert result[0], result[1]
+    assert a_yaralyzer._filename_string() == 'il_tulipano_nero.txt_scanned_with_tulips.yara'
 
 
 def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
@@ -38,7 +37,7 @@ def test_yaralyzer_for_rules_dir(il_tulipano_path):
 
 
 def test_hex_rules(binary_file_path, tulips_yara_path):
-    result = _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 117)
+    result = _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 102)
     assert result[0], result[1]
 
 

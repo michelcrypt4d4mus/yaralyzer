@@ -21,7 +21,7 @@ from yaralyzer.output.rich_console import console
 def test_help_option():
     help_text = _run_with_args('-h')
     assert 'maximize-width' in help_text
-    _assert_line_count_within_range(118, help_text)
+    _assert_line_count_within_range(127, help_text)
 
 
 def test_no_rule_args(il_tulipano_path):
@@ -62,7 +62,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     rendered_files = files_in_dir(tmp_dir)
     assert len(rendered_files) == 3
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [65961, 78832, 233374])
+    _assert_array_is_close(sorted(file_sizes), [62223, 106947, 307839])
 
     for file in rendered_files:
         remove(file)
@@ -89,4 +89,4 @@ def _assert_line_count_within_range(expected_line_count, text):
 
     if not isclose(expected_line_count, lines_in_text, rel_tol=CLOSENESS_THRESHOLD):
         console.print(text)
-        raise AssertionError(f"Expected {line_count} +/- but found {lines_in_text}")
+        raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")

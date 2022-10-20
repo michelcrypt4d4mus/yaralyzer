@@ -1,5 +1,6 @@
 # NEXT RELEASE
 * All command lines args configurable via environment variables
+* Expose `--min-chardet-table-confidence` option
 
 # 0.8.0
 * Add `--log-level` option

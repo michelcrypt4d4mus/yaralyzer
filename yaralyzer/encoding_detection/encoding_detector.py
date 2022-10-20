@@ -2,8 +2,6 @@
 Manager class to ease dealing with the chardet encoding detection library 'chardet'.
 Each instance of this classes managed a chardet.detect_all() scan on a single set of bytes.
 """
-from collections import namedtuple
-from numbers import Number
 from operator import attrgetter
 from typing import List
 

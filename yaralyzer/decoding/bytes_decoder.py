@@ -64,14 +64,22 @@ class BytesDecoder:
             yield self._generate_decodings_table()
         else:
             log.debug(f"{self.bytes_match} is not decodable")
-            yield self.bytes_match.suppression_notice()
+
+            if YaralyzerConfig.args.suppress_decodes_table:
+                yield self.bytes_match.suppression_notice()
+            else:
+                yield self._generate_decodings_table(True)
+
             yield NewLine()
 
         yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
-    def _generate_decodings_table(self) -> Table:
+    def _generate_decodings_table(self, suppress_decodes: bool = False) -> Table:
         """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
         self.table = build_decoding_attempts_table(self.bytes_match)
+
+        if YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes:
+            return self.table
 
         self.decodings = [
             DecodingAttempt(self.bytes_match, encoding)

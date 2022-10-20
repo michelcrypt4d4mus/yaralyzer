@@ -1,5 +1,7 @@
 # NEXT RELEASE
-* All command lines args configurable via environment variables
+* All command lines args configurable via environment variables or `.yaralyzer` file
+* Improve decoding attempt statistics tracking
+* Add suppression notices
 * Expose `--min-chardet-table-confidence` option
 
 # 0.8.0

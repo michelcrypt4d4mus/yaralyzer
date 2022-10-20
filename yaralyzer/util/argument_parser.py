@@ -122,7 +122,7 @@ tuning.add_argument('--min-chardet-table-confidence',
                     help="minimum chardet confidence to display the encoding name/score in the character " + \
                          "decection scores table",
                     default=YaralyzerConfig.DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE,
-                    metavar='N',
+                    metavar='PCT_CONFIDENCE',
                     type=int)
 
 tuning.add_argument('--force-display-threshold',

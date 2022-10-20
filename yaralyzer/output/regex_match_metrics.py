@@ -22,9 +22,6 @@ class RegexMatchMetrics:
         self.forced_decode_count = 0
         self.undecodable_count = 0
         self.skipped_matches_lengths = defaultdict(lambda: 0)
-        # self.was_match_decodable = defaultdict(lambda: 0)
-        # self.was_match_force_decoded = defaultdict(lambda: 0)
-        # self.was_match_undecodable = defaultdict(lambda: 0)
         self.bytes_match_objs = []  # Keep a copy of all matches in memory
         self.per_encoding_stats = defaultdict(lambda: RegexMatchMetrics())
 
@@ -34,25 +31,23 @@ class RegexMatchMetrics:
     def num_matches_skipped_for_being_too_big(self) -> int:
         return sum({k: v for k, v in self.skipped_matches_lengths.items() if k > 0}.values())
 
-    def tally_match(self, bytes_match: 'BytesMatch', decoder: BytesDecoder) -> None:
+    def tally_match(self, decoder: BytesDecoder) -> None:
         self.match_count += 1
-        self.bytes_matched += bytes_match.match_length
-        self.bytes_match_objs.append(bytes_match)
+        self.bytes_matched += decoder.bytes_match.match_length
+        self.bytes_match_objs.append(decoder.bytes_match)
 
-        for encoding, _bool in decoder.was_match_decodable.items():
-            self.per_encoding_stats[encoding].matches_decoded += 1
-            if _bool > 1:
-                raise ValueError(f"{_bool} is > 1 but should not be for {encoding} 1")
+        for decoding_attempt in decoder.decodings:
+            encoding_stats = self.per_encoding_stats[decoding_attempt.encoding]
 
-        for encoding, _bool in decoder.was_match_force_decoded.items():
-            self.per_encoding_stats[encoding].forced_decode_count += 1
-            if _bool > 1:
-                raise ValueError(f"{_bool} is > 1 but should not be for {encoding} 2")
+            if decoding_attempt.failed_to_decode:
+                encoding_stats.undecodable_count += 1
+            else:
+                encoding_stats.matches_decoded += 1
 
-        for encoding, _bool in decoder.was_match_force_decoded.items():
-            self.per_encoding_stats[encoding].undecodable_count += 1
-            if _bool > 1:
-                raise ValueError(f"{_bool} is > 1 but should not be for {encoding} 3")
+                if decoding_attempt.was_force_decoded:
+                    encoding_stats.forced_decode_count += 1
+                else:
+                    encoding_stats.easy_decode_count += 1
 
     def __eq__(self, other):
         for k, v in vars(self).items():

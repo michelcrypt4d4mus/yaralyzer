@@ -76,10 +76,9 @@ class Yaralyzer:
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
         # Outcome tracking variables
-        self.suppression_notice_queue: list = []
-        self.matches: List[YaraMatch] = []
         self.non_matches: List[dict] = []
-        #self.regex_extraction_stats: defaultdict = defaultdict(lambda: RegexMatchMetrics())
+        self.matches: List[YaraMatch] = []
+        self.suppression_notice_queue: list = []
         self.extraction_stats = RegexMatchMetrics()
 
     @classmethod
@@ -154,7 +153,9 @@ class Yaralyzer:
             console.line()
 
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
-                yield match, BytesDecoder(match, yara_match.rule_name)
+                decoder = BytesDecoder(match, yara_match.rule_name)
+                self.extraction_stats.tally_match(decoder)
+                yield match, decoder
 
         self._print_non_matches()
 
@@ -201,12 +202,9 @@ class Yaralyzer:
         """Does the stuff. TODO: not the best place to put the core logic"""
         yield bytes_hashes_table(self.bytes, self.scannable_label)
 
-        for bytes_match, bytes_decoder in self.match_iterator():
+        for _bytes_match, bytes_decoder in self.match_iterator():
             for attempt in bytes_decoder.__rich_console__(_console, options):
                 yield attempt
-
-            self.extraction_stats.tally_match(bytes_match, bytes_decoder)
-            log.debug(bytes_match)
 
     def __str__(self) -> str:
         return self.__text__().plain

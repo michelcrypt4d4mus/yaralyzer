@@ -46,6 +46,7 @@ class BytesDecoder:
         self.was_match_undecodable = _build_encodings_metric_dict()
         self.decoded_strings = {}  # dict[encoding: decoded string]
         self.undecoded_rows = []
+        self.decodings = []
 
         # Note we send both the match and surrounding bytes used when detecting the encoding
         self.encoding_detector = EncodingDetector(self.bytes)

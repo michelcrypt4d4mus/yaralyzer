@@ -1,8 +1,7 @@
-from argparse import Namespace
 import logging
-
+from argparse import ArgumentParser, Namespace
 from os import environ
-from typing import List
+from typing import Any, List
 
 YARALYZE = 'yaralyze'
 YARALYZER = f"{YARALYZE}r".upper()
@@ -79,6 +78,7 @@ class YaralyzerConfig:
 
     ONLY_CLI_ARGS = [
         'debug',
+        'help',
         'hex_patterns',
         'interact',
         'patterns_label',
@@ -87,7 +87,10 @@ class YaralyzerConfig:
         'version'
     ]
 
-    _argparse_keys: List[str] = []
+    @classmethod
+    def set_argument_parser(cls, parser):
+        cls._argument_parser: ArgumentParser = parser
+        cls._argparse_keys: List[str] = sorted([action.dest for action in parser._actions])
 
     @classmethod
     def set_args(cls, args: Namespace) -> None:
@@ -98,71 +101,24 @@ class YaralyzerConfig:
                 continue
 
             arg_value = vars(args)[option]
-            default_var = f"DEFAULT_{option.upper()}"
             env_var = f"{YARALYZER}_{option.upper()}"
             env_value = environ.get(env_var)
+            default_value = cls.get_default_arg(option)
 
             if isinstance(type(arg_value), bool):
                 setattr(args, option, arg_value or is_env_var_set_and_not_false(env_var))
             elif isinstance(arg_value, (int, float)):
-                if default_var in vars(cls):
-                    default_value = vars(cls)[default_var]
-                    print(f" DEFAULT for {option}: {default_value}")
-                else:
-                    default_value = None
-
                 # Check against defaults to avoid overriding env var configured optoins
-                if default_value == arg_value and env_value is not None:
+                if arg_value == default_value and env_value is not None:
                     setattr(args, option, int(env_value) or arg_value)  # TODO: float args not handled
             else:
                 setattr(args, option, arg_value or env_value)
 
     @classmethod
     def set_default_args(cls):
-        defaults = {k.removeprefix('DEFAULT_').lower(): v for k, v in vars(cls).items() if k.startswith('DEFAULT_')}
-        _args = Namespace(**defaults)
-        cls.set_args(_args)
+        cls.set_args(cls._argument_parser.parse_args(['dummy']))
 
-
-
-        # env_var_args = {
-        #     f"{YARALYZER}_{option.upper()}": vars(args)[option]
-
-        #     if not (option.startswith('export') or option in cls.ONLY_CLI_ARGS)
-        # }
-
-        # for env_var, value in env_var_args:
-        #     print(f"{env_var} => {environ.get(env_var)}")
-
-        #     if type()
-
-
-    #                      debug    bool              False
-    #                export_html    NoneType          None
-    #                 export_svg    NoneType          None
-    #                 export_txt    NoneType          None
-    #                file_prefix    NoneType          None
-    #                file_suffix    NoneType          None
-    #          file_to_scan_path    str               tests/file_fixtures/random_bytes.bin
-    #     force_decode_threshold    float             50.0
-    #    force_display_threshold    float             20.0
-    #               hex_patterns    NoneType          None
-    #                   interact    bool              False
-    #                  log_level    NoneType          None
-    #          max_decode_length    int               256
-    #           max_match_length    int               102400
-    #             maximize_width    bool              False
-    #          min_chardet_bytes    int               9
-    #          min_decode_length    int               1
-    #                 output_dir    NoneType          None
-    #             patterns_label    NoneType          None
-    #             regex_modifier    NoneType          None
-    #             regex_patterns    NoneType          None
-    #           suppress_chardet    bool              False
-    #     suppress_decodes_table    bool              False
-    # suppress_decoding_attempts    bool              False
-    #          surrounding_bytes    int               64
-    #                    version    bool              False
-    #            yara_rules_dirs    NoneType          None
-    #           yara_rules_files    list              ['tests/file_fixtures/tulips.yara']
-    #            yara_stack_size    int               131072
+    @classmethod
+    def get_default_arg(cls, arg: str) -> Any:
+        default_var = f"DEFAULT_{arg.upper()}"
+        return vars(cls).get(default_var)

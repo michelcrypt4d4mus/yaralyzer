@@ -62,7 +62,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     rendered_files = files_in_dir(tmp_dir)
     assert len(rendered_files) == 3
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [45191, 78832, 233374])
+    _assert_array_is_close(sorted(file_sizes), [65961, 78832, 233374])
 
     for file in rendered_files:
         remove(file)

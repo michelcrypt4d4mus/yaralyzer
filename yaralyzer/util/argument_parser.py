@@ -200,6 +200,8 @@ debug.add_argument('-L', '--log-level',
                     help='set the log level',
                     choices=['DEBUG', 'INFO', 'WARN', 'ERROR'])
 
+YaralyzerConfig.set_argument_parser(parser)
+
 
 def parse_arguments(args: Optional[Namespace] = None):
     """
@@ -215,7 +217,6 @@ def parse_arguments(args: Optional[Namespace] = None):
     used_as_library = args is not None
     args = args or parser.parse_args()
     log_argparse_result(args, 'RAW')
-    YaralyzerConfig._argparse_keys = sorted(list(args.__dict__.keys()))
     args.invoked_at_str = timestamp_for_filename()
 
     if args.debug:
@@ -247,21 +248,19 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
-    # if args.suppress_chardet:
-    #     YaralyzerConfig.SUPPRESS_CHARDET_OUTPUT = True
-
     # File export options
     if args.export_svg or args.export_txt or args.export_html:
         args.output_dir = args.output_dir or getcwd()
     elif args.output_dir:
         log.warning('--output-dir provided but no export option was chosen')
 
+    YaralyzerConfig.set_args(args)
+
     if not used_as_library:
         log_argparse_result(args, 'parsed')
         log_current_config()
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
 
-    YaralyzerConfig.set_args(args)
     return args
 
 

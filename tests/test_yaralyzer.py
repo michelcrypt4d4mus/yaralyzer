@@ -22,7 +22,9 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
-    _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path), EXPECTED_LINES)
+    _check_output_linecount(
+        Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path),
+        EXPECTED_LINES)
 
 
 def test_yaralyzer_for_rules_dir(il_tulipano_path):

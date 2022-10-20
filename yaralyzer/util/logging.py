@@ -95,10 +95,10 @@ def log_invocation() -> None:
     invocation_log.info(msg)
 
 
-def log_argparse_result(args):
+def log_argparse_result(args, label: str):
     """Logs the result of argparse"""
     args_dict = vars(args)
-    log_msg = 'argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+    log_msg = f'{label} argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
 
     for arg_var in sorted(args_dict.keys()):
         arg_val = args_dict[arg_var]

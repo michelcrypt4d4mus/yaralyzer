@@ -60,7 +60,7 @@ class EncodingDetector:
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 
     def has_enough_bytes(self) -> bool:
-        return self.bytes_len >= YaralyzerConfig.MIN_BYTES_FOR_ENCODING_DETECTION
+        return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
 
     def assessments_above_confidence(self, cutoff: float) -> List[EncodingAssessment]:
         return [a for a in self.unique_assessments if a.confidence >= cutoff]
@@ -73,8 +73,9 @@ class EncodingDetector:
         already_seen_encodings = {}
 
         for i, result in enumerate(self.assessments):
-            if result.confidence < YaralyzerConfig.MIN_CHARDET_CONFIDENCE:
-                continue
+            # TODO: unimplemented option
+            # if result.confidence < YaralyzerConfig.args.min_chardet_confidence:
+            #     continue
 
             self.table.add_row(f"{i + 1}", result.encoding_text, result.confidence_text)
 

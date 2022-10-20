@@ -32,8 +32,8 @@ from yaralyzer.yara.yara_rule_builder import yara_rule_string
 YARA_EXT = 'yara'
 
 
+# TODO: might be worth introducing a Scannable namedtuple or similar
 class Yaralyzer:
-    # TODO: might be worth introducing a Scannable namedtuple or similar
     def __init__(
             self,
             rules: Union[str, yara.Rules],
@@ -48,7 +48,13 @@ class Yaralyzer:
         If scannable is a string it is assumed to be a file that bytes should be read from
         and the scannable_label will be set to the file's basename.
         """
-        yara.set_config(stack_size=YaralyzerConfig.YARA_STACK_SIZE, max_match_data=YaralyzerConfig.MAX_MATCH_LENGTH)
+        if 'args' not in vars(YaralyzerConfig):
+            YaralyzerConfig.set_default_args()
+
+        yara.set_config(
+            stack_size=YaralyzerConfig.args.yara_stack_size,
+            max_match_data=YaralyzerConfig.args.max_match_length
+        )
 
         if isinstance(scannable, bytes):
             if scannable_label is None:

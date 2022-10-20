@@ -54,7 +54,7 @@ class BytesDecoder:
         yield NewLine(2)
         yield Align(self._decode_attempt_subheading(), CENTER)
 
-        if not YaralyzerConfig.SUPPRESS_CHARDET_OUTPUT:
+        if not YaralyzerConfig.args.suppress_chardet:
             yield NewLine()
             yield Align(self.encoding_detector, CENTER)
             yield NewLine()

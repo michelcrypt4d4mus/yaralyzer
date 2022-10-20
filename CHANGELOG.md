@@ -4,7 +4,6 @@
 * Add `--log-level` option
 * `BytesMatch.is_decodable()` method
 
-
 ### 0.7.1
 * Bump deps
 

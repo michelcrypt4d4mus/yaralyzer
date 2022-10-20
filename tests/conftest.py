@@ -5,6 +5,8 @@ import pytest
 PYTESTS_DIR = path.dirname(__file__)
 LOG_DIR = path.join(PYTESTS_DIR, pardir, 'log')
 FILE_FIXTURE_PATH = path.join(PYTESTS_DIR, 'file_fixtures')
+
+# Some env vars that we need or are helpful for pytest
 environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = LOG_DIR
 

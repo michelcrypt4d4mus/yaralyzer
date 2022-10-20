@@ -1,5 +1,6 @@
 """
-Tests for invoking yaralyze script from shell.
+Tests for invoking yaralyze script from shell (NOT for Yaralyzer() class directly - those tests
+are over in test_yaralyzer.py)
 """
 from functools import partial
 from math import isclose

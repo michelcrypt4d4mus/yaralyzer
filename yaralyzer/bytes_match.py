@@ -118,10 +118,10 @@ class BytesMatch:
         return location_txt
 
     def is_decodable(self) -> bool:
-        """True if SUPPRESS_DECODES is false and length of self.bytes is between MIN/MAX_DECODE_LENGTH"""
-        return self.match_length >= YaralyzerConfig.MIN_DECODE_LENGTH \
-           and self.match_length <= YaralyzerConfig.MAX_DECODE_LENGTH \
-           and not YaralyzerConfig.SUPPRESS_DECODES
+        """True if SUPPRESS_DECODES_TABLE is false and length of self.bytes is between MIN/MAX_DECODE_LENGTH"""
+        return self.match_length >= YaralyzerConfig.args.min_decode_length \
+           and self.match_length <= YaralyzerConfig.args.max_decode_length \
+           and not YaralyzerConfig.args.suppress_decodes_table
 
     def bytes_hashes_table(self) -> Table:
         """Helper function to build the MD5/SHA table for self.bytes"""
@@ -133,8 +133,8 @@ class BytesMatch:
 
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
-        num_after = num_after or num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES
-        num_before = num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES
+        num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
+        num_before = num_before or YaralyzerConfig.args.surrounding_bytes
         self.surrounding_start_idx: int = max(self.start_idx - num_before, 0)
         self.surrounding_end_idx: int = min(self.end_idx + num_after, len(self.matched_against))
         self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]

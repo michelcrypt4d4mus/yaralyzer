@@ -224,6 +224,7 @@ def parse_arguments(args: Optional[Namespace] = None):
     used_as_library = args is not None
     args = args or parser.parse_args()
     log_argparse_result(args, 'RAW')
+    args.standalone_mode = not used_as_library
     args.invoked_at_str = timestamp_for_filename()
 
     if args.debug:

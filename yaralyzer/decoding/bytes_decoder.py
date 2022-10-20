@@ -61,18 +61,13 @@ class BytesDecoder:
             yield Align(self.encoding_detector, CENTER)
             yield NewLine()
 
+        # In standalone mode we always print the hex/raw bytes
         if self.bytes_match.is_decodable():
             yield self._generate_decodings_table()
-        else:
-            log.debug(f"{self.bytes_match} is not decodable")
+        elif YaralyzerConfig.args.standalone_mode:
+            yield self._generate_decodings_table(True)
 
-            if YaralyzerConfig.args.suppress_decodes_table:
-                yield self.bytes_match.suppression_notice()
-            else:
-                yield self._generate_decodings_table(True)
-
-            yield NewLine()
-
+        yield NewLine()
         yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
     def _generate_decodings_table(self, suppress_decodes: bool = False) -> Table:

@@ -131,6 +131,18 @@ class BytesMatch:
             'center'
         )
 
+    def suppression_notice(self) -> Text:
+        """Generate a message for when there are too few/too many bytes"""
+        txt = self.__rich__()
+
+        if self.match_length < YaralyzerConfig.args.min_decode_length:
+            txt = Text('Too little to actually attempt decode at ', style='grey') + txt
+        else:
+            txt.append(" too long to decode ")
+            txt.append(f"(--max-decode-length is {YaralyzerConfig.args.max_decode_length} bytes)", style='grey')
+
+        return txt
+
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
         num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes

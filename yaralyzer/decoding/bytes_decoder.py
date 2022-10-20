@@ -13,6 +13,7 @@ from rich.console import Console, ConsoleOptions, NewLine, RenderResult
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
+from yaralyzer import bytes_match
 
 #from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
@@ -59,16 +60,17 @@ class BytesDecoder:
             yield Align(self.encoding_detector, CENTER)
             yield NewLine()
 
-        yield self._generate_decodings_table()
-        bytes_hashes_table = self.bytes_match.bytes_hashes_table()
-        yield Align(bytes_hashes_table, CENTER, style='dim')
+        if self.bytes_match.is_decodable():
+            yield self._generate_decodings_table()
+        else:
+            log.debug(f"{self.bytes_match} is not decodable")
+            yield self.bytes_match.suppression_notice()
+            yield NewLine()
+
+        yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
     def _generate_decodings_table(self) -> Table:
         """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
-        if not self.bytes_match.is_decodable():
-            log.debug(f"{self.bytes_match} is not decodable")
-            return self.table
-
         self.table = build_decoding_attempts_table(self.bytes_match)
 
         self.decodings = [

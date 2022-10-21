@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yaralyzer"
-version = "0.8.0"
+version = "0.9.0"
 description = "Visualize and force decode YARA and regex matches found in a file or byte stream. With colors. Lots of colors."
 authors = ["Michel de Cryptadamus <michel@cryptadamus.com>"]
 readme = "README.md"

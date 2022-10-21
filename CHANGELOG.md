@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+# 0.9.0
 * All command lines args configurable via environment variables or `.yaralyzer` file
 * Improve decoding attempt statistics tracking
 * Add suppression notices

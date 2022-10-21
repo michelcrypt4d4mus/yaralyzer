@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix PyPi screenshots
 
 # 0.9.0
 * All command lines args configurable via environment variables or `.yaralyzer` file

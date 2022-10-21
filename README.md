@@ -53,7 +53,7 @@ pipx install yaralyzer
 # Usage
 Run `yaralyze -h` to see the command line options (screenshot below).
 
-![Help](doc/rendered_images/yaralyze_help.png)
+![](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/yaralyze_help.png)
 
 For info on exporting SVG images, HTML, etc., see [Example Output](#example-output).
 
@@ -94,11 +94,11 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 
 #### Display hex, raw python string, and various attempted decodings of both the match and the bytes before and after the match (configurable):
 
-![Font Scan Slash](doc/rendered_images/font_34_frontslash_scan.png)
+![](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/font_34_frontslash_scan.png)
 
 #### Bonus: see what `chardet.detect()` thinks about the likelihood your bytes are in a given encoding/language:
 
-![Font Scan Regex](doc/rendered_images/decoding_and_chardet_table_2.png)
+![](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/decoding_and_chardet_table_2.png)
 
 
 # TODO

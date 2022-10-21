@@ -5,7 +5,7 @@
 
 # THE YARALYZER
 
-![YARA match](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/yara_match_result.jpg)
+![YARA match](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/top_of_readme.png)
 
 Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the [YARA](https://github.com/VirusTotal/yara-python) matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. [With colors](https://github.com/michelcrypt4d4mus/yaralyzer#example-output).
 

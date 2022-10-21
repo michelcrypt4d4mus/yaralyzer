@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix PyPi screenshots
 
 ### 0.9.1
 * Fix PyPi screenshots

@@ -11,6 +11,7 @@ TODO: use @dataclass decorator https://realpython.com/python-data-classes/
 from collections import defaultdict
 
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
+from yaralyzer.util.logging import log
 
 
 class RegexMatchMetrics:
@@ -32,16 +33,22 @@ class RegexMatchMetrics:
         return sum({k: v for k, v in self.skipped_matches_lengths.items() if k > 0}.values())
 
     def tally_match(self, decoder: BytesDecoder) -> None:
+        log.debug(f"Tallying {decoder.bytes_match} ({len(decoder.decodings)} decodings)")
         self.match_count += 1
         self.bytes_matched += decoder.bytes_match.match_length
         self.bytes_match_objs.append(decoder.bytes_match)
 
+        if not decoder.bytes_match.is_decodable():
+            self.skipped_matches_lengths[decoder.bytes_match.match_length] += 1
+
         for decoding_attempt in decoder.decodings:
+            log.debug(f"Tallying decoding for {decoding_attempt.encoding}")
             encoding_stats = self.per_encoding_stats[decoding_attempt.encoding]
 
             if decoding_attempt.failed_to_decode:
                 encoding_stats.undecodable_count += 1
             else:
+                encoding_stats.match_count += 1
                 encoding_stats.matches_decoded += 1
 
                 if decoding_attempt.was_force_decoded:

@@ -65,6 +65,7 @@ class BytesDecoder:
         if self.bytes_match.is_decodable():
             yield self._generate_decodings_table()
         elif YaralyzerConfig.args.standalone_mode:
+            # TODO: yield self.bytes_match.suppression_notice()
             yield self._generate_decodings_table(True)
 
         yield NewLine()

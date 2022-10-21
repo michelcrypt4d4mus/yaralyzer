@@ -78,7 +78,6 @@ class Yaralyzer:
         # Outcome tracking variables
         self.non_matches: List[dict] = []
         self.matches: List[YaraMatch] = []
-        self.suppression_notice_queue: list = []
         self.extraction_stats = RegexMatchMetrics()
 
     @classmethod

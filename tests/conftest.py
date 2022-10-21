@@ -1,13 +1,17 @@
-from os import environ, getcwd, listdir, path, remove
+from os import environ, pardir, path, remove
 
 import pytest
 
+PYTESTS_DIR = path.dirname(__file__)
+LOG_DIR = path.join(PYTESTS_DIR, pardir, 'log')
+FILE_FIXTURE_PATH = path.join(PYTESTS_DIR, 'file_fixtures')
+
+# Some env vars that we need or are helpful for pytest
 environ['INVOKED_BY_PYTEST'] = 'True'
+environ['YARALYZER_LOG_DIR'] = LOG_DIR
 
 from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
 from yaralyzer.yaralyzer import Yaralyzer
-
-FILE_FIXTURE_PATH = path.join(path.dirname(__file__), 'file_fixtures')
 
 
 # Full paths to file fixtures

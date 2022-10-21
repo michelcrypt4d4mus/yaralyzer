@@ -1,5 +1,6 @@
 """
-Tests for invoking yaralyze script from shell.
+Tests for invoking yaralyze script from shell (NOT for Yaralyzer() class directly - those tests
+are over in test_yaralyzer.py)
 """
 from functools import partial
 from math import isclose
@@ -8,19 +9,19 @@ from subprocess import CalledProcessError, check_output
 
 import pytest
 
+from tests.test_yaralyzer import CLOSENESS_THRESHOLD
+from tests.yara.test_yara_rule_builder import HEX_STRING
 from yaralyzer.config import YARALYZE
 from yaralyzer.helpers.file_helper import files_in_dir
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
-from tests.test_yaralyzer import CLOSENESS_THRESHOLD, EXPECTED_LINES
-from tests.yara.test_yara_rule_builder import HEX_STRING
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
 def test_help_option():
     help_text = _run_with_args('-h')
     assert 'maximize-width' in help_text
-    _assert_line_count_within_range(118, help_text)
+    _assert_line_count_within_range(127, help_text)
 
 
 def test_no_rule_args(il_tulipano_path):
@@ -45,7 +46,7 @@ def test_yaralyze_with_files(il_tulipano_path, tulips_yara_path):
         yaralyze -Y tests/file_fixtures/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
         yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
     """
-    test_line_count = partial(_assert_output_line_count_is_close, EXPECTED_LINES, il_tulipano_path)
+    test_line_count = partial(_assert_output_line_count_is_close, 1002, il_tulipano_path)
     test_line_count('-Y', tulips_yara_path)
     test_line_count('-dir', path.dirname(tulips_yara_path))
 
@@ -61,7 +62,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     rendered_files = files_in_dir(tmp_dir)
     assert len(rendered_files) == 3
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [45191, 78832, 240046])
+    _assert_array_is_close(sorted(file_sizes), [62223, 106947, 307839])
 
     for file in rendered_files:
         remove(file)
@@ -88,4 +89,4 @@ def _assert_line_count_within_range(expected_line_count, text):
 
     if not isclose(expected_line_count, lines_in_text, rel_tol=CLOSENESS_THRESHOLD):
         console.print(text)
-        raise AssertionError(f"Expected {line_count} +/- but found {lines_in_text}")
+        raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")

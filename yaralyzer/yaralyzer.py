@@ -5,12 +5,14 @@ Alternate constructors are provided depending on whether:
     2. YARA rules should be compiled from a string
     3. YARA rules should be read from a file
     4. YARA rules should be read from a directory of .yara files
+
+The real action happens in the __rich__console__() dunder method.
 """
-from collections import defaultdict
 from os import path
 from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
+from rich.console import Console, ConsoleOptions, RenderResult
 from rich.padding import Padding
 from rich.text import Text
 
@@ -18,11 +20,11 @@ from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YARALYZE, YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
-from yaralyzer.helpers.rich_text_helper import CENTER, dim_if, reverse_color
+from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.rich_console import YARALYZER_THEME, console
-from yaralyzer.output.rich_layout_elements import bytes_hashes_table
+from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
@@ -30,8 +32,8 @@ from yaralyzer.yara.yara_rule_builder import yara_rule_string
 YARA_EXT = 'yara'
 
 
+# TODO: might be worth introducing a Scannable namedtuple or similar
 class Yaralyzer:
-    # TODO: might be worth introducing a Scannable namedtuple or similar
     def __init__(
             self,
             rules: Union[str, yara.Rules],
@@ -46,7 +48,13 @@ class Yaralyzer:
         If scannable is a string it is assumed to be a file that bytes should be read from
         and the scannable_label will be set to the file's basename.
         """
-        yara.set_config(stack_size=YaralyzerConfig.YARA_STACK_SIZE, max_match_data=YaralyzerConfig.MAX_MATCH_LENGTH)
+        if 'args' not in vars(YaralyzerConfig):
+            YaralyzerConfig.set_default_args()
+
+        yara.set_config(
+            stack_size=YaralyzerConfig.args.yara_stack_size,
+            max_match_data=YaralyzerConfig.args.max_match_length
+        )
 
         if isinstance(scannable, bytes):
             if scannable_label is None:
@@ -67,11 +75,10 @@ class Yaralyzer:
         self.bytes_length: int = len(self.bytes)
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
-        # Outcome racking variables
-        self.suppression_notice_queue: list = []
-        self.matches: List[YaraMatch] = []
+        # Outcome tracking variables
         self.non_matches: List[dict] = []
-        self.regex_extraction_stats: defaultdict = defaultdict(lambda: RegexMatchMetrics())
+        self.matches: List[YaraMatch] = []
+        self.extraction_stats = RegexMatchMetrics()
 
     @classmethod
     def for_rules_files(
@@ -134,10 +141,7 @@ class Yaralyzer:
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them"""
-        console.print(bytes_hashes_table(self.bytes, self.scannable_label))
-
-        for bytes_match, bytes_decoder in self.match_iterator():
-            log.debug(bytes_match)
+        console.print(self)
 
     def match_iterator(self) -> Iterator[Tuple[BytesMatch, BytesDecoder]]:
         """Iterator version of yaralyze. Yields match and decode data tuple back to caller."""
@@ -149,8 +153,7 @@ class Yaralyzer:
 
             for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
-                decoder.print_decode_attempts()
-                console.print(bytes_hashes_table(match.bytes, match.location().plain, CENTER), justify=CENTER, style='dim')
+                self.extraction_stats.tally_match(decoder)
                 yield match, decoder
 
         self._print_non_matches()
@@ -173,29 +176,34 @@ class Yaralyzer:
         # Only show the non matches if there were valid ones, otherwise just show the number
         if len(self.matches) == 0:
             non_match_desc = f" did not match any of the {len(self.non_matches)} yara rules"
-            console.print(dim_if(self.__rich__()  + Text(non_match_desc, style='grey'), True))
+            console.print(dim_if(self.__text__()  + Text(non_match_desc, style='grey'), True))
             return
 
         non_match_desc = f" did not match the other {len(self.non_matches)} yara rules"
-        console.print(self.__rich__() + Text(non_match_desc, style='grey') + Text(': '), style='dim')
+        console.print(self.__text__() + Text(non_match_desc, style='grey') + Text(': '), style='dim')
         console.print(Padding(Text(', ', 'white').join(non_matches_text), (0, 0, 1, 4)))
 
     def _panel_text(self) -> Text:
         """Inverted colors for the panel at the top of the match section of the output"""
         styles = [reverse_color(YARALYZER_THEME.styles[f"yara.{s}"]) for s in ('scanned', 'rules')]
-        return self._text_rep(*styles)
-
-    def _text_rep(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
-        """Text representation of this YARA scan"""
-        txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
-        return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
+        return self.__text__(*styles)
 
     def _filename_string(self):
         """The string to use when exporting this yaralyzer to SVG/HTML/etc"""
         return str(self).replace('>', '').replace('<', '').replace(' ', '_')
 
-    def __rich__(self) -> Text:
-        return self._text_rep()
+    def __text__(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
+        """Text representation of this YARA scan (__text__() was taken)"""
+        txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
+        return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
+
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        """Does the stuff. TODO: not the best place to put the core logic"""
+        yield bytes_hashes_table(self.bytes, self.scannable_label)
+
+        for _bytes_match, bytes_decoder in self.match_iterator():
+            for attempt in bytes_decoder.__rich_console__(_console, options):
+                yield attempt
 
     def __str__(self) -> str:
-        return self.__rich__().plain
+        return self.__text__().plain

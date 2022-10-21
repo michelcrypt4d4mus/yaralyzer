@@ -134,3 +134,5 @@ dmypy.json
 
 # Misc
 test_yaralyze.sh
+/tests/tmp/
+.yaralyzer

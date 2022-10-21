@@ -1,7 +1,7 @@
 import logging
 import re
 import sys
-from argparse import Action, ArgumentError, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
+from argparse import ArgumentError, ArgumentParser, Namespace
 from collections import namedtuple
 from importlib.metadata import version
 from os import getcwd, path
@@ -9,9 +9,7 @@ from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
 
-from yaralyzer.config import (DEFAULT_MAX_MATCH_LENGTH, DEFAULT_MIN_DECODE_LENGTH, DEFAULT_MAX_DECODE_LENGTH,
-     DEFAULT_MIN_BYTES_TO_DETECT_ENCODING, DEFAULT_SURROUNDING_BYTES, DEFAULT_YARA_STACK_SIZE, LOG_DIR_ENV_VAR,
-     YaralyzerConfig)
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
@@ -30,8 +28,8 @@ DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make
 
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
          "see the documentation for details.\n" + \
-         f"* A registry of previous yaralyzer invocations will be incribed to a file if the '{LOG_DIR_ENV_VAR}' " + \
-         "environment variable is configured."
+         f"* A registry of previous yaralyzer invocations will be incribed to a file if the " + \
+         "'{YaralyzerConfig.LOG_DIR_ENV_VAR}' environment variable is configured."
 
 
 # Positional args, version, help, etc
@@ -89,7 +87,25 @@ tuning.add_argument('--maximize-width', action='store_true',
 
 tuning.add_argument('--surrounding-bytes',
                     help="number of bytes to display/decode before and after YARA match start positions",
-                    default=DEFAULT_SURROUNDING_BYTES,
+                    default=YaralyzerConfig.DEFAULT_SURROUNDING_BYTES,
+                    metavar='N',
+                    type=int)
+
+tuning.add_argument('--suppress-decodes-table', action='store_true',
+                    help='suppress decodes table entirely (including hex/raw output)')
+
+tuning.add_argument('--suppress-decoding-attempts', action='store_true',
+                    help='suppress decodes attempts for matched bytes (only hex/raw output will be shown)')
+
+tuning.add_argument('--min-decode-length',
+                    help='suppress decode attempts for quoted byte sequences shorter than N',
+                    default=YaralyzerConfig.DEFAULT_MIN_DECODE_LENGTH,
+                    metavar='N',
+                    type=int)
+
+tuning.add_argument('--max-decode-length',
+                    help='suppress decode attempts for quoted byte sequences longer than N',
+                    default=YaralyzerConfig.DEFAULT_MAX_DECODE_LENGTH,
                     metavar='N',
                     type=int)
 
@@ -98,28 +114,20 @@ tuning.add_argument('--suppress-chardet', action='store_true',
 
 tuning.add_argument('--min-chardet-bytes',
                     help="minimum number of bytes to run chardet.detect() and the decodings it suggests",
-                    default=DEFAULT_MIN_BYTES_TO_DETECT_ENCODING,
+                    default=YaralyzerConfig.DEFAULT_MIN_CHARDET_BYTES,
                     metavar='N',
                     type=int)
 
-tuning.add_argument('--suppress-decodes', action='store_true',
-                    help='suppress decode attempts for matched bytes (only hex/raw output)')
-
-tuning.add_argument('--min-decode-length',
-                    help='suppress decode attempts for quoted byte sequences shorter than N',
-                    default=DEFAULT_MIN_DECODE_LENGTH,
-                    metavar='N',
-                    type=int)
-
-tuning.add_argument('--max-decode-length',
-                    help='suppress decode attempts for quoted byte sequences longer than N',
-                    default=DEFAULT_MAX_DECODE_LENGTH,
-                    metavar='N',
+tuning.add_argument('--min-chardet-table-confidence',
+                    help="minimum chardet confidence to display the encoding name/score in the character " + \
+                         "decection scores table",
+                    default=YaralyzerConfig.DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE,
+                    metavar='PCT_CONFIDENCE',
                     type=int)
 
 tuning.add_argument('--force-display-threshold',
                     help="encodings with chardet confidence below this number will neither be displayed nor " + \
-                         "decoded",
+                         "decoded in the decodings table",
                     default=EncodingDetector.force_display_threshold,
                     metavar='PCT_CONFIDENCE',
                     type=int,
@@ -137,13 +145,13 @@ tuning.add_argument('--force-decode-threshold',
 
 tuning.add_argument('--max-match-length',
                     help="max bytes YARA will return for a match",
-                    default=DEFAULT_MAX_MATCH_LENGTH,
+                    default=YaralyzerConfig.DEFAULT_MAX_MATCH_LENGTH,
                     metavar='N',
                     type=int)
 
 tuning.add_argument('--yara-stack-size',
                     help="YARA matching engine internal stack size",
-                    default=DEFAULT_YARA_STACK_SIZE,
+                    default=YaralyzerConfig.DEFAULT_YARA_STACK_SIZE,
                     metavar='N',
                     type=int)
 
@@ -199,6 +207,8 @@ debug.add_argument('-L', '--log-level',
                     help='set the log level',
                     choices=['DEBUG', 'INFO', 'WARN', 'ERROR'])
 
+YaralyzerConfig.set_argument_parser(parser)
+
 
 def parse_arguments(args: Optional[Namespace] = None):
     """
@@ -210,8 +220,11 @@ def parse_arguments(args: Optional[Namespace] = None):
         print(f"yaralyzer {version('yaralyzer')}")
         sys.exit()
 
+    # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool
     used_as_library = args is not None
     args = args or parser.parse_args()
+    log_argparse_result(args, 'RAW')
+    args.standalone_mode = not used_as_library
     args.invoked_at_str = timestamp_for_filename()
 
     if args.debug:
@@ -236,26 +249,6 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
         raise ArgumentError(None, 'Pattern can only include alphanumeric chars and underscore')
 
-    #### Check against defaults to avoid overriding env var configured optoins
-    # Suppressing/limiting output
-    if args.min_decode_length != DEFAULT_MIN_DECODE_LENGTH:
-        YaralyzerConfig.MIN_DECODE_LENGTH = args.min_decode_length
-    if args.max_decode_length != DEFAULT_MAX_DECODE_LENGTH:
-        YaralyzerConfig.MAX_DECODE_LENGTH = args.max_decode_length
-
-    if args.surrounding_bytes != DEFAULT_SURROUNDING_BYTES:
-        YaralyzerConfig.NUM_SURROUNDING_BYTES = args.surrounding_bytes
-
-    if args.suppress_decodes:
-        YaralyzerConfig.SUPPRESS_DECODES = args.suppress_decodes
-
-    # Yara args
-    if args.yara_stack_size != DEFAULT_YARA_STACK_SIZE:
-        YaralyzerConfig.YARA_STACK_SIZE = args.yara_stack_size
-
-    if args.max_match_length != DEFAULT_MAX_MATCH_LENGTH:
-        YaralyzerConfig.MAX_MATCH_LENGTH = args.max_match_length
-
     # chardet.detect() action thresholds
     if args.force_decode_threshold:
         EncodingDetector.force_decode_threshold = args.force_decode_threshold
@@ -263,18 +256,18 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
-    if args.suppress_chardet:
-        YaralyzerConfig.SUPPRESS_CHARDET_OUTPUT = True
-
     # File export options
     if args.export_svg or args.export_txt or args.export_html:
         args.output_dir = args.output_dir or getcwd()
     elif args.output_dir:
         log.warning('--output-dir provided but no export option was chosen')
 
+    YaralyzerConfig.set_args(args)
+
     if not used_as_library:
-        log_argparse_result(args)
+        log_argparse_result(args, 'parsed')
         log_current_config()
+        log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
 
     return args
 
@@ -282,6 +275,6 @@ def parse_arguments(args: Optional[Namespace] = None):
 def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
     file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
     args.output_basename =  f"{file_prefix}{yaralyzer._filename_string()}"
-    args.output_basename += f"__maxdecode{YaralyzerConfig.MAX_DECODE_LENGTH}"
+    args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
     args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
     return path.join(args.output_dir, args.output_basename + f"__at_{args.invoked_at_str}")

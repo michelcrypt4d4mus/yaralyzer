@@ -1,9 +1,12 @@
 # If you place a filed called '.yaralyzer' in your home dir or the current dir environment variables specified
 # in that .yaralyzer file will be added to the environment each time yaralyzer is invoked. (See the `dotenv`
-# package for more details.) This file contains environment variables you can place in .yaralyzer to configure
-# the application above and beyond providing command line options.  Useful if you want to permanently
+# package for more details.) This file contains environment variables you can use to configure
+# the application above and beyond providing command line options on each invocation.  Useful if you want to permanently
 # configure options you tend to reuse (e.g. '--maximize-width') so you can stop remembering to type them.
-# Easiest way to do this is probably to just copy this file to one in your home or working directory and customize.
+#
+# Almost all of the command line options can be configured in this file by capitalizing them and prefixing
+# with 'YARALYZER'. e.g. to configure the --maximize-width option for every invocation, you would set:
+# YARALYZER_MAXIMIZE_WIDTH=True
 
 
 # Expand the width of the output to the fit the display window (same as the --maximize-width options)
@@ -14,7 +17,7 @@
 #    YARALYZER_MAX_MATCH_LENGTH=10737418240
 
 # Suppress all PDF binary regex matching/scanning/etc
-#    YARALYZER_SUPPRESS_DECODE=False
+#    YARALYZER_SUPPRESS_DECODES_TABLE=False
 
 # Suppress the display of the table showing the the encoding assessments given by `chardet.detect()`
 # about a particular chunk of binary data. (The most important data in the chardet confidence table is

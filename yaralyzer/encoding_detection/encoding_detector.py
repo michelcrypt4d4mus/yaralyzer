@@ -2,8 +2,6 @@
 Manager class to ease dealing with the chardet encoding detection library 'chardet'.
 Each instance of this classes managed a chardet.detect_all() scan on a single set of bytes.
 """
-from collections import namedtuple
-from numbers import Number
 from operator import attrgetter
 from typing import List
 
@@ -60,7 +58,7 @@ class EncodingDetector:
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 
     def has_enough_bytes(self) -> bool:
-        return self.bytes_len >= YaralyzerConfig.MIN_BYTES_FOR_ENCODING_DETECTION
+        return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
 
     def assessments_above_confidence(self, cutoff: float) -> List[EncodingAssessment]:
         return [a for a in self.unique_assessments if a.confidence >= cutoff]
@@ -73,7 +71,7 @@ class EncodingDetector:
         already_seen_encodings = {}
 
         for i, result in enumerate(self.assessments):
-            if result.confidence < YaralyzerConfig.MIN_CHARDET_CONFIDENCE:
+            if result.confidence < YaralyzerConfig.args.min_chardet_table_confidence:
                 continue
 
             self.table.add_row(f"{i + 1}", result.encoding_text, result.confidence_text)

@@ -16,27 +16,11 @@ from yaralyzer.output.rich_console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTES
      BYTES_HIGHLIGHT, GREY, console, console_width)
 from yaralyzer.util.logging import log
 
-BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
-
 HEX_CHARS_PER_GROUP = 8
 SUBTABLE_MAX_WIDTH = console_width() - 35 - 5  # 35 for first 3 cols, 5 for in between hex and ascii
 HEX_UNIT_LENGTH = (HEX_CHARS_PER_GROUP * 3) + HEX_CHARS_PER_GROUP + 4  # 4 for padding between groups
 HEX_GROUPS_PER_LINE = divmod(SUBTABLE_MAX_WIDTH, HEX_UNIT_LENGTH)[0]
 HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
-
-
-def get_bytes_info(_bytes: bytes) -> BytesInfo:
-    return BytesInfo(
-        size=len(_bytes),
-        md5=hashlib.md5(_bytes).hexdigest().upper(),
-        sha1=hashlib.sha1(_bytes).hexdigest().upper(),
-        sha256=hashlib.sha256(_bytes).hexdigest().upper()
-    )
-
-
-def get_bytes_info_for_file(file_path) -> BytesInfo:
-    with open(file_path, 'rb') as file:
-        return get_bytes_info(file.read())
 
 
 def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:
@@ -49,8 +33,8 @@ def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=
 
 
 def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num_before=None, num_after=None) -> bytes:
-    num_after = num_after or num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES
-    num_before = num_before or YaralyzerConfig.NUM_SURROUNDING_BYTES
+    num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
+    num_before = num_before or YaralyzerConfig.args.surrounding_bytes
     start_idx = max(start_idx - num_before, 0)
     end_idx = min(end_idx + num_after, len(_bytes))
     return _bytes[start_idx:end_idx]

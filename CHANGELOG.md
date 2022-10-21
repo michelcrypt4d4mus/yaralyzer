@@ -1,9 +1,12 @@
 # NEXT RELEASE
+* All command lines args configurable via environment variables or `.yaralyzer` file
+* Improve decoding attempt statistics tracking
+* Add suppression notices
+* Expose `--min-chardet-table-confidence` option
 
 # 0.8.0
 * Add `--log-level` option
 * `BytesMatch.is_decodable()` method
-
 
 ### 0.7.1
 * Bump deps

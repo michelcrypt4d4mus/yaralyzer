@@ -87,8 +87,9 @@ class YaralyzerConfig:
             env_var = f"{YARALYZER}_{option.upper()}"
             env_value = environ.get(env_var)
             default_value = cls.get_default_arg(option)
+            #print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}")
 
-            if isinstance(type(arg_value), bool):
+            if isinstance(arg_value, bool):
                 setattr(args, option, arg_value or is_env_var_set_and_not_false(env_var))
             elif isinstance(arg_value, (int, float)):
                 # Check against defaults to avoid overriding env var configured optoins

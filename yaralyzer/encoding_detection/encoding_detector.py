@@ -107,5 +107,5 @@ def _empty_chardet_results_table():
         collapse_padding=True)
 
     table.columns[0].justify = 'right'
-    table.columns
+    table.columns # TODO: ???
     return table

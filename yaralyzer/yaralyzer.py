@@ -91,6 +91,10 @@ class Yaralyzer:
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
 
+        for file in yara_rules_files:
+            if not path.exists(file):
+                raise ValueError(f"'{file}' is not a valid yara rules file (it doesn't exist)")
+
         filepaths_arg = {path.basename(file): file for file in yara_rules_files}
         yara_rules = yara.compile(filepaths=filepaths_arg)
         yara_rules_label = comma_join(yara_rules_files, func=path.basename)

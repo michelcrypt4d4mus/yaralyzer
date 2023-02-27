@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+##### 0.9.2
 * Fix PyPi screenshots
 * Raise better error message if yara rules file doesn't exist
 

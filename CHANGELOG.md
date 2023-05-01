@@ -1,5 +1,8 @@
 # NEXT RELEASE
 
+### 0.9.3
+* Lock `yara-python` at 4.2.3 bc 4.3.x causes problems
+
 ### 0.9.2
 * Fix PyPi screenshots
 * Raise better error message if yara rules file doesn't exist

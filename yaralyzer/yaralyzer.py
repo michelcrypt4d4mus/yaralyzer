@@ -30,6 +30,7 @@ from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
 YARA_EXT = 'yara'
+YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't exist)"
 
 
 # TODO: might be worth introducing a Scannable namedtuple or similar
@@ -93,7 +94,7 @@ class Yaralyzer:
 
         for file in yara_rules_files:
             if not path.exists(file):
-                raise ValueError(f"'{file}' is not a valid yara rules file (it doesn't exist)")
+                raise ValueError(f"'{file}' {YARA_FILE_DOES_NOT_EXIST_ERROR_MSG}")
 
         filepaths_arg = {path.basename(file): file for file in yara_rules_files}
         yara_rules = yara.compile(filepaths=filepaths_arg)

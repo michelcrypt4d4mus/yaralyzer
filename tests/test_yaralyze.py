@@ -21,7 +21,7 @@ from yaralyzer.output.rich_console import console
 def test_help_option():
     help_text = _run_with_args('-h')
     assert 'maximize-width' in help_text
-    _assert_line_count_within_range(116, help_text)
+    _assert_line_count_within_range(123, help_text)
 
 
 def test_no_rule_args(il_tulipano_path):

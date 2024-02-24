@@ -13,10 +13,9 @@ MEGABYTE = 1024 * KILOBYTE
 
 def config_var_name(env_var: str) -> str:
     """
-    Get the name of env_var and strip off 'YARALYZER_':
-
-    SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
-    config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
+    Get the name of env_var and strip off 'YARALYZER_', e.g.:
+        SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
+        config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
     """
     env_var = env_var.removeprefix("YARALYZER_")
     return f'{env_var=}'.partition('=')[0]
@@ -71,7 +70,7 @@ class YaralyzerConfig:
     ]
 
     @classmethod
-    def set_argument_parser(cls, parser):
+    def set_argument_parser(cls, parser: ArgumentParser) -> None:
         cls._argument_parser: ArgumentParser = parser
         cls._argparse_keys: List[str] = sorted([action.dest for action in parser._actions])
 
@@ -93,7 +92,7 @@ class YaralyzerConfig:
             if isinstance(arg_value, bool):
                 setattr(args, option, arg_value or is_env_var_set_and_not_false(env_var))
             elif isinstance(arg_value, (int, float)):
-                # Check against defaults to avoid overriding env var configured optoins
+                # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
                     setattr(args, option, int(env_value) or arg_value)  # TODO: float args not handled
             else:

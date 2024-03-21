@@ -161,7 +161,7 @@ export = parser.add_argument_group(
     'FILE EXPORT',
     "Multiselect. Choosing nothing is choosing nothing. Sends what you see on the screen to various file " + \
         "formats in parallel. Writes files to the current directory if --output-dir is not provided. " + \
-        "Filenames are expansion of the scanned filename though you can use --file-prefix to make your " +
+        "Filenames are expansions of the scanned filename though you can use --file-prefix to make your " +
         "filenames more unique and beautiful to their beholder.")
 
 export.add_argument('-svg', '--export-svg',

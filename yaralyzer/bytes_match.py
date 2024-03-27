@@ -10,6 +10,7 @@ from typing import Iterator, Optional
 
 from rich.table import Table
 from rich.text import Text
+from yara import StringMatch, StringMatchInstance
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
@@ -41,10 +42,10 @@ class BytesMatch:
         self.label: str = label
         self.ordinal: int = ordinal
         self.match: Optional[re.Match] = match
-        # Maybe should be called "matched_bytes"
-        self.bytes = matched_against[start_idx:self.end_idx]
+        self.bytes = matched_against[start_idx:self.end_idx]  # TODO: Maybe should be called "matched_bytes"
         self.match_groups: Optional[tuple] = match.groups() if match else None
         self._find_surrounding_bytes()
+
         # Adjust the highlighting start point in case this match is very early in the stream
         self.highlight_start_idx = start_idx - self.surrounding_start_idx
         self.highlight_end_idx = self.highlight_start_idx + self.length
@@ -65,14 +66,15 @@ class BytesMatch:
             cls,
             matched_against: bytes,
             rule_name: str,
-            yara_str: dict,
+            yara_str_match: StringMatch,
+            yara_str_match_instance: StringMatchInstance,
             ordinal: int,
             highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> 'BytesMatch':
-        """Build a BytesMatch from a yara string match. matched_against is the set of bytes yara was run against"""
-        # Don't duplicate the labeling if rule_name and yara_str are the same
-        pattern_label = yara_str[1]
+        """Build a BytesMatch from a yara string match. 'matched_against' is the set of bytes yara was run against."""
+        pattern_label = yara_str_match.identifier
 
+        # Don't duplicate the labeling if rule_name and yara_str are the same
         if pattern_label == '$' + rule_name:
             label = pattern_label
         else:
@@ -80,8 +82,8 @@ class BytesMatch:
 
         return cls(
             matched_against=matched_against,
-            start_idx=yara_str[0],
-            length=len(yara_str[2]),
+            start_idx=yara_str_match_instance.offset,
+            length=yara_str_match_instance.matched_length,
             label=label,
             ordinal=ordinal,
             highlight_style=highlight_style)
@@ -94,8 +96,20 @@ class BytesMatch:
             highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
         ) -> Iterator['BytesMatch']:
         """Iterator w/a BytesMatch for each string returned as part of a YARA match result dict."""
-        for i, yara_str in enumerate(yara_match['strings']):
-            yield(cls.from_yara_str(matched_against, yara_match['rule'], yara_str, i + 1, highlight_style))
+        i = 0  # For numbered labeling
+
+        # yara-python's internals changed with 4.3.0: https://github.com/VirusTotal/yara-python/releases/tag/v4.3.0
+        for yara_str_match in yara_match['strings']:
+            for yara_str_match_instance in yara_str_match.instances:
+                i += 1
+
+                yield(cls.from_yara_str(
+                    matched_against,
+                    yara_match['rule'],
+                    yara_str_match,
+                    yara_str_match_instance,
+                    i,
+                    highlight_style))
 
     def style_at_position(self, idx) -> str:
         """Get the style for the byte at position idx within the matched bytes"""

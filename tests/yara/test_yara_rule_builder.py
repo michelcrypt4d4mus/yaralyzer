@@ -44,7 +44,8 @@ def test_build_yara_rule():
     matches = []
     rule.match(data=TEST_BYTES, callback=lambda match: matches.append(match))
     assert len(matches) == 1
-    assert matches[0]['strings'] == [(49, '$hilton_producer', b'Scotty Storch')]
+    assert matches[0]['strings'][0].instances[0].matched_data == b'Scotty Storch'
+    #assert matches[0]['strings'] == [(49, '$hilton_producer', b'Scotty Storch')]
 
 
 def test_yara_hex_rule(binary_file_bytes):

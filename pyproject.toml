@@ -44,7 +44,7 @@ chardet = "^5.0.0"
 python-dotenv = "^0.21.0"
 rich = "^12.5.1"
 rich-argparse-plus = "^0.3.1"
-yara-python = "~4.2.3"
+yara-python = "^4.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"

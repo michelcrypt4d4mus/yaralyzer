@@ -1,6 +1,9 @@
 from functools import partial
 from typing import Any, Callable, List
 
+INDENT_DEPTH = 4
+INDENT_SPACES = INDENT_DEPTH * ' '
+
 
 def escape_yara_pattern(pattern: str) -> str:
     return pattern.replace('/', '\\/')

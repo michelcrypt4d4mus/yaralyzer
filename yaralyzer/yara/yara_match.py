@@ -8,12 +8,13 @@ Rich text decorator for YARA match dicts, which look like this:
     'rule': 'my_rule',
     'meta': {},
     'strings': [
-        (81L, '$a', 'abc'),
-        (141L, '$b', 'def')
+        StringMatch1,
+        StringMatch2
     ]
 }
 """
 import re
+from copy import deepcopy
 from numbers import Number
 from typing import Any, Dict
 
@@ -21,9 +22,11 @@ from rich.console import Console, ConsoleOptions, RenderResult
 from rich.padding import Padding
 from rich.panel import Panel
 from rich.text import Text
+from yara import StringMatch
 
 from yaralyzer.helpers.bytes_helper import clean_byte_string
 from yaralyzer.helpers.rich_text_helper import CENTER
+from yaralyzer.helpers.string_helper import INDENT_SPACES
 from yaralyzer.output.rich_console import console_width, theme_colors_with_prefix
 from yaralyzer.util.logging import log
 
@@ -63,9 +66,9 @@ class YaraMatch:
 
 
 def _rich_yara_match(element: Any, depth: int = 0) -> Text:
-    """Mildly painful/hacky way of coloring a yara result hash."""
-    indent = Text((depth + 1) * 4 * ' ')
-    end_indent = Text(depth * 4 * ' ')
+    """Painful/hacky way of recursively coloring a yara result hash."""
+    indent = Text((depth + 1) * INDENT_SPACES)
+    end_indent = Text(depth * INDENT_SPACES)
 
     if isinstance(element, str):
         txt = _yara_string(element)
@@ -79,6 +82,17 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
         if len(element) == 0:
             txt = Text('[]', style='white')
         else:
+            if isinstance(element[0], StringMatch):
+                # In yara-python 4.3.0 the StringMatch type was introduced so we just make it look like
+                # the old list of tuples format (see: https://github.com/VirusTotal/yara-python/releases/tag/v4.3.0)
+                match_tuples = [
+                    (match.identifier, match_instance.offset, match_instance.matched_data)
+                    for match in element
+                    for match_instance in match.instances
+                ]
+
+                return _rich_yara_match(match_tuples, depth + 1)
+
             total_length = sum([len(str(e)) for e in element]) + ((len(element) - 1) * 2) + len(indent) + 2
             elements_txt = [_rich_yara_match(e, depth + 1) for e in element]
             list_txt = Text('[', style='white')

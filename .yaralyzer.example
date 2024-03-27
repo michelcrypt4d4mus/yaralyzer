@@ -36,7 +36,7 @@
 # (in my experience) less likely to be maningful. Consider it - two frontslash characters 20,000 lines apart
 # are more likely to be random than those same frontslashes when placed nearer to each other and
 # in the vicinity of lot of computerized sigils of internet power like `.', `+bacd*?`,. and other regexes.*
-# Keeping the max value number low will do more to affect the speed of the app than ay anything else you
+# Keeping the max value number low will do more to affect the speed of the app than anything else you
 # can easily configure.
 #
 #    YARALYZER_MIN_DECODE_LENGTH=1

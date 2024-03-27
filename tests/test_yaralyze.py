@@ -65,7 +65,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     _assert_array_is_close(sorted(file_sizes), [61919, 104808, 308080])
 
     for file in rendered_files:
-        pass#remove(file)
+        remove(file)
 
 
 def _assert_array_is_close(_list1, _list2):

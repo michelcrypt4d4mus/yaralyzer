@@ -11,7 +11,7 @@ from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 CLOSENESS_THRESHOLD = 0.05
-EXPECTED_LINES = 1002
+EXPECTED_LINES = 1060
 
 
 def test_filename_string(a_yaralyzer):

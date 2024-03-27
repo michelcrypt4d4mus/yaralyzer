@@ -91,7 +91,7 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
                     for match_instance in match.instances
                 ]
 
-                return _rich_yara_match(match_tuples, depth + 1)
+                return _rich_yara_match(match_tuples, depth)
 
             total_length = sum([len(str(e)) for e in element]) + ((len(element) - 1) * 2) + len(indent) + 2
             elements_txt = [_rich_yara_match(e, depth + 1) for e in element]

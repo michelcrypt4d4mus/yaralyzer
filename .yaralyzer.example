@@ -28,7 +28,7 @@
 #    YARALYZER_MIN_CHARDET_CONFIDENCE=2.0
 
 # Configure how many bytes before and after any binary data should be included in scans and visualizations
-#    PDFAlYZER_SURROUNDING_BYTES=64
+#    YARALYZER_SURROUNDING_BYTES=64
 
 # Size thresholds (in bytes) under/over which yaralyzer will NOT make attempts to decode a match.
 # Longer byte sequences are for obvious reasons slower to decode by force.
@@ -59,6 +59,3 @@
 
 # Log level
 #    YARALYZER_LOG_LEVEL='WARN'
-
-# Path to directory containing Didier Stevens's pdf-parser.py. Only required for extracting binary streams to files.
-#    YARALYZER_PDF_PARSER_PY_PATH=/path/to/pdfparserdotpy/

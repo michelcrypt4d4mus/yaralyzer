@@ -9,10 +9,11 @@
 # YARALYZER_MAXIMIZE_WIDTH=True
 
 
+
 # Expand the width of the output to the fit the display window (same as the --maximize-width options)
 #    YARALYZER_MAXIMIZE_WIDTH=True
 
-# Passed through to yara.set_config() as the stack_size and max_match_data arguments
+# yara-python internal options passed through to yara.set_config() as the stack_size and max_match_data arguments
 #    YARALYZER_STACK_SIZE=10485760
 #    YARALYZER_MAX_MATCH_LENGTH=10737418240
 
@@ -36,7 +37,7 @@
 # are more likely to be random than those same frontslashes when placed nearer to each other and
 # in the vicinity of lot of computerized sigils of internet power like `.', `+bacd*?`,. and other regexes.*
 # Keeping the max value number low will do more to affect the speed of the app than ay anything else you
-# can easily configure..
+# can easily configure.
 #
 #    YARALYZER_MIN_DECODE_LENGTH=1
 #    YARALYZER_MAX_DECODE_LENGTH=256

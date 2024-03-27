@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Bump `yara-python` to 4.3.0+ and deal with backwards incompatibility
 
 ### 0.9.3
 * Lock `yara-python` at 4.2.3 bc 4.3.x causes problems

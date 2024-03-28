@@ -1,3 +1,6 @@
+"""
+Helper methods to work with files.
+"""
 from datetime import datetime
 from os import listdir, path
 from typing import List, Optional

@@ -1,3 +1,6 @@
+"""
+Variables and methods for working with Rich text output.
+"""
 from shutil import get_terminal_size
 from typing import List
 

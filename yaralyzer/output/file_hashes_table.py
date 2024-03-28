@@ -1,5 +1,5 @@
 """
-Methods for building Rich layout elements
+Methods for building Rich layout elements for display of results.
 """
 import hashlib
 from collections import namedtuple

@@ -1,3 +1,6 @@
+"""
+Helper methods to work with strings.
+"""
 from functools import partial
 from typing import Any, Callable, List
 

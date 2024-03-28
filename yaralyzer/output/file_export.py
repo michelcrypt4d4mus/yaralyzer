@@ -46,6 +46,7 @@ _EXPORT_KWARGS = {
     },
 }
 
+
 def invoke_rich_export(export_method, output_file_basepath) -> str:
     """
     Announce the export, perform the export, announce completion.
@@ -72,4 +73,3 @@ def invoke_rich_export(export_method, output_file_basepath) -> str:
     elapsed_time = time.perf_counter() - start_time
     log_and_print(f"'{output_file_path}' written in {elapsed_time:02f} seconds")
     return output_file_path
-

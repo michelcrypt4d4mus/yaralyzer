@@ -1,6 +1,7 @@
-import hashlib
+"""
+Helper methods to work with bytes.
+"""
 import re
-from collections import namedtuple
 from io import StringIO
 from sys import byteorder
 

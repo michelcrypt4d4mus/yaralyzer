@@ -1,6 +1,6 @@
 """
 Manager class to ease dealing with the chardet encoding detection library 'chardet'.
-Each instance of this classes managed a chardet.detect_all() scan on a single set of bytes.
+Each instance of this class manages a chardet.detect_all() scan on a single set of bytes.
 """
 from operator import attrgetter
 from typing import List
@@ -30,6 +30,7 @@ class EncodingDetector:
         self.bytes_len = len(_bytes)
         self.table = _empty_chardet_results_table()
 
+        # Skip chardet if there's not enough bytes available
         if not self.has_enough_bytes():
             log.debug(f"{self.bytes_len} is not enough bytes to run chardet.detect()")
             self._set_empty_results()

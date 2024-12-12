@@ -49,7 +49,7 @@ source.add_argument('--yara-file', '-Y',
                     dest='yara_rules_files')
 
 source.add_argument('--rule-dir', '-dir',
-                    help='directory with .yara files (can be supplied more than once)',
+                    help='directory with yara rules files (all files are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs')

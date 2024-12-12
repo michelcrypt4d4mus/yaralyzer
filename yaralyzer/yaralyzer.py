@@ -9,6 +9,7 @@ Alternate constructors are provided depending on whether:
 The real action happens in the __rich__console__() dunder method.
 """
 from os import path
+from sys import exit
 from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
@@ -23,13 +24,12 @@ from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
 from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
-from yaralyzer.output.rich_console import YARALYZER_THEME, console
+from yaralyzer.output.rich_console import YARALYZER_THEME, console, print_fatal_error_and_exit
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
-YARA_EXT = 'yara'
 YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't exist)"
 
 
@@ -97,7 +97,12 @@ class Yaralyzer:
                 raise ValueError(f"'{file}' {YARA_FILE_DOES_NOT_EXIST_ERROR_MSG}")
 
         filepaths_arg = {path.basename(file): file for file in yara_rules_files}
-        yara_rules = yara.compile(filepaths=filepaths_arg)
+
+        try:
+            yara_rules = yara.compile(filepaths=filepaths_arg)
+        except yara.SyntaxError as e:
+            print_fatal_error_and_exit(f"Failed to parse YARA rules file(s): {e}")
+
         yara_rules_label = comma_join(yara_rules_files, func=path.basename)
         return cls(yara_rules, yara_rules_label, scannable, scannable_label)
 
@@ -112,7 +117,7 @@ class Yaralyzer:
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
 
-        rules_files = [path.join(dir, f) for dir in dirs for f in files_in_dir(dir, YARA_EXT)]
+        rules_files = [path.join(dir, f) for dir in dirs for f in files_in_dir(dir)]
         return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod

@@ -4,8 +4,10 @@ Variables and methods for working with Rich text output.
 from shutil import get_terminal_size
 from typing import List
 
+from rich import box
 from rich.console import Console
 from rich.errors import MarkupError
+from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 from rich.theme import Theme
@@ -110,3 +112,13 @@ def console_print_with_fallback(_string, style=None) -> None:
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:
     return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
+
+
+def print_fatal_error(error_message: str) -> None:
+    console.line(1)
+    print_header_panel(error_message, style='bold red reverse')
+    console.line(1)
+
+
+def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0,2)) -> None:
+    console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))

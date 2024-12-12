@@ -31,8 +31,8 @@ def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
     assert result[0], result[1]
 
 
-def test_yaralyzer_for_rules_dir(il_tulipano_path):
-    result = _check_output_linecount(Yaralyzer.for_rules_dirs([dirname(il_tulipano_path)], il_tulipano_path))
+def test_yaralyzer_for_rules_dir(il_tulipano_path, tulips_yara_path):
+    result = _check_output_linecount(Yaralyzer.for_rules_dirs([dirname(tulips_yara_path)], il_tulipano_path))
     assert result[0], result[1]
 
 

@@ -22,7 +22,7 @@ def il_tulipano_path():
 
 @pytest.fixture(scope='session')
 def tulips_yara_path():
-    return path.join(FILE_FIXTURE_PATH, 'tulips.yara')
+    return path.join(FILE_FIXTURE_PATH, 'yara_rules', 'tulips.yara')
 
 
 @pytest.fixture(scope='session')

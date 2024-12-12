@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Use all files in a directory specified by `--rule-dir` instead of just those with the extension `.yara`
 
 ### 0.9.4
 * Bump `yara-python` to 4.3.0+ and deal with backwards incompatibility

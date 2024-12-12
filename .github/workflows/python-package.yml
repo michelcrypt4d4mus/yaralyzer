@@ -30,6 +30,7 @@ jobs:
         python -m pip install pytest
         pip install .
         mkdir /home/runner/work/yaralyzer/yaralyzer/log
+        mkdir /home/runner/work/yaralyzer/yaralyzer/tests/tmp
     - name: Test with pytest
       run: |
         pytest

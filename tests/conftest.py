@@ -1,9 +1,10 @@
 from os import environ, pardir, path, remove
+from pathlib import Path
 
 import pytest
 
 PYTESTS_DIR = path.dirname(__file__)
-LOG_DIR = path.join(PYTESTS_DIR, pardir, 'log')
+LOG_DIR = str(Path(path.join(PYTESTS_DIR, pardir, 'log')).resolve())
 FILE_FIXTURE_PATH = path.join(PYTESTS_DIR, 'file_fixtures')
 
 # Some env vars that we need or are helpful for pytest

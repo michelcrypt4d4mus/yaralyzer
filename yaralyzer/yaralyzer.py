@@ -30,7 +30,6 @@ from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
-YARA_EXT = 'yara'
 YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't exist)"
 
 

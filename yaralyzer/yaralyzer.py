@@ -24,7 +24,7 @@ from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
 from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
-from yaralyzer.output.rich_console import YARALYZER_THEME, console, print_fatal_error
+from yaralyzer.output.rich_console import YARALYZER_THEME, console, print_fatal_error_and_exit
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
@@ -102,8 +102,7 @@ class Yaralyzer:
         try:
             yara_rules = yara.compile(filepaths=filepaths_arg)
         except yara.SyntaxError as e:
-            print_fatal_error(f"Failed to parse YARA rules file(s): {e}")
-            exit()
+            print_fatal_error_and_exit(f"Failed to parse YARA rules file(s): {e}")
 
         yara_rules_label = comma_join(yara_rules_files, func=path.basename)
         return cls(yara_rules, yara_rules_label, scannable, scannable_label)
@@ -119,9 +118,7 @@ class Yaralyzer:
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
 
-        print(f"for_rules_dirs() dirs: {dirs}")
         rules_files = [path.join(dir, f) for dir in dirs for f in files_in_dir(dir)]
-        print(f"Rules files: {rules_files}")
         return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod

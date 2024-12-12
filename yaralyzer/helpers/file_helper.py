@@ -13,8 +13,6 @@ def timestamp_for_filename() -> str:
 
 def files_in_dir(dir: str, with_extname: Optional[str] = None) -> List[str]:
     """paths for non dot files, optionally ending in 'with_extname'"""
-    print(f"Looking for files in {dir}")
-    print(f"listdir(dir): {listdir(dir)}")
     files = [path.join(dir, path.basename(file)) for file in listdir(dir) if not file.startswith('.')]
     files = [file for file in files if not path.isdir(file)]
 

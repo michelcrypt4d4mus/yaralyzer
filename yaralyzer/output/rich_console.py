@@ -2,6 +2,7 @@
 Variables and methods for working with Rich text output.
 """
 from shutil import get_terminal_size
+from sys import exit
 from typing import List
 
 from rich import box
@@ -114,10 +115,11 @@ def theme_colors_with_prefix(prefix: str) -> List[Text]:
     return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
 
 
-def print_fatal_error(error_message: str) -> None:
+def print_fatal_error_and_exit(error_message: str) -> None:
     console.line(1)
     print_header_panel(error_message, style='bold red reverse')
     console.line(1)
+    exit()
 
 
 def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0,2)) -> None:

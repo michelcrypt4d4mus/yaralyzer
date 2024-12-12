@@ -5,6 +5,7 @@ import pytest
 
 PYTESTS_DIR = path.dirname(__file__)
 LOG_DIR = str(Path(path.join(PYTESTS_DIR, pardir, 'log')).resolve())
+print(f"LOG_DIR: {LOG_DIR}")
 FILE_FIXTURE_PATH = path.join(PYTESTS_DIR, 'file_fixtures')
 
 # Some env vars that we need or are helpful for pytest

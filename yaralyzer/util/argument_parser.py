@@ -29,7 +29,7 @@ DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make
 EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
          "see the documentation for details.\n" + \
          f"* A registry of previous yaralyzer invocations will be incribed to a file if the " + \
-         "'{YaralyzerConfig.LOG_DIR_ENV_VAR}' environment variable is configured."
+         f"{YaralyzerConfig.LOG_DIR_ENV_VAR} environment variable is configured."
 
 
 # Positional args, version, help, etc
@@ -95,7 +95,7 @@ tuning.add_argument('--suppress-decodes-table', action='store_true',
                     help='suppress decodes table entirely (including hex/raw output)')
 
 tuning.add_argument('--suppress-decoding-attempts', action='store_true',
-                    help='suppress decodes attempts for matched bytes (only hex/raw output will be shown)')
+                    help='suppress decode attempts for matched bytes (only hex/raw output will be shown)')
 
 tuning.add_argument('--min-decode-length',
                     help='suppress decode attempts for quoted byte sequences shorter than N',

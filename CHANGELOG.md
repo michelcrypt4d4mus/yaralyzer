@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix help message
 
 ### 0.9.5
 * Use all files in a directory specified by `--rule-dir` instead of just those with the extension `.yara`

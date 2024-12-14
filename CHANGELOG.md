@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 0.9.6
 * Fix help message
 
 ### 0.9.5

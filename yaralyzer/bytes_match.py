@@ -14,9 +14,8 @@ from yara import StringMatch, StringMatchInstance
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
-from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
-from yaralyzer.util.logging import log
+from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 
 
 class BytesMatch:

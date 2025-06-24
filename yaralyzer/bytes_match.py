@@ -14,9 +14,8 @@ from yara import StringMatch, StringMatchInstance
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
-from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
-from yaralyzer.util.logging import log
+from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 
 
 class BytesMatch:
@@ -156,6 +155,25 @@ class BytesMatch:
             txt.append(f"(--max-decode-length is {YaralyzerConfig.args.max_decode_length} bytes)", style='grey')
 
         return txt
+
+    def to_json(self) -> dict:
+        """Convert this BytesMatch to a JSON-serializable dict."""
+        json_dict = {
+            'label': self.label,
+            'match_length': self.match_length,
+            'matched_bytes': self.bytes.hex(),
+            'ordinal': self.ordinal,
+            'start_idx': self.start_idx,
+            'end_idx': self.end_idx,
+            'surrounding_bytes': self.surrounding_bytes.hex(),
+            'surrounding_start_idx': self.surrounding_start_idx,
+            'surrounding_end_idx': self.surrounding_end_idx,
+        }
+
+        if self.match:
+            json_dict['pattern'] = self.match.re.pattern
+
+        return json_dict
 
     def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""

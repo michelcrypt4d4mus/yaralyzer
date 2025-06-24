@@ -12,7 +12,7 @@ if not environ.get('INVOKED_BY_PYTEST', False):
             break
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.output.file_export import invoke_rich_export
+from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
 from yaralyzer.util.logging import log
@@ -58,6 +58,9 @@ def yaralyze():
 
     if args.export_svg:
         invoke_rich_export(console.save_svg, output_basepath)
+
+    if args.export_json:
+        export_json(yaralyzer, output_basepath)
 
     if args.file_to_scan_path.endswith('.pdf'):
         console.print(PDFALYZER_MSG_TXT)

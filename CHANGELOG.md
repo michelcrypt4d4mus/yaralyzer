@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Add `--export-json` option
 
 ### 0.9.6
 * Fix help message

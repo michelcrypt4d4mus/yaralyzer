@@ -2,6 +2,7 @@
 Tests for invoking yaralyze script from shell (NOT for Yaralyzer() class directly - those tests
 are over in test_yaralyzer.py)
 """
+import json
 from functools import partial
 from math import isclose
 from os import environ, path, remove
@@ -12,7 +13,7 @@ import pytest
 from tests.test_yaralyzer import CLOSENESS_THRESHOLD
 from tests.yara.test_yara_rule_builder import HEX_STRING
 from yaralyzer.config import YARALYZE
-from yaralyzer.helpers.file_helper import files_in_dir
+from yaralyzer.helpers.file_helper import files_in_dir, load_file
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 
@@ -58,14 +59,27 @@ def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
-    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-svg', '-html', '-txt', '-out', tmp_dir)
+    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt', '-out', tmp_dir)
     rendered_files = files_in_dir(tmp_dir)
-    assert len(rendered_files) == 3
+    assert len(rendered_files) == 4
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [61919, 104808, 308080])
+    _assert_array_is_close(sorted(file_sizes), [1182, 62224, 104808, 308080])
 
     for file in rendered_files:
-        remove(file)
+        if file.endswith('.json'):
+            json_data = json.loads(load_file(file))  # Ensure JSON is valid
+            assert isinstance(json_data, list), "JSON data should be a list of matches"
+            assert len(json_data) == 2, "JSON data should not be empty"
+
+            first_match = json_data[0]
+            assert first_match.get('label') == "There_Will_Be_Tulips: $tulip", "First match should have correct 'label'"
+            assert first_match.get('match_length') == 8, "First match should have 'length' key"
+            assert first_match.get('ordinal') == 1, "First match should have 'ordinal' value of 1"
+            assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"
+            assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"
+            assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
+
+        # remove(file)
 
 
 def _assert_array_is_close(_list1, _list2):

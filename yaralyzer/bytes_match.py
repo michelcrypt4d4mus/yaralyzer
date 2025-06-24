@@ -160,14 +160,12 @@ class BytesMatch:
     def to_json(self) -> dict:
         """Convert this BytesMatch to a JSON-serializable dict."""
         json_dict = {
-            'matched_bytes': self.bytes.hex(),
             'label': self.label,
             'length': self.match_length,
+            'matched_bytes': self.bytes.hex(),
             'ordinal': self.ordinal,
             'start_idx': self.start_idx,
             'end_idx': self.end_idx,
-            # 'match_groups': self.match_groups,
-            # 'highlight_style': self.highlight_style,
             'surrounding_bytes': self.surrounding_bytes.hex(),
             'surrounding_start_idx': self.surrounding_start_idx,
             'surrounding_end_idx': self.surrounding_end_idx,

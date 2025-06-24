@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+# 1.0.0
 * Add `--export-json` option
 
 ### 0.9.6

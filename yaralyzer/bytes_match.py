@@ -171,12 +171,7 @@ class BytesMatch:
         }
 
         if self.match:
-            json_dict['match'] = {
-                'start': self.match.start(),
-                'end': self.match.end(),
-                # 'groups': self.match_groups,
-                'pattern': self.match.re.pattern,
-            }
+            json_dict['pattern'] = self.match.re.pattern
 
         return json_dict
 

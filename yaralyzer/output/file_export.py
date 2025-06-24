@@ -1,9 +1,13 @@
+import json
 import time
+from argparse import Namespace
+from pathlib import Path
 from os import path
 
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.logging import log_and_print
+from yaralyzer.yaralyzer import Yaralyzer
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -45,6 +49,21 @@ _EXPORT_KWARGS = {
         'styles': True,
     },
 }
+
+
+def export_json(args: Namespace, yaralyzer: Yaralyzer) -> Path:
+    """Export YARA scan results to JSON. Returns the path to the output file that was written."""
+    matches_data = []
+
+    for bytes_match, bytes_decoder in yaralyzer.match_iterator():
+        matches_data.append(bytes_match.to_json())
+
+    output_path = Path(args.output_dir).joinpath(f"yara_matches.json")
+
+    with open(output_path, 'w') as f:
+        json.dump(matches_data, f, indent=4)
+
+    return output_path
 
 
 def invoke_rich_export(export_method, output_file_basepath) -> str:

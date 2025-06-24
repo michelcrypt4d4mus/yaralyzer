@@ -157,7 +157,33 @@ class BytesMatch:
 
         return txt
 
-    def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
+    def to_json(self) -> dict:
+        """Convert this BytesMatch to a JSON-serializable dict."""
+        json_dict = {
+            'matched_bytes': self.bytes.hex(),
+            'label': self.label,
+            'length': self.match_length,
+            'ordinal': self.ordinal,
+            'start_idx': self.start_idx,
+            'end_idx': self.end_idx,
+            # 'match_groups': self.match_groups,
+            # 'highlight_style': self.highlight_style,
+            'surrounding_bytes': self.surrounding_bytes.hex(),
+            'surrounding_start_idx': self.surrounding_start_idx,
+            'surrounding_end_idx': self.surrounding_end_idx,
+        }
+
+        if self.match:
+            json_dict['match'] = {
+                'start': self.match.start(),
+                'end': self.match.end(),
+                # 'groups': self.match_groups,
+                'pattern': self.match.re.pattern,
+            }
+
+        return json_dict
+
+    def _find_surrounding_bytes(self, num_before: int = 0, num_after: int = 0) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
         num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
         num_before = num_before or YaralyzerConfig.args.surrounding_bytes

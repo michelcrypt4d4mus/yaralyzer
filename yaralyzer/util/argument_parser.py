@@ -179,6 +179,11 @@ export.add_argument('-html', '--export-html',
                     const='html',
                     help='export analysis to styled html files')
 
+export.add_argument('-json', '--export-json',
+                    action='store_const',
+                    const='json',
+                    help='export analysis to JSON files')
+
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
                     help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file')
@@ -257,7 +262,7 @@ def parse_arguments(args: Optional[Namespace] = None):
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
     # File export options
-    if args.export_svg or args.export_txt or args.export_html:
+    if args.export_html or args.export_json or args.export_svg or args.export_txt:
         args.output_dir = args.output_dir or getcwd()
     elif args.output_dir:
         log.warning('--output-dir provided but no export option was chosen')

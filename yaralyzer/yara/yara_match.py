@@ -14,7 +14,6 @@ Rich text decorator for YARA match dicts, which look like this:
 }
 """
 import re
-from copy import deepcopy
 from numbers import Number
 from typing import Any, Dict
 

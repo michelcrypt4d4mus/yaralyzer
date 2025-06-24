@@ -58,11 +58,11 @@ def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
-    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-svg', '-html', '-txt', '-out', tmp_dir)
+    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt', '-out', tmp_dir)
     rendered_files = files_in_dir(tmp_dir)
-    assert len(rendered_files) == 3
+    assert len(rendered_files) == 4
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [61919, 104808, 308080])
+    _assert_array_is_close(sorted(file_sizes), [1182, 62224, 104808, 308080])
 
     for file in rendered_files:
         remove(file)

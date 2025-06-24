@@ -60,7 +60,7 @@ def yaralyze():
         invoke_rich_export(console.save_svg, output_basepath)
 
     if args.export_json:
-        output_path = export_json(args, yaralyzer)
+        output_path = export_json(yaralyzer, output_basepath)
         console.print(f"YARA matches exported to JSON file: \"{output_path}\"", style='green')
 
     if args.file_to_scan_path.endswith('.pdf'):

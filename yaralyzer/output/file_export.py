@@ -51,14 +51,14 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(args: Namespace, yaralyzer: Yaralyzer) -> Path:
+def export_json(yaralyzer: Yaralyzer, output_basepath: str | None) -> str:
     """Export YARA scan results to JSON. Returns the path to the output file that was written."""
-    matches_data = []
+    output_path = f"{output_basepath or 'yara_matches'}.json"
 
-    for bytes_match, bytes_decoder in yaralyzer.match_iterator():
-        matches_data.append(bytes_match.to_json())
-
-    output_path = Path(args.output_dir).joinpath(f"yara_matches.json")
+    matches_data = [
+        bytes_match.to_json()
+        for bytes_match, _bytes_decoder in yaralyzer.match_iterator()
+    ]
 
     with open(output_path, 'w') as f:
         json.dump(matches_data, f, indent=4)

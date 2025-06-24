@@ -181,7 +181,7 @@ class BytesMatch:
 
         return json_dict
 
-    def _find_surrounding_bytes(self, num_before: int = 0, num_after: int = 0) -> None:
+    def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
         """Find the surrounding bytes, making sure not to step off the beginning or end"""
         num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
         num_before = num_before or YaralyzerConfig.args.surrounding_bytes

@@ -63,6 +63,7 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: str | None) -> str:
     with open(output_path, 'w') as f:
         json.dump(matches_data, f, indent=4)
 
+    log_and_print(f"YARA matches exported to JSON file: '{output_path}'")
     return output_path
 
 

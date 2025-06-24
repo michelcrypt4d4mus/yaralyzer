@@ -160,7 +160,7 @@ class BytesMatch:
         """Convert this BytesMatch to a JSON-serializable dict."""
         json_dict = {
             'label': self.label,
-            'length': self.match_length,
+            'match_length': self.match_length,
             'matched_bytes': self.bytes.hex(),
             'ordinal': self.ordinal,
             'start_idx': self.start_idx,

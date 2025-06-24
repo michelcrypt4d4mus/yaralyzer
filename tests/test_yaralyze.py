@@ -73,7 +73,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
 
             first_match = json_data[0]
             assert first_match.get('label') == "There_Will_Be_Tulips: $tulip", "First match should have correct 'label'"
-            assert first_match.get('length') == 8, "First match should have 'length' key"
+            assert first_match.get('match_length') == 8, "First match should have 'length' key"
             assert first_match.get('ordinal') == 1, "First match should have 'ordinal' value of 1"
             assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"
             assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"

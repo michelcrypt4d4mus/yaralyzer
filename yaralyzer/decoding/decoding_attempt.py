@@ -131,7 +131,7 @@ class DecodingAttempt:
 
             # Append the current bytes_offset to the encoding label if we found a valid decoded string
             if decoded_str is not None:
-                log.info(f"Successfully decoded '{self.encoding}' w/offset {bytes_offset}")
+                log.debug(f"Successfully decoded '{self.encoding}' w/offset {bytes_offset}")
                 self.start_offset = bytes_offset
                 self.start_offset_label = f"offset {self.start_offset} byte" + ('s' if self.start_offset > 1 else '')
                 self.encoding_label = f"{self.encoding} ({self.start_offset_label})"

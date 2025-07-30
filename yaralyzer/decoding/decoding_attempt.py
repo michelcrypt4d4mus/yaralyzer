@@ -52,7 +52,7 @@ class DecodingAttempt:
         self.was_force_decoded = True
 
         if self.is_wide_utf_encoding():
-            return self._decode_utf_multibyte_with_byte_offset()
+            return self._decode_utf_multibyte()
         else:
             return self._custom_decode()
 
@@ -114,7 +114,7 @@ class DecodingAttempt:
 
         return output
 
-    def _decode_utf_multibyte_with_byte_offset(self) -> Text:
+    def _decode_utf_multibyte(self) -> Text:
         """UTF-16/32 are fixed width and multibyte and therefore depend on the position of the starting byte."""
         char_width = encoding_width(self.encoding)
         last_exception = None

@@ -34,7 +34,7 @@ keywords = [
     "threat intelligence",
     "threat research",
     "visualization",
-    "yara"
+    "yara",
 ]
 
 classifiers = [

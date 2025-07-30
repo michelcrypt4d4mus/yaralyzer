@@ -1,5 +1,6 @@
 # NEXT RELEASE
-* Add `Environment :: Console` and `Programming Language :: Python` to pypi classifiers
+* Add `Environment :: Console` and `Programming Language :: Python` to PyPi classifiers
+* Add `LICENSE` to PyPi package
 
 ### 1.0.5
 * Add `Development Status :: 5 - Production/Stable` to pypi classifiers

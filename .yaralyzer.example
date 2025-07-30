@@ -17,7 +17,7 @@
 #    YARALYZER_STACK_SIZE=10485760
 #    YARALYZER_MAX_MATCH_LENGTH=10737418240
 
-# Suppress all PDF binary regex matching/scanning/etc
+# Suppress all attempts to decode bytes into various text encodings
 #    YARALYZER_SUPPRESS_DECODES_TABLE=False
 
 # Suppress the display of the table showing the the encoding assessments given by `chardet.detect()`
@@ -29,6 +29,8 @@
 
 # Configure how many bytes before and after any binary data should be included in scans and visualizations
 #    YARALYZER_SURROUNDING_BYTES=64
+
+
 
 # Size thresholds (in bytes) under/over which yaralyzer will NOT make attempts to decode a match.
 # Longer byte sequences are for obvious reasons slower to decode by force.
@@ -44,6 +46,8 @@
 
 # Minimum bytes to run chardet.detect() on a sequence of bytes
 #    YARALYZER_MIN_BYTES_TO_DETECT_ENCODING
+
+
 
 # Directory to write application logs to. Must be an absolute path, not a relative one.
 # These logs are not normally written to a file and the default log level means that the standard behavior

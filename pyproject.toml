@@ -73,6 +73,11 @@ yaralyze = 'yaralyzer:yaralyze'
 yaralyzer_show_color_theme = 'yaralyzer.helpers.rich_text_helper:yaralyzer_show_color_theme'
 
 
+# URLs for PyPi page
+[tool.poetry.urls]
+Changelog = "https://github.com/michelcrypt4d4mus/yaralyzer/blob/master/CHANGELOG.md"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

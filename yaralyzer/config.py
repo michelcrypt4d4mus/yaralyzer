@@ -58,7 +58,7 @@ class YaralyzerConfig:
     LOG_LEVEL_ENV_VAR = f"{YARALYZER}_LOG_LEVEL"
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
 
-    if LOG_DIR:
+    if LOG_DIR and not is_invoked_by_pytest():
         Console(color_system='256').print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     HIGHLIGHT_STYLE = 'orange1'

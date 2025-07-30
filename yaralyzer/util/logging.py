@@ -54,7 +54,6 @@ def configure_logger(log_label: str) -> logging.Logger:
         rich_stream_handler = RichHandler(rich_tracebacks=True)
         rich_stream_handler.setLevel('WARN')
         logger.addHandler(rich_stream_handler)
-        logger.info('File logging triggered by setting of YARALYZER_LOG_DIR')
     else:
         logger.addHandler(RichHandler(rich_tracebacks=True))
 

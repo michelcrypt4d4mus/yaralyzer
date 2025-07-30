@@ -3,6 +3,8 @@ from argparse import ArgumentParser, Namespace
 from os import environ
 from typing import Any, List
 
+from rich.console import Console
+
 YARALYZE = 'yaralyze'
 YARALYZER = f"{YARALYZE}r".upper()
 PYTEST_FLAG = 'INVOKED_BY_PYTEST'
@@ -55,6 +57,9 @@ class YaralyzerConfig:
     LOG_DIR = environ.get(LOG_DIR_ENV_VAR)
     LOG_LEVEL_ENV_VAR = f"{YARALYZER}_LOG_LEVEL"
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
+
+    if LOG_DIR:
+        Console(color_system='256').print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     HIGHLIGHT_STYLE = 'orange1'
 

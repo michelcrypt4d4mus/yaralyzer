@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.1
 * Fix iteration of byte offsets during attempted decodes for UTF-16 and UTF-32 (was starting at second byte instead of first)
 * Show helpful message if logs are being sent to files in `YaralyzerConfig.LOG_DIR` instead of being written to stderr/stdout
 * Warn if `--debug` and `--log-level` args both provided

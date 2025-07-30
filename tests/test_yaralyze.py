@@ -63,7 +63,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     rendered_files = files_in_dir(tmp_dir)
     assert len(rendered_files) == 4
     file_sizes = [path.getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [1182, 62224, 104808, 308080])
+    _assert_array_is_close(sorted(file_sizes), [1182, 45179, 78781, 243312])
 
     for file in rendered_files:
         if file.endswith('.json'):

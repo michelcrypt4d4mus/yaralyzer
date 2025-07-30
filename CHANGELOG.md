@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Add `Development Status :: 5 - Production/Stable`
 
 ### 1.0.4
 * Lock `chardet` library to 5.x

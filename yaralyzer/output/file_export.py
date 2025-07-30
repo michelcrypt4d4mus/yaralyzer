@@ -83,7 +83,7 @@ def invoke_rich_export(export_method, output_file_basepath) -> str:
     kwargs.update({'clear': False})
 
     if 'svg' in method_name:
-        kwargs.update({'title': path.basename(output_file_path) })
+        kwargs.update({'title': path.basename(output_file_path)})
 
     # Invoke it
     log_and_print(f"Invoking Rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")

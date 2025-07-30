@@ -9,7 +9,6 @@ Alternate constructors are provided depending on whether:
 The real action happens in the __rich__console__() dunder method.
 """
 from os import path
-from sys import exit
 from typing import Iterator, List, Optional, Tuple, Union
 
 import yara
@@ -36,13 +35,13 @@ YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't
 # TODO: might be worth introducing a Scannable namedtuple or similar
 class Yaralyzer:
     def __init__(
-            self,
-            rules: Union[str, yara.Rules],
-            rules_label: str,
-            scannable: Union[bytes, str],
-            scannable_label: Optional[str] = None,
-            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-        ) -> None:
+        self,
+        rules: Union[str, yara.Rules],
+        rules_label: str,
+        scannable: Union[bytes, str],
+        scannable_label: Optional[str] = None,
+        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    ) -> None:
         """
         If rules is a string it will be compiled by yara
         If scannable is bytes then scannable_label must be provided.
@@ -83,11 +82,11 @@ class Yaralyzer:
 
     @classmethod
     def for_rules_files(
-            cls,
-            yara_rules_files: List[str],
-            scannable: Union[bytes, str],
-            scannable_label: Optional[str] = None
-        ) -> 'Yaralyzer':
+        cls,
+        yara_rules_files: List[str],
+        scannable: Union[bytes, str],
+        scannable_label: Optional[str] = None
+    ) -> 'Yaralyzer':
         """Alternate constructor loads yara rules from files, labels rules w/filenames"""
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
@@ -108,11 +107,11 @@ class Yaralyzer:
 
     @classmethod
     def for_rules_dirs(
-            cls,
-            dirs: List[str],
-            scannable: Union[bytes, str],
-            scannable_label: Optional[str] = None
-        ) -> 'Yaralyzer':
+        cls,
+        dirs: List[str],
+        scannable: Union[bytes, str],
+        scannable_label: Optional[str] = None
+    ) -> 'Yaralyzer':
         """Alternate constructor that will load all .yara files in yara_rules_dir"""
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
@@ -122,15 +121,15 @@ class Yaralyzer:
 
     @classmethod
     def for_patterns(
-            cls,
-            patterns: List[str],
-            patterns_type: str,
-            scannable: Union[bytes, str],
-            scannable_label: Optional[str] = None,
-            rules_label: Optional[str] = None,
-            pattern_label: Optional[str] = None,
-            regex_modifier: Optional[str] = None,
-        ) -> 'Yaralyzer':
+        cls,
+        patterns: List[str],
+        patterns_type: str,
+        scannable: Union[bytes, str],
+        scannable_label: Optional[str] = None,
+        rules_label: Optional[str] = None,
+        pattern_label: Optional[str] = None,
+        regex_modifier: Optional[str] = None,
+    ) -> 'Yaralyzer':
         """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
         rule_strings = []
 
@@ -186,7 +185,7 @@ class Yaralyzer:
         # Only show the non matches if there were valid ones, otherwise just show the number
         if len(self.matches) == 0:
             non_match_desc = f" did not match any of the {len(self.non_matches)} yara rules"
-            console.print(dim_if(self.__text__()  + Text(non_match_desc, style='grey'), True))
+            console.print(dim_if(self.__text__() + Text(non_match_desc, style='grey'), True))
             return
 
         non_match_desc = f" did not match the other {len(self.non_matches)} yara rules"

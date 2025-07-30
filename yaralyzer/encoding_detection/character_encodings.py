@@ -13,7 +13,7 @@ ASCII = 'ascii'
 UTF_8 = 'utf-8'
 UTF_16 = 'utf-16'
 UTF_32 = 'utf-32'
-ISO_8859_1 =  'iso-8859-1'
+ISO_8859_1 = 'iso-8859-1'
 WINDOWS_1252 = 'windows-1252'
 
 
@@ -32,39 +32,39 @@ BOMS = {
 # ASCII characters that either print nothing, put the cursor in a weird place, or (worst of all) actively
 # delete stuff you already printed
 UNPRINTABLE_ASCII = {
-    0: 'NUL',
-    1: 'SOH',  # 'StartHeading',
-    2: 'STX',  # 'StartText',
+    0: 'NUL',    # 'Null',
+    1: 'SOH',    # 'StartHeading',
+    2: 'STX',    # 'StartText',
     3: 'ETX',
-    4: 'EOT',  # End of transmission
-    5: 'ENQ',  # 'Enquiry',
-    6: 'ACK',  # 'Acknowledgement',
-    7: 'BEL',  # 'Bell',
-    8: 'BS',   # 'BackSpace',
-    #9:  'HT'  # 'HorizontalTab',
-    #10: 'LF',  # 'LineFeed',
-    11: 'VT',  # 'VerticalTab',
-    12: 'FF',  # 'FormFeed', AKA 'NewPage'
-    13: 'CR',  # 'CarriageReturn',
-    14: 'SO',  # 'ShiftOut',
-    15: 'SI',  # 'ShiftIn',
-    16: 'DLE',  # 'DataLineEscape',
-    17: 'DC1',  # DeviceControl1',
-    18: 'DC2',  # 'DeviceControl2',
-    19: 'DC3',  # 'DeviceControl3',
-    20: 'DC4',  # 'DeviceControl4',
+    4: 'EOT',    # End of transmission
+    5: 'ENQ',    # 'Enquiry',
+    6: 'ACK',    # 'Acknowledgement',
+    7: 'BEL',    # 'Bell',
+    8: 'BS',     # 'BackSpace',
+    # 9:  'HT'   # 'HorizontalTab',
+    # 10: 'LF',  # 'LineFeed',
+    11: 'VT',    # 'VerticalTab',
+    12: 'FF',    # 'FormFeed', AKA 'NewPage'
+    13: 'CR',    # 'CarriageReturn',
+    14: 'SO',    # 'ShiftOut',
+    15: 'SI',    # 'ShiftIn',
+    16: 'DLE',   # 'DataLineEscape',
+    17: 'DC1',   # DeviceControl1',
+    18: 'DC2',   # 'DeviceControl2',
+    19: 'DC3',   # 'DeviceControl3',
+    20: 'DC4',   # 'DeviceControl4',
     21: 'NAK',   # NegativeAcknowledgement',
-    22: 'SYN',  # 'SynchronousIdle',
-    23: 'ETB',  # 'EndTransmitBlock',
-    24: 'CAN',  # 'Cancel',
-    25: 'EM',  # 'EndMedium',
-    26: 'SUB',  # 'Substitute',
-    27: 'ESC',  # 'Escape',
-    28: 'FS',  # 'FileSeparator',
-    29: 'GS',  #'GroupSeparator',
-    30: 'RS',  #'RecordSeparator',
-    31: 'US',  # 'UnitSeparator',
-    127: 'DEL', # Delete
+    22: 'SYN',   # 'SynchronousIdle',
+    23: 'ETB',   # 'EndTransmitBlock',
+    24: 'CAN',   # 'Cancel',
+    25: 'EM',    # 'EndMedium',
+    26: 'SUB',   # 'Substitute',
+    27: 'ESC',   # 'Escape',
+    28: 'FS',    # 'FileSeparator',
+    29: 'GS',    # 'GroupSeparator',
+    30: 'RS',    # 'RecordSeparator',
+    31: 'US',    # 'UnitSeparator',
+    127: 'DEL',  # Delete
 }
 
 
@@ -116,12 +116,12 @@ UNPRINTABLE_UTF_8.update({
 UNPRINTABLE_WIN_1252 = UNPRINTABLE_ASCII.copy()
 
 UNPRINTABLE_WIN_1252.update({
-    129: 'HOP', # High Octet Preset
-    141: 'RLF', # Reverse Line Feed
-    143: 'SS3', # Single shift 3
-    144: 'DCS', # Device Control String
-    147: 'STS', # Set transmit state
-    160: 'NBSP',
+    129: 'HOP',   # High Octet Preset
+    141: 'RLF',   # Reverse Line Feed
+    143: 'SS3',   # Single shift 3
+    144: 'DCS',   # Device Control String
+    147: 'STS',   # Set transmit state
+    160: 'NBSP',  # Non-breaking space
 })
 
 
@@ -146,7 +146,6 @@ ENCODINGS_TO_ATTEMPT = {
     UTF_32:       None,  # UTF-16 and 32 are handled differently
     ISO_8859_1:   UNPRINTABLE_ISO_8859_1,
     WINDOWS_1252: UNPRINTABLE_WIN_1252,
-    #'utf-7':
 }
 
 SINGLE_BYTE_ENCODINGS = [

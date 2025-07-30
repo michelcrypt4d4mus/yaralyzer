@@ -5,7 +5,7 @@ are over in test_yaralyzer.py)
 import json
 from functools import partial
 from math import isclose
-from os import environ, path, remove
+from os import environ, path
 from subprocess import CalledProcessError, check_output
 
 import pytest

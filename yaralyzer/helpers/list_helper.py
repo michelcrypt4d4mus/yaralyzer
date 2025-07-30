@@ -2,6 +2,7 @@
 Help with lists.
 """
 
+
 def flatten(a):
     """From https://www.geeksforgeeks.org/python/python-flatten-list-to-individual-elements/"""
     return_value = []

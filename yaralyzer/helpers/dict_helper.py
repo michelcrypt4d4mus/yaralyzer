@@ -1,7 +1,6 @@
 """
 Help with dicts.
 """
-from numbers import Number
 
 
 def get_dict_key_by_value(_dict: dict, value):

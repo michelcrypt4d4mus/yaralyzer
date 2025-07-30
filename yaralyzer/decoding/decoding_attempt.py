@@ -7,10 +7,11 @@ from typing import Optional
 from rich.markup import escape
 from rich.text import Text
 
+from yaralyzer.bytes_match import BytesMatch  # Used to cause circular import issues
 from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEMPT, SINGLE_BYTE_ENCODINGS,
      UTF_8, encoding_width, is_wide_utf)
 from yaralyzer.helpers.bytes_helper import clean_byte_string, truncate_for_encoding
-from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj, unprintable_byte_to_text
+from yaralyzer.helpers.rich_text_helper import prefix_with_style, unprintable_byte_to_text
 from yaralyzer.output.rich_console import ALERT_STYLE, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS
 from yaralyzer.util.logging import log
 
@@ -144,7 +145,7 @@ class DecodingAttempt:
         else:
             return self._failed_to_decode_msg_txt(last_exception)
 
-    def _to_rich_text(self, _string: str, bytes_offset: int=0) -> Text:
+    def _to_rich_text(self, _string: str, bytes_offset: int = 0) -> Text:
         """Convert a decoded string to highlighted Text representation"""
         # Adjust where we start the highlighting given the multibyte nature of the encodings
         log.debug(f"Stepping through {self.encoding} encoded string...")
@@ -181,4 +182,4 @@ class DecodingAttempt:
     def _failed_to_decode_msg_txt(self, exception: Optional[Exception]) -> Text:
         """Set failed_to_decode flag and return a Text object with the error message."""
         self.failed_to_decode = True
-        return prefix_with_plain_text_obj(f"(decode failed: {exception})", style='red dim italic')
+        return prefix_with_style(f"(decode failed: {exception})", style='red dim italic')

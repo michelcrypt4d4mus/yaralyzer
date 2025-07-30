@@ -1,4 +1,4 @@
-from os.path import basename, dirname
+from os.path import dirname
 
 from yaralyzer.helpers.file_helper import files_in_dir
 

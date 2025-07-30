@@ -26,7 +26,7 @@ Python log levels for reference:
 """
 import logging
 import sys
-from os import environ, path
+from os import path
 from typing import Union
 
 from rich.logging import RichHandler

@@ -14,10 +14,10 @@ BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
 
 
 def bytes_hashes_table(
-        bytes_or_bytes_info: Union[bytes, BytesInfo],
-        title: Optional[str] = None,
-        title_justify: str = LEFT
-    ) -> Table:
+    bytes_or_bytes_info: Union[bytes, BytesInfo],
+    title: Optional[str] = None,
+    title_justify: str = LEFT
+) -> Table:
     """Build a table to show the MD5, SHA1, SHA256, etc."""
     if isinstance(bytes_or_bytes_info, bytes):
         bytes_info = compute_file_hashes(bytes_or_bytes_info)

@@ -1,4 +1,6 @@
 # NEXT RELEASE
+* Add `Changelog` to PyPi URLs, add some more PyPi classifiers
+* Add `.flake8` config file and fix style errors
 
 ### 1.0.6
 * Add `Environment :: Console` and `Programming Language :: Python` to PyPi classifiers

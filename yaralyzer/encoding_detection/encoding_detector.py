@@ -9,7 +9,6 @@ import chardet
 from rich import box
 from rich.padding import Padding
 from rich.table import Table
-from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_assessment import ENCODING, EncodingAssessment
@@ -83,7 +82,7 @@ class EncodingDetector:
                 self.unique_assessments.append(result)
                 already_seen_encodings[result.encoding] = result
             else:
-                log.debug(f"Skipping chardet result {result}: we already saw {already_seen_encodings[result.encoding]})")
+                log.debug(f"Skipping chardet result {result} (already saw {already_seen_encodings[result.encoding]})")
 
         self.unique_assessments.sort(key=attrgetter('confidence'), reverse=True)
 
@@ -105,8 +104,8 @@ def _empty_chardet_results_table():
         style='dim',
         box=box.SIMPLE,
         show_edge=False,
-        collapse_padding=True)
+        collapse_padding=True
+    )
 
     table.columns[0].justify = 'right'
-    table.columns # TODO: ???
     return table

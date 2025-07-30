@@ -7,7 +7,7 @@ from rich.text import Text
 
 from yaralyzer.encoding_detection.character_encodings import ENCODING
 from yaralyzer.helpers.rich_text_helper import (DIM_COUNTRY_THRESHOLD, meter_style,
-     prefix_with_plain_text_obj)
+     prefix_with_style)
 
 CONFIDENCE = 'confidence'
 LANGUAGE = 'language'
@@ -20,7 +20,7 @@ class EncodingAssessment:
 
         # Shift confidence from 0-1.0 scale to 0-100.0 scale
         self.confidence = 100.0 * (self._get_dict_empty_value_as_None(CONFIDENCE) or 0.0)
-        self.confidence_text = prefix_with_plain_text_obj(f"{round(self.confidence, 1)}%", style=meter_style(self.confidence))
+        self.confidence_text = prefix_with_style(f"{round(self.confidence, 1)}%", style=meter_style(self.confidence))
 
         # Add detected language info and label if any language was detected
         self.language = self._get_dict_empty_value_as_None(LANGUAGE)

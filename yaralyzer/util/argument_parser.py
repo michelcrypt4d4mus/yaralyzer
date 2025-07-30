@@ -78,8 +78,8 @@ source.add_argument('--regex-modifier', '-mod',
 # Fine tuning
 tuning = parser.add_argument_group(
     'FINE TUNING',
-    "Tune various aspects of the analyses and visualizations to your needs. As an example setting " + \
-        "a low --max-decode-length (or suppressing brute force binary decode attempts altogether) can " + \
+    "Tune various aspects of the analyses and visualizations to your needs. As an example setting " +
+        "a low --max-decode-length (or suppressing brute force binary decode attempts altogether) can " +
         "dramatically improve run times and only occasionally leads to a fatal lack of insight.")
 
 tuning.add_argument('--maximize-width', action='store_true',
@@ -119,14 +119,14 @@ tuning.add_argument('--min-chardet-bytes',
                     type=int)
 
 tuning.add_argument('--min-chardet-table-confidence',
-                    help="minimum chardet confidence to display the encoding name/score in the character " + \
+                    help="minimum chardet confidence to display the encoding name/score in the character " +
                          "decection scores table",
                     default=YaralyzerConfig.DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE,
                     metavar='PCT_CONFIDENCE',
                     type=int)
 
 tuning.add_argument('--force-display-threshold',
-                    help="encodings with chardet confidence below this number will neither be displayed nor " + \
+                    help="encodings with chardet confidence below this number will neither be displayed nor " +
                          "decoded in the decodings table",
                     default=EncodingDetector.force_display_threshold,
                     metavar='PCT_CONFIDENCE',
@@ -134,9 +134,9 @@ tuning.add_argument('--force-display-threshold',
                     choices=CONFIDENCE_SCORE_RANGE)
 
 tuning.add_argument('--force-decode-threshold',
-                    help="extremely high (AKA 'above this number') confidence scores from chardet.detect() " + \
-                         "as to the likelihood some bytes were written with a particular encoding will cause " + \
-                         "the yaralyzer to attempt decoding those bytes in that encoding even if it is not a " + \
+                    help="extremely high (AKA 'above this number') confidence scores from chardet.detect() " +
+                         "as to the likelihood some bytes were written with a particular encoding will cause " +
+                         "the yaralyzer to attempt decoding those bytes in that encoding even if it is not a " +
                          "configured encoding",
                     default=EncodingDetector.force_decode_threshold,
                     metavar='PCT_CONFIDENCE',
@@ -159,8 +159,8 @@ tuning.add_argument('--yara-stack-size',
 # Export options
 export = parser.add_argument_group(
     'FILE EXPORT',
-    "Multiselect. Choosing nothing is choosing nothing. Sends what you see on the screen to various file " + \
-        "formats in parallel. Writes files to the current directory if --output-dir is not provided. " + \
+    "Multiselect. Choosing nothing is choosing nothing. Sends what you see on the screen to various file " +
+        "formats in parallel. Writes files to the current directory if --output-dir is not provided. " +
         "Filenames are expansions of the scanned filename though you can use --file-prefix to make your " +
         "filenames more unique and beautiful to their beholder.")
 
@@ -282,7 +282,7 @@ def parse_arguments(args: Optional[Namespace] = None):
 
 def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
     file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
-    args.output_basename =  f"{file_prefix}{yaralyzer._filename_string()}"
+    args.output_basename  = f"{file_prefix}{yaralyzer._filename_string()}"  # noqa: E221
     args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
     args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
     return path.join(args.output_dir, args.output_basename + f"__at_{args.invoked_at_str}")

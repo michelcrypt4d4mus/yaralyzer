@@ -144,9 +144,9 @@ def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):
     """
     Find the position of bytes_str in surrounding_byte_str. Both args are raw text dumps of binary data.
-    Because strings are longer than bytes (stuff like '\xcc' are 4 chars when printed are one byte and the ANSI unprintables
-    include stuff like 'NegativeAcknowledgement' which is over 20 chars) they represent so we have to re-find the location to highlight the bytes
-    correctly.
+    Because strings are longer than bytes (stuff like '\xcc' are 4 chars when printed are one byte and
+    the ANSI unprintables include stuff like 'NegativeAcknowledgement' which is over 20 chars) they represent
+    so we have to re-find the location to highlight the bytes correctly.
     """
     # Start a few chars in to avoid errors: sometimes we're searching for 1 or 2 bytes and there's a false positive
     # in the extra bytes. Tthis isn't perfect - it's starting us at the first index into the *bytes* that's safe to
@@ -155,7 +155,7 @@ def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: st
 
     # TODO: Somehow \' and ' don't always come out the same :(
     if highlight_idx == -1:
-        log.info(f"Failed to find highlighted_bytes in first pass so deleting single quotes and retrying. " + \
+        log.info(f"Failed to find highlighted_bytes in first pass so deleting single quotes and retrying. " +
                   "Highlighting may be off by a few chars,")
 
         surrounding_bytes_str = surrounding_bytes_str.replace("\\'", "'")

@@ -11,11 +11,9 @@ if not environ.get('INVOKED_BY_PYTEST', False):
             load_dotenv(dotenv_path=dotenv_file)
             break
 
-from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
-from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 

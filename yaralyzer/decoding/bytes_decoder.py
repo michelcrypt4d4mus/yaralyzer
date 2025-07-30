@@ -3,7 +3,6 @@ Class to handle attempting to decode a chunk of bytes into strings with various 
 Leverages the chardet library to both guide what encodings are attempted as well as to rank decodings
 in the results.
 """
-
 from collections import defaultdict
 from copy import deepcopy
 from operator import attrgetter
@@ -15,14 +14,13 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-#from yaralyzer.bytes_match import BytesMatch
+from yaralyzer.bytes_match import BytesMatch  # Used to cause circular import issues
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.decoding_attempt import DecodingAttempt
-from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT, encoding_offsets
+from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.helpers.dict_helper import get_dict_key_by_value
-from yaralyzer.helpers.list_helper import flatten
 from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
      decoding_table_row, new_decoding_attempts_table)
@@ -66,7 +64,6 @@ class BytesDecoder:
         if self.bytes_match.is_decodable():
             yield self._build_decodings_table()
         elif YaralyzerConfig.args.standalone_mode:
-            # TODO: yield self.bytes_match.suppression_notice() (i guess to show some notice that things are suppressed?)
             yield self._build_decodings_table(True)
 
         yield NewLine()
@@ -136,7 +133,7 @@ class BytesDecoder:
         # If the decoding can have a start offset add an appropriate extension to the encoding label
         if decoding.start_offset_label:
             if assessment.language:
-                log.warning(f"{decoding.encoding} has offset {decoding.start_offset} and language '{assessment.language}'")
+                log.warning(f"{decoding.encoding} offset {decoding.start_offset} AND language '{assessment.language}'")
             else:
                 assessment = deepcopy(assessment)
                 assessment.set_encoding_label(decoding.start_offset_label)

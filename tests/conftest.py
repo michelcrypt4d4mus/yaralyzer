@@ -12,8 +12,8 @@ FILE_FIXTURE_PATH = path.join(PYTESTS_DIR, 'file_fixtures')
 environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = LOG_DIR
 
-from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
-from yaralyzer.yaralyzer import Yaralyzer
+from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
+from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 
 # Full paths to file fixtures

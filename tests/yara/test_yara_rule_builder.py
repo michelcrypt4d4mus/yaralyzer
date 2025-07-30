@@ -1,5 +1,3 @@
-import yara
-
 from yaralyzer.yara.yara_rule_builder import HEX, PATTERN, REGEX, build_yara_rule, safe_label, yara_rule_string
 
 TEST_BYTES = b"I'm a real producer but you're just a piano man, Scotty Storch"

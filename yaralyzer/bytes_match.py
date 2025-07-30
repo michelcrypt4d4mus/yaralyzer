@@ -13,22 +13,22 @@ from rich.text import Text
 from yara import StringMatch, StringMatchInstance
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.rich_text_helper import prefix_with_plain_text_obj
+from yaralyzer.helpers.rich_text_helper import prefix_with_style
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 
 
 class BytesMatch:
     def __init__(
-            self,
-            matched_against: bytes,
-            start_idx: int,
-            length: int,
-            label: str,
-            ordinal: int,
-            match: Optional[re.Match] = None,  # It's rough to get the regex from yara :(
-            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-        ) -> None:
+        self,
+        matched_against: bytes,
+        start_idx: int,
+        length: int,
+        label: str,
+        ordinal: int,
+        match: Optional[re.Match] = None,  # It's rough to get the regex from yara :(
+        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    ) -> None:
         """
         Ordinal means it's the Nth match with this regex (not super important but useful)
         YARA makes it a little rouch to get the actual regex that matched. Can be done with plyara eventually.
@@ -52,24 +52,24 @@ class BytesMatch:
 
     @classmethod
     def from_regex_match(
-            cls,
-            matched_against: bytes,
-            match: re.Match,
-            ordinal: int,
-            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-        ) -> 'BytesMatch':
+        cls,
+        matched_against: bytes,
+        match: re.Match,
+        ordinal: int,
+        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    ) -> 'BytesMatch':
         return cls(matched_against, match.start(), len(match[0]), match.re.pattern, ordinal, match, highlight_style)
 
     @classmethod
     def from_yara_str(
-            cls,
-            matched_against: bytes,
-            rule_name: str,
-            yara_str_match: StringMatch,
-            yara_str_match_instance: StringMatchInstance,
-            ordinal: int,
-            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-        ) -> 'BytesMatch':
+        cls,
+        matched_against: bytes,
+        rule_name: str,
+        yara_str_match: StringMatch,
+        yara_str_match_instance: StringMatchInstance,
+        ordinal: int,
+        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    ) -> 'BytesMatch':
         """Build a BytesMatch from a yara string match. 'matched_against' is the set of bytes yara was run against."""
         pattern_label = yara_str_match.identifier
 
@@ -89,11 +89,11 @@ class BytesMatch:
 
     @classmethod
     def from_yara_match(
-            cls,
-            matched_against: bytes,
-            yara_match: dict,
-            highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-        ) -> Iterator['BytesMatch']:
+        cls,
+        matched_against: bytes,
+        yara_match: dict,
+        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    ) -> Iterator['BytesMatch']:
         """Iterator w/a BytesMatch for each string returned as part of a YARA match result dict."""
         i = 0  # For numbered labeling
 
@@ -102,13 +102,14 @@ class BytesMatch:
             for yara_str_match_instance in yara_str_match.instances:
                 i += 1
 
-                yield(cls.from_yara_str(
+                yield cls.from_yara_str(
                     matched_against,
                     yara_match['rule'],
                     yara_str_match,
                     yara_str_match_instance,
                     i,
-                    highlight_style))
+                    highlight_style
+                )
 
     def style_at_position(self, idx) -> str:
         """Get the style for the byte at position idx within the matched bytes"""
@@ -119,11 +120,12 @@ class BytesMatch:
 
     def location(self) -> Text:
         """Returns a Text obj like '(start idx: 348190, end idx: 348228)'"""
-        location_txt = prefix_with_plain_text_obj(
+        location_txt = prefix_with_style(
             f"(start idx: ",
             style='off_white',
             root_style='decode.subheading'
         )
+
         location_txt.append(str(self.start_idx), style='number')
         location_txt.append(', end idx: ', style='off_white')
         location_txt.append(str(self.end_idx), style='number')
@@ -184,7 +186,7 @@ class BytesMatch:
         self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
 
     def __rich__(self) -> Text:
-        headline = prefix_with_plain_text_obj(str(self.match_length), style='number', root_style='decode.subheading')
+        headline = prefix_with_style(str(self.match_length), style='number', root_style='decode.subheading')
         headline.append(f" bytes matching ")
         headline.append(f"{self.label} ", style=ALERT_STYLE if self.highlight_style == ALERT_STYLE else 'regex')
         headline.append('at ')

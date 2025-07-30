@@ -97,7 +97,7 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
             list_txt = Text('[', style='white')
 
             if total_length > console_width() or len(element) > 3:
-                join_txt = Text(f"\n{indent}" )
+                join_txt = Text(f"\n{indent}")
                 list_txt.append(join_txt).append(Text(f",{join_txt}").join(elements_txt))
                 list_txt += Text(f'\n{end_indent}]', style='white')
             else:

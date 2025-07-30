@@ -4,12 +4,11 @@ Builds bare bones YARA rules to match strings and regex patterns. Example rule s
 rule Just_A_Piano_Man {
     meta:
         author           = "Tim"
-	strings:
-		$hilton_producer = /Scott.*Storch/
-	condition:
-		$hilton_producer
+    strings:
+        $hilton_producer = /Scott.*Storch/
+    condition:
+        $hilton_producer
 }
-
 """
 import re
 from typing import Optional
@@ -60,12 +59,12 @@ rule {rule_name} {{
 
 
 def yara_rule_string(
-        pattern: str,
-        pattern_type: str = REGEX,
-        rule_name: str = YARALYZE,
-        pattern_label: Optional[str] = PATTERN,
-        modifier: Optional[str] = None
-    ) -> str:
+    pattern: str,
+    pattern_type: str = REGEX,
+    rule_name: str = YARALYZE,
+    pattern_label: Optional[str] = PATTERN,
+    modifier: Optional[str] = None
+) -> str:
     """Build a YARA rule string for a given pattern"""
     if not (modifier is None or modifier in YARA_REGEX_MODIFIERS):
         raise TypeError(f"Modifier '{modifier}' is not one of {YARA_REGEX_MODIFIERS}")
@@ -89,12 +88,12 @@ def yara_rule_string(
 
 
 def build_yara_rule(
-        pattern: str,
-        pattern_type: str = REGEX,
-        rule_name: str = YARALYZE,
-        pattern_label: Optional[str] = PATTERN,
-        modifier: Optional[str] = None
-    ) -> yara.Rule:
+    pattern: str,
+    pattern_type: str = REGEX,
+    rule_name: str = YARALYZE,
+    pattern_label: Optional[str] = PATTERN,
+    modifier: Optional[str] = None
+) -> yara.Rule:
     """Build a compiled YARA rule"""
     rule_string = yara_rule_string(pattern, pattern_type, rule_name, pattern_label, modifier)
     return yara.compile(source=rule_string)

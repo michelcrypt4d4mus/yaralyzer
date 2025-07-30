@@ -123,5 +123,5 @@ def print_fatal_error_and_exit(error_message: str) -> None:
     exit()
 
 
-def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0,2)) -> None:
+def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0, 2)) -> None:
     console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))

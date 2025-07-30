@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Upgrade `rich` to 14.1.0
 
 ### 1.0.2
 * Upgrade `yara-python` to 4.5.4

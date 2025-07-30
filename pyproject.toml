@@ -70,8 +70,8 @@ yara-python = "^4.5.4"
 #plyara = "^2.1.1"  # TODO: use plyara for YARA rule parsing and validation
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.1.3"
 flake8 = "^7.3.0"
+pytest = "^7.1.3"
 
 
 [tool.poetry.scripts]

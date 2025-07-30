@@ -19,8 +19,7 @@ from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
-from yaralyzer.helpers.bytes_helper import (ascii_view_of_raw_bytes, hex_view_of_raw_bytes,
-     rich_text_view_of_raw_bytes)
+from yaralyzer.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
 from yaralyzer.helpers.rich_text_helper import CENTER, FOLD, MIDDLE, RIGHT, na_txt
 
 # The confidence and encoding will not be shown in the final display - instead their Text versions are shown.

@@ -78,7 +78,7 @@ class BytesDecoder:
 
         # Add the encoding rows to the table if not suppressed
         if not (YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes):
-            self.decodings = flatten([self._get_decoding_attempts(encoding) for encoding in ENCODINGS_TO_ATTEMPT])
+            self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT]
             # Attempt decodings we don't usually attempt if chardet is insistent enough
             forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
             self.decodings += [DecodingAttempt(self.bytes_match, a.encoding) for a in forced_decodes]
@@ -103,13 +103,6 @@ class BytesDecoder:
     def _forced_displays(self) -> List[EncodingAssessment]:
         """Returns assessments over the display threshold that are not yet decoded."""
         return self._undecoded_assessments(self.encoding_detector.force_display_assessments)
-
-    def _get_decoding_attempts(self, encoding: str) -> List[DecodingAttempt]:
-        """Get a list of DecodingAttempts for a given encoding, including all offsets for wide UTF encodings."""
-        return [
-            DecodingAttempt(self.bytes_match, encoding, start_offset)
-            for start_offset in encoding_offsets(encoding)
-        ]
 
     def _undecoded_assessments(self, assessments: List[EncodingAssessment]) -> List[EncodingAssessment]:
         """Filter out the already decoded assessments from a set of assessments"""
@@ -141,7 +134,7 @@ class BytesDecoder:
         assessment = self.encoding_detector.get_encoding_assessment(decoding.encoding)
 
         # If the decoding can have a start offset add an appropriate extension to the encoding label
-        if decoding.is_wide_utf_encoding():
+        if decoding.start_offset > 0:
             if assessment.language:
                 log.warning(f"{decoding.encoding} has offset {decoding.start_offset} and language '{assessment.language}'")
             else:

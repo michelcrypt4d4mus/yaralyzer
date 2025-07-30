@@ -5,7 +5,6 @@ from sys import byteorder
 from typing import Optional
 
 from rich.markup import escape
-from rich.panel import Panel
 from rich.text import Text
 
 from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEMPT, SINGLE_BYTE_ENCODINGS,
@@ -17,27 +16,18 @@ from yaralyzer.util.logging import log
 
 
 class DecodingAttempt:
-    def __init__(self, bytes_match: 'BytesMatch', encoding: str, start_offset: int = 0) -> None:
-        if start_offset > 0 and not is_wide_utf(encoding):
-            raise ValueError(f"Start offset {start_offset} is only valid for wide UTF encodings, not '{encoding}'")
-
+    def __init__(self, bytes_match: 'BytesMatch', encoding: str) -> None:
         # Args
+        self.bytes = bytes_match.surrounding_bytes
         self.bytes_match = bytes_match
         self.encoding = encoding
-        self.start_offset = start_offset
-        # Inferred / derived values (some to be set later)
-        self.bytes = truncate_for_encoding(bytes_match.surrounding_bytes[start_offset:], encoding)
+        # Inferred / derived values
+        self.encoding_label = encoding
+        self.start_offset = 0  # Offset in bytes to start decoding from
+        self.start_offset_label = None  # String to indicate what offset we were able to decode
         self.was_force_decoded = False
         self.failed_to_decode = False
         self.decoded_string = self._decode_bytes()
-
-        # Append the offset to the encoding label if it's a wide UTF encoding
-        if self.is_wide_utf_encoding():
-            self.start_offset_label = f"offset {start_offset} byte" + ('s' if start_offset > 1 else '')
-            self.encoding_label = f"{encoding} ({self.start_offset_label})"
-        else:
-            self.start_offset_label = None
-            self.encoding_label = encoding
 
     def is_wide_utf_encoding(self) -> bool:
         """Returns True if the encoding is UTF-16 or UTF-32"""
@@ -125,14 +115,13 @@ class DecodingAttempt:
         return output
 
     def _decode_utf_multibyte_with_byte_offset(self) -> Text:
-        """ UTF-16/32 are fixed width (and wide)."""
+        """UTF-16/32 are fixed width and multibyte and therefore depend on the position of the starting byte."""
         char_width = encoding_width(self.encoding)
-        log.debug(f"Decoding '{self.encoding}', offset={self.start_offset}, char_width={char_width}...")
         last_exception = None
         decoded_str = None
         bytes_offset = 0
 
-        # TODO: we shouldn't be iterating here because we already have self.start_offset
+        # Iterate through the possibly byte offsets until we find a valid decoded string (or don't)
         while bytes_offset < char_width:
             try:
                 decoded_str = truncate_for_encoding(self.bytes[bytes_offset:], self.encoding).decode(self.encoding)
@@ -140,15 +129,20 @@ class DecodingAttempt:
                 log.info(f"Exception decoding w/offset {bytes_offset} in {self.encoding}: {e}")
                 last_exception = e
 
+            # Append the current bytes_offset to the encoding label if we found a valid decoded string
             if decoded_str is not None:
+                log.info(f"Successfully decoded '{self.encoding}' w/offset {bytes_offset}")
+                self.start_offset = bytes_offset
+                self.start_offset_label = f"offset {self.start_offset} byte" + ('s' if self.start_offset > 1 else '')
+                self.encoding_label = f"{self.encoding} ({self.start_offset_label})"
                 break
 
             bytes_offset += 1
 
-        if decoded_str is None:
+        if decoded_str is not None:
+            return self._to_rich_text(decoded_str, bytes_offset)
+        else:
             return self._failed_to_decode_msg_txt(last_exception)
-
-        return self._to_rich_text(decoded_str, bytes_offset)
 
     def _to_rich_text(self, _string: str, bytes_offset: int=0) -> Text:
         """Convert a decoded string to highlighted Text representation"""

@@ -134,7 +134,7 @@ class BytesDecoder:
         assessment = self.encoding_detector.get_encoding_assessment(decoding.encoding)
 
         # If the decoding can have a start offset add an appropriate extension to the encoding label
-        if decoding.start_offset > 0:
+        if decoding.start_offset_label:
             if assessment.language:
                 log.warning(f"{decoding.encoding} has offset {decoding.start_offset} and language '{assessment.language}'")
             else:

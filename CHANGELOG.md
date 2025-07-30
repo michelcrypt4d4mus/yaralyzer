@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.6
 * Add `Environment :: Console` and `Programming Language :: Python` to PyPi classifiers
 * Add `LICENSE` to PyPi package
 

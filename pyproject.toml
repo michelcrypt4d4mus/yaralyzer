@@ -50,6 +50,7 @@ classifiers = [
 
 include = [
     "CHANGELOG.md",
+    "LICENSE",
     ".yaralyzer.example"
 ]
 

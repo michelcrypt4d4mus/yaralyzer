@@ -234,6 +234,9 @@ def parse_arguments(args: Optional[Namespace] = None):
 
     if args.debug:
         log.setLevel(logging.DEBUG)
+
+        if args.log_level:
+            log.warning("Ignoring --log-level option as debug mode means log level is DEBUG")
     elif args.log_level:
         log.setLevel(args.log_level)
 

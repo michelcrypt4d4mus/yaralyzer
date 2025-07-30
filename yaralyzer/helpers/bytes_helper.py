@@ -11,7 +11,7 @@ from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE
+from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE, encoding_width
 from yaralyzer.helpers.rich_text_helper import newline_join
 from yaralyzer.output.rich_console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST,
      BYTES_HIGHLIGHT, GREY, console, console_width)
@@ -124,6 +124,18 @@ def print_bytes(bytes_array: bytes, style=None) -> None:
     """Convert bytes to a string representation and print to console"""
     for line in bytes_array.split(NEWLINE_BYTE):
         console.print(escape(clean_byte_string(line)), style=style or 'bytes')
+
+
+def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
+    """Truncate bytes to the a modulus of the char width of the given encoding."""
+    char_width = encoding_width(encoding)
+    num_bytes = len(_bytes)
+    num_extra_bytes = num_bytes % char_width
+
+    if char_width <= 1 or num_bytes <= char_width or num_extra_bytes == 0:
+        return _bytes
+    else:
+        return _bytes[:-num_extra_bytes]
 
 
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):

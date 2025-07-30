@@ -11,8 +11,8 @@ Final output should be rich.table of decoding attempts that are sorted like this
         3. Decodings that were the same as other decodings
         4. Failed decodings
 """
-
 from collections import namedtuple
+from operator import attrgetter
 
 from rich import box
 from rich.table import Table
@@ -24,7 +24,8 @@ from yaralyzer.helpers.bytes_helper import (ascii_view_of_raw_bytes, hex_view_of
      rich_text_view_of_raw_bytes)
 from yaralyzer.helpers.rich_text_helper import CENTER, FOLD, MIDDLE, RIGHT, na_txt
 
-# The confidence and encoding will not be shown in the final display - instead their Text versions are shown
+# The confidence and encoding will not be shown in the final display - instead their Text versions are shown.
+# TODO: this should become a dataclass (requires Python 3.7+)
 DecodingTableRow = namedtuple(
     'DecodingTableRow',
     [
@@ -32,9 +33,11 @@ DecodingTableRow = namedtuple(
         'confidence_text',
         'errors_while_decoded',
         'decoded_string',
+        # Properties below here are not displayed in the table but are used for sorting etc.
         'confidence',
         'encoding',
-        'sort_score'
+        'sort_score',
+        'encoding_text_plain',  # For sorting purposes, if confidences match
     ]
 )
 
@@ -43,8 +46,11 @@ HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
 
 
-def build_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
-    """First rows are the raw / hex views of the bytes then 1 row per decoding attempt."""
+def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
+    """
+    Build a new rich Table with two rows, the raw and hex views of the bytes_match data.
+    (Additional decoding attempt rows will be added later.)
+    """
     table = Table(show_lines=True, border_style='bytes', header_style='color(101) bold')
 
     def add_col(title, **kwargs):
@@ -64,7 +70,7 @@ def build_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
 
 
 def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> DecodingTableRow:
-    """Get a table row for a decoding attempt"""
+    """Build a table row for a decoding attempt."""
     return DecodingTableRow(
         assessment.encoding_text,
         assessment.confidence_text,
@@ -72,11 +78,13 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
         txt,
         assessment.confidence,
         assessment.encoding,
-        sort_score=score)
+        sort_score=score,
+        encoding_text_plain=assessment.encoding_text.plain
+    )
 
 
 def assessment_only_row(assessment: EncodingAssessment, score) -> DecodingTableRow:
-    """Build a row with just chardet assessment data and no actual decoded string"""
+    """Build a row with just chardet assessment confidence data and no actual decoding attempt string."""
     return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
 
 

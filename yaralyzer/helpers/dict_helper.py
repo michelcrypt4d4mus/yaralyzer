@@ -1,5 +1,5 @@
 """
-Help with dicts
+Help with dicts.
 """
 from numbers import Number
 

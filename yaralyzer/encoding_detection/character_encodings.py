@@ -152,8 +152,30 @@ ENCODINGS_TO_ATTEMPT = {
 SINGLE_BYTE_ENCODINGS = [
     ASCII,
     ISO_8859_1,
-    WINDOWS_1252
+    WINDOWS_1252,
 ]
+
+# Keys are encodings that use multiple bytes to represent a single character, values are the possible offsets
+# to attempt to use as the starting point for decoding in a given set of bytes.
+WIDE_UTF_ENCODINGS = {
+    UTF_16: [0, 1],
+    UTF_32: [0, 1, 2, 3],
+}
+
+
+def encoding_offsets(encoding: str) -> list:
+    """Get possible offsets for a given encoding. If the encoding is not in WIDE_UTF_ENCODINGS, return [0]."""
+    return WIDE_UTF_ENCODINGS.get(encoding, [0])
+
+
+def encoding_width(encoding: str) -> int:
+    """Get the width of a character in bytes for a given encoding, which is the number of possible offsets."""
+    return len(encoding_offsets(encoding))
+
+
+def is_wide_utf(encoding: str) -> bool:
+    """Check if the encoding is a wide UTF encoding (UTF-16 or UTF-32)."""
+    return encoding in WIDE_UTF_ENCODINGS
 
 
 # TODO: this is unused cruft (mostly Asian language encodings)

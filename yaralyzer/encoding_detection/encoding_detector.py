@@ -53,7 +53,7 @@ class EncodingDetector:
         self.force_decode_assessments = self.assessments_above_confidence(type(self).force_decode_threshold)
         self.force_display_assessments = self.assessments_above_confidence(type(self).force_display_threshold)
 
-    def get_encoding_assessment(self, encoding) -> EncodingAssessment:
+    def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
         """If chardet produced one, return it, otherwise return a dummy node with confidence of 0"""
         assessment = next((r for r in self.unique_assessments if r.encoding == encoding), None)
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)

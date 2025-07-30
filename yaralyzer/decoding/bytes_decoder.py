@@ -5,6 +5,7 @@ in the results.
 """
 
 from collections import defaultdict
+from copy import deepcopy
 from operator import attrgetter
 from typing import List, Optional
 
@@ -13,18 +14,18 @@ from rich.console import Console, ConsoleOptions, NewLine, RenderResult
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
-from yaralyzer import bytes_match
 
 #from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.decoding_attempt import DecodingAttempt
-from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
+from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT, encoding_offsets
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.helpers.dict_helper import get_dict_key_by_value
+from yaralyzer.helpers.list_helper import flatten
 from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
-     build_decoding_attempts_table, decoding_table_row)
+     decoding_table_row, new_decoding_attempts_table)
 from yaralyzer.util.logging import log
 
 # A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
@@ -63,51 +64,55 @@ class BytesDecoder:
 
         # In standalone mode we always print the hex/raw bytes
         if self.bytes_match.is_decodable():
-            yield self._generate_decodings_table()
+            yield self._build_decodings_table()
         elif YaralyzerConfig.args.standalone_mode:
-            # TODO: yield self.bytes_match.suppression_notice()
-            yield self._generate_decodings_table(True)
+            # TODO: yield self.bytes_match.suppression_notice() (i guess to show some notice that things are suppressed?)
+            yield self._build_decodings_table(True)
 
         yield NewLine()
         yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
-    def _generate_decodings_table(self, suppress_decodes: bool = False) -> Table:
+    def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
         """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
-        self.table = build_decoding_attempts_table(self.bytes_match)
+        self.table = new_decoding_attempts_table(self.bytes_match)
 
-        if YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes:
-            return self.table
+        # Add the encoding rows to the table if not suppressed
+        if not (YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes):
+            self.decodings = flatten([self._get_decoding_attempts(encoding) for encoding in ENCODINGS_TO_ATTEMPT])
+            # Attempt decodings we don't usually attempt if chardet is insistent enough
+            forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
+            self.decodings += [DecodingAttempt(self.bytes_match, a.encoding) for a in forced_decodes]
 
-        self.decodings = [
-            DecodingAttempt(self.bytes_match, encoding)
-            for encoding in ENCODINGS_TO_ATTEMPT.keys()
-        ]
+            # If we still haven't decoded chardet's top choice, decode it
+            if len(self._forced_displays()) > 0 and not self._was_decoded(self._forced_displays()[0].encoding):
+                chardet_top_encoding = self._forced_displays()[0].encoding
+                log.info(f"Decoding {chardet_top_encoding} because it's chardet top choice...")
+                self.decodings.append(DecodingAttempt(self.bytes_match, chardet_top_encoding))
 
-        # Attempt decodings we don't usually attempt if chardet is insistent enough
-        forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
-        self.decodings += [DecodingAttempt(self.bytes_match, a.encoding) for a in forced_decodes]
+            # Build the table rows from the decoding attempts
+            rows = [self._row_from_decoding_attempt(decoding) for decoding in self.decodings]
+            rows += [assessment_only_row(a, a.confidence * SCORE_SCALER) for a in self._forced_displays()]
+            self._track_decode_stats()
 
-        # If we still haven't decoded chardets top choice, decode it
-        if len(self._forced_displays()) > 0 and not self._was_decoded(self._forced_displays()[0].encoding):
-            chardet_top_encoding = self._forced_displays()[0].encoding
-            log.info(f"Decoding {chardet_top_encoding} because it's chardet top choice...")
-            self.decodings.append(DecodingAttempt(self.bytes_match, chardet_top_encoding))
-
-        rows = [self._row_from_decoding_attempt(decoding) for decoding in self.decodings]
-        rows += [assessment_only_row(a, a.confidence * SCORE_SCALER) for a in self._forced_displays()]
-        self._track_decode_stats()
-
-        for row in sorted(rows, key=attrgetter('sort_score'), reverse=True):
-            self.table.add_row(*row[0:4])
+            for row in sorted(rows, key=attrgetter('sort_score', 'encoding_text_plain'), reverse=True):
+                self.table.add_row(*row[0:4])
 
         return self.table
 
+    # TODO: rename this to something that makes more sense, maybe assessments_over_display_threshold()?
     def _forced_displays(self) -> List[EncodingAssessment]:
-        """Returns assessments over the display threshold that are not yet decoded"""
+        """Returns assessments over the display threshold that are not yet decoded."""
         return self._undecoded_assessments(self.encoding_detector.force_display_assessments)
 
+    def _get_decoding_attempts(self, encoding: str) -> List[DecodingAttempt]:
+        """Get a list of DecodingAttempts for a given encoding, including all offsets for wide UTF encodings."""
+        return [
+            DecodingAttempt(self.bytes_match, encoding, start_offset)
+            for start_offset in encoding_offsets(encoding)
+        ]
+
     def _undecoded_assessments(self, assessments: List[EncodingAssessment]) -> List[EncodingAssessment]:
-        """Fiter out the already decoded assessments from a set of assessments"""
+        """Filter out the already decoded assessments from a set of assessments"""
         return [a for a in assessments if not self._was_decoded(a.encoding)]
 
     def _was_decoded(self, encoding: str) -> bool:
@@ -115,7 +120,7 @@ class BytesDecoder:
         return any(row.encoding == encoding for row in self.decodings)
 
     def _decode_attempt_subheading(self) -> Panel:
-        """Generate a rich.Panel for decode attempts"""
+        """Generate a rich.Panel for displaying decode attempts"""
         headline = Text(f"Found ", style='decode.subheading') + self.bytes_match.__rich__()
         return Panel(headline, style='decode.subheading', expand=False)
 
@@ -132,26 +137,33 @@ class BytesDecoder:
                 self.was_match_force_decoded[decoding.encoding] += 1
 
     def _row_from_decoding_attempt(self, decoding: DecodingAttempt) -> DecodingTableRow:
-        """
-        Create a DecodingAttemptTable row from a DecodingAttempt.
-        If the decoding result is a duplicate of a previous decoding, replace the decoded text
-        with "same output as X" where X is the previous encoding that gave the same result.
-        """
+        """Create a DecodingAttemptTable row from a DecodingAttempt."""
         assessment = self.encoding_detector.get_encoding_assessment(decoding.encoding)
+
+        # If the decoding can have a start offset add an appropriate extension to the encoding label
+        if decoding.is_wide_utf_encoding():
+            if assessment.language:
+                log.warning(f"{decoding.encoding} has offset {decoding.start_offset} and language '{assessment.language}'")
+            else:
+                assessment = deepcopy(assessment)
+                assessment.set_encoding_text(decoding.start_offset_label)
+
         plain_decoded_string = decoding.decoded_string.plain
         sort_score = assessment.confidence * SCORE_SCALER
 
+        # If the decoding result is a duplicate of a previous decoding, replace the decoded text
+        # with "same output as X" where X is the previous encoding that gave the same result.
         if plain_decoded_string in self.decoded_strings.values():
             encoding_with_same_output = get_dict_key_by_value(self.decoded_strings, plain_decoded_string)
             display_text = Text('same output as ', style='color(66) dim italic')
             display_text.append(encoding_with_same_output, style=ENCODING).append('...', style='white')
         else:
-            self.decoded_strings[decoding.encoding] = plain_decoded_string
+            self.decoded_strings[decoding.encoding_label] = plain_decoded_string
             display_text = decoding.decoded_string
 
         # Set failures negative, shave off a little for forced decodes
         if decoding.failed_to_decode:
-            sort_score = sort_score * -1 - 100
+            sort_score = (sort_score * -1) - 100
         elif decoding.was_force_decoded:
             sort_score -= 10
 

@@ -43,3 +43,8 @@ See [pytest's official docs](https://docs.pytest.org/en/7.1.x/how-to/usage.html)
 * For some reason when displaying matches the output to a file iterates over all matches in a different way than just running in the console. Presumably this is related to the `rich` rendering engine in some way. For now the console output is the "more correct" one so it's generally OK. See [`issue_with_output_to_console_correct`](doc/rendered_images/issue_with_output_to_console_correct.png) vs. [`issue_with_output_to_txt_file_incorrect.png`](doc/rendered_images/issue_with_output_to_txt_file_incorrect.png)
 * highlight decodes done at `chardet`s behest
 * deal with repetitive matches
+
+#### Hashtags
+```
+#asciiArt #ascii #cybersecurity #detectionengineering #DFIR #FOSS #infosec #KaliLinux #malware #malwareDetection #malwareAnalysis #openSource #pdfalyzer #reverseEngineering #reversing #threathunting #yaralyze #yaralyzer #YARA #YARArule #YARArules
+```

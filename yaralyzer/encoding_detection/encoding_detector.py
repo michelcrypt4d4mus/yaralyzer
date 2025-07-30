@@ -75,7 +75,7 @@ class EncodingDetector:
             if result.confidence < YaralyzerConfig.args.min_chardet_table_confidence:
                 continue
 
-            self.table.add_row(f"{i + 1}", result.encoding_text, result.confidence_text)
+            self.table.add_row(f"{i + 1}", result.encoding_label, result.confidence_text)
 
             # self.unique_assessments retains one result per encoding possibility (the highest confidence one)
             # Some encodings are not language specific and for those we don't care about the language

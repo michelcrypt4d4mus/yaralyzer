@@ -94,7 +94,7 @@ class BytesDecoder:
             rows += [assessment_only_row(a, a.confidence * SCORE_SCALER) for a in self._forced_displays()]
             self._track_decode_stats()
 
-            for row in sorted(rows, key=attrgetter('sort_score', 'encoding_text_plain'), reverse=True):
+            for row in sorted(rows, key=attrgetter('sort_score', 'encoding_label_plain'), reverse=True):
                 self.table.add_row(*row[0:4])
 
         return self.table
@@ -139,7 +139,7 @@ class BytesDecoder:
                 log.warning(f"{decoding.encoding} has offset {decoding.start_offset} and language '{assessment.language}'")
             else:
                 assessment = deepcopy(assessment)
-                assessment.set_encoding_text(decoding.start_offset_label)
+                assessment.set_encoding_label(decoding.start_offset_label)
 
         plain_decoded_string = decoding.decoded_string.plain
         sort_score = assessment.confidence * SCORE_SCALER

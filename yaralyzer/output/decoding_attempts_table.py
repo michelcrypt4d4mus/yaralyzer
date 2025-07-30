@@ -29,7 +29,7 @@ from yaralyzer.helpers.rich_text_helper import CENTER, FOLD, MIDDLE, RIGHT, na_t
 DecodingTableRow = namedtuple(
     'DecodingTableRow',
     [
-        'encoding_text',
+        'encoding_label',
         'confidence_text',
         'errors_while_decoded',
         'decoded_string',
@@ -37,7 +37,7 @@ DecodingTableRow = namedtuple(
         'confidence',
         'encoding',
         'sort_score',
-        'encoding_text_plain',  # For sorting purposes, if confidences match
+        'encoding_label_plain',  # For sorting purposes, if confidences match
     ]
 )
 
@@ -72,14 +72,14 @@ def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
 def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> DecodingTableRow:
     """Build a table row for a decoding attempt."""
     return DecodingTableRow(
-        assessment.encoding_text,
+        assessment.encoding_label,
         assessment.confidence_text,
         is_forced,
         txt,
         assessment.confidence,
         assessment.encoding,
         sort_score=score,
-        encoding_text_plain=assessment.encoding_text.plain
+        encoding_label_plain=assessment.encoding_label.plain
     )
 
 

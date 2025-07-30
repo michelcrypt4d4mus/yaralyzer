@@ -24,7 +24,7 @@ class EncodingAssessment:
 
         # Add detected language info and label if any language was detected
         self.language = self._get_dict_empty_value_as_None(LANGUAGE)
-        self.set_encoding_text(self.language.title() if self.language else None)
+        self.set_encoding_label(self.language.title() if self.language else None)
 
     @classmethod
     def dummy_encoding_assessment(cls, encoding) -> 'EncodingAssessment':
@@ -33,16 +33,16 @@ class EncodingAssessment:
         assessment.confidence_text = Text('none', 'no_attempt')
         return assessment
 
-    def set_encoding_text(self, alt_text: Optional[str]) -> None:
+    def set_encoding_label(self, alt_text: Optional[str]) -> None:
         """Alt text is displayed below the encoding in slightly dimmer font."""
-        self.encoding_text = Text(self.encoding, 'encoding.header')
+        self.encoding_label = Text(self.encoding, 'encoding.header')
 
         if alt_text is not None:
             dim = 'dim' if (self.confidence or 0.0) < DIM_COUNTRY_THRESHOLD else ''
-            self.encoding_text.append(f" ({alt_text})", style=f"color(23) {dim}")
+            self.encoding_label.append(f" ({alt_text})", style=f"color(23) {dim}")
 
     def __rich__(self) -> Text:
-        return Text('<Chardet(', 'white') + self.encoding_text + Text(':') + self.confidence_text + Text('>')
+        return Text('<Chardet(', 'white') + self.encoding_label + Text(':') + self.confidence_text + Text('>')
 
     def __str__(self) -> str:
         return self.__rich__().plain

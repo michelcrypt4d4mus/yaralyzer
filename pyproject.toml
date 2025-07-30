@@ -84,5 +84,5 @@ Changelog = "https://github.com/michelcrypt4d4mus/yaralyzer/blob/master/CHANGELO
 
 
 [build-system]
-requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]

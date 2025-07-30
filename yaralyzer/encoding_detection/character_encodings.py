@@ -136,16 +136,17 @@ UNPRINTABLE_ISO_8859_7.update({
 })
 
 
-# The encodings we will attempt to actually use
-# Values are the unprintable values in that encoding in a dict (keys in dict are ints)
+# Keys are names of encodings we will attempt to decode with, values are dicts mapping the unprintable bytes
+# in that encoding to appropriate string represenations of those unprintable bytes.
+# Order matters here, as we will attempt the decoding in the order of the keys.
 ENCODINGS_TO_ATTEMPT = {
     ASCII:        UNPRINTABLE_ASCII,
-    UTF_8:          UNPRINTABLE_UTF_8,
-    UTF_16:         None,
-    UTF_32:         None,  # UTF-16 and 32 are handled differently
-    #'utf-7':
+    UTF_8:        UNPRINTABLE_UTF_8,
+    UTF_16:       None,
+    UTF_32:       None,  # UTF-16 and 32 are handled differently
     ISO_8859_1:   UNPRINTABLE_ISO_8859_1,
-    WINDOWS_1252: UNPRINTABLE_WIN_1252
+    WINDOWS_1252: UNPRINTABLE_WIN_1252,
+    #'utf-7':
 }
 
 

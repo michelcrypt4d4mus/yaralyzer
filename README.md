@@ -104,9 +104,8 @@ The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vect
 ![](https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/decoding_and_chardet_table_2.png)
 
 
-# TODO
-* For some reason when displaying matches the output to a file iterates over all matches in a different way than just running in the console. Presumably this is related to the `rich` rendering engine in some way. For now the console output is the "more correct" one so it's generally OK. See [`issue_with_output_to_console_correct`](doc/rendered_images/issue_with_output_to_console_correct.png) vs. [`issue_with_output_to_txt_file_incorrect.png`](doc/rendered_images/issue_with_output_to_txt_file_incorrect.png)
-* highlight decodes done at `chardet`s behest
-* deal with repetitive matches
+# Contributing
+Contributions are more than welcome; see [CONTRIBUTING.md](CONTRIBUTING.md) for details on environment setup, running the test suite, etc. There's also a TODO list over there of work that needs to be done.
+
 
 [^1]: As I was until recently.

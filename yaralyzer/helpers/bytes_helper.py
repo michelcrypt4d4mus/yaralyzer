@@ -127,7 +127,10 @@ def print_bytes(bytes_array: bytes, style=None) -> None:
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
-    """Truncate bytes to the a modulus of the char width of the given encoding."""
+    """
+    Truncate bytes to the a modulus of the char width of the given encoding.
+    For utf-16 this means truncate to a multiple of 2, for utf-32 to a multiple of 4.
+    """
     char_width = encoding_width(encoding)
     num_bytes = len(_bytes)
     num_extra_bytes = num_bytes % char_width

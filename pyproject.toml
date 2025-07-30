@@ -50,10 +50,10 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-chardet = "^5.0.0"
+chardet = "^5.2.0"
 #plyara = "^2.1.1"
 python-dotenv = "^0.21.0"
-rich = "^12.5.1"
+rich = "^14.1.0"
 rich-argparse-plus = "^0.3.1"
 yara-python = "^4.5.4"
 

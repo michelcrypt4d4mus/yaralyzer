@@ -36,7 +36,7 @@ class DecodingAttempt:
             log.info(f"{self.encoding} failed on 1st pass decoding {self.bytes_match} capture; custom decoding...")
         except LookupError as e:
             log.warning(f"Unknown encoding: {self.encoding}. {e}")
-            return self._failed_to_decode(e)
+            return self._failed_to_decode_msg_txt(e)
 
         self.was_force_decoded = True
 
@@ -124,13 +124,9 @@ class DecodingAttempt:
             bytes_offset += 1
 
         if decoded_str is None:
-            return self._failed_to_decode(last_exception)
+            return self._failed_to_decode_msg_txt(last_exception)
 
         return self._to_rich_text(decoded_str, bytes_offset)
-
-    def _failed_to_decode(self, exception: Optional[Exception]) -> Text:
-        self.failed_to_decode = True
-        return prefix_with_plain_text_obj(f"(decode failed: {exception})", style='red dim italic')
 
     def _to_rich_text(self, _string: str, bytes_offset: int=0) -> Text:
         """Convert a decoded string to highlighted Text representation"""
@@ -165,3 +161,8 @@ class DecodingAttempt:
             current_byte_idx += char_width
 
         return txt
+
+    def _failed_to_decode_msg_txt(self, exception: Optional[Exception]) -> Text:
+        """Set failed_to_decode flag and return a Text object with the error message."""
+        self.failed_to_decode = True
+        return prefix_with_plain_text_obj(f"(decode failed: {exception})", style='red dim italic')

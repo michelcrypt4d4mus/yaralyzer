@@ -149,10 +149,14 @@ ENCODINGS_TO_ATTEMPT = {
     #'utf-7':
 }
 
+SINGLE_BYTE_ENCODINGS = [
+    ASCII,
+    ISO_8859_1,
+    WINDOWS_1252
+]
 
-SINGLE_BYTE_ENCODINGS = [ASCII, ISO_8859_1, WINDOWS_1252]
 
-# Unused cruft (mostly Asian language encodings)
+# TODO: this is unused cruft (mostly Asian language encodings)
 ENCODINGS = [
     'big5',
     'big5hkscs',

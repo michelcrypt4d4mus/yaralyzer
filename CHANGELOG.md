@@ -1,5 +1,8 @@
 # NEXT RELEASE
 
+### 1.0.4
+* Lock `chardet` library to 5.x
+
 ### 1.0.3
 * Upgrade `rich` to 14.1.0
 

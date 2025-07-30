@@ -9,6 +9,23 @@ homepage = "https://github.com/michelcrypt4d4mus/yaralyzer"
 repository = "https://github.com/michelcrypt4d4mus/yaralyzer"
 documentation = "https://github.com/michelcrypt4d4mus/yaralyzer"
 
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python",
+    "Topic :: Artistic Software",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+include = [
+    "CHANGELOG.md",
+    "LICENSE",
+    ".yaralyzer.example"
+]
+
 keywords = [
     "ascii art",
     "binary",
@@ -35,23 +52,6 @@ keywords = [
     "threat research",
     "visualization",
     "yara",
-]
-
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Information Technology",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-    "Programming Language :: Python",
-    "Topic :: Artistic Software",
-    "Topic :: Security",
-    "Topic :: Scientific/Engineering :: Visualization",
-]
-
-include = [
-    "CHANGELOG.md",
-    "LICENSE",
-    ".yaralyzer.example"
 ]
 
 

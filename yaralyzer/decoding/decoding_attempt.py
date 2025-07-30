@@ -25,8 +25,9 @@ class DecodingAttempt:
 
     def _decode_bytes(self) -> Text:
         """
-        Sets self.decoded_string. Tries builtin decode, hands off to other methods for harsher treatement
-        (Byte shifting for UTF-16/32 and custom decode for the rest) if that fails
+        Tries builtin decode, hands off to other methods for harsher treatement
+        (byte shifting for UTF-16/32 and custom decode for the rest) if that fails.
+        Has side effect of setting 'self.decoded_string' value.
         """
         try:
             decoded_string = self._to_rich_text(escape(self.bytes.decode(self.encoding)))

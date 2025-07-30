@@ -53,6 +53,7 @@ YARALYZER_THEME_DICT = {
     'decode.section_header': 'color(100) reverse',
     'decode.subheading': PEACH,
     'decode.subheading_2': 'color(215) dim italic',
+    'decode.table_header': 'color(101) bold',
     'headline': 'bold white underline',
     # bytes
     'ascii': 'color(58)',

@@ -47,7 +47,7 @@ RAW_BYTES = Text('Raw', style=f"bytes")
 
 def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
     """Build a new rich Table with two rows, the raw and hex views of the bytes_match data."""
-    table = Table(show_lines=True, border_style='bytes', header_style='color(101) bold')
+    table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
 
     def add_col(title, **kwargs):
         kwargs['justify'] = kwargs.get('justify', CENTER)
@@ -89,8 +89,8 @@ def _hex_preview_subtable(bytes_match: BytesMatch) -> Table:
     hex_table = Table(
         'hex',
         'ascii',
-        border_style='color(235) dim',
-        header_style='color(101) bold',
+        border_style='grey.darkest',
+        header_style='decode.table_header',
         box=box.MINIMAL,
         show_lines=True,
         show_header=True,

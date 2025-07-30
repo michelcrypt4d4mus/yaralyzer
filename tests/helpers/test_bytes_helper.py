@@ -29,3 +29,4 @@ def test_truncate_for_encoding():
     assert(truncate_for_encoding(TRUNCATE_TEST_BYTES, UTF_32) == b'1234')
     assert(truncate_for_encoding(b'abcdefghijklmnopqrstuvwx', UTF_32) == b'abcdefghijklmnopqrstuvwx')
     assert(truncate_for_encoding(b'123', UTF_32) == b'123')  # Too short
+    assert(truncate_for_encoding(TRUNCATE_TEST_BYTES, ISO_8859_1) == TRUNCATE_TEST_BYTES)

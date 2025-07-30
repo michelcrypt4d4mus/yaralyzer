@@ -1,8 +1,10 @@
+# CONTRIBUTING
 Contributions are welcome, just make sure that before you open a pull request:
 
-1. [The test suite passes](#Testing)
-1. You add tests for your changes to the `pytest` test suite
-1. You add a description of your changes to [the changelog](CHANGELOG.md)
+1. The `pytest` suite passes (see [here](#Testing) for more info on running the tests).
+1. You add tests for your changes to the `pytest` test suite.
+1. You add a description of your changes to [the changelog](CHANGELOG.md).
+
 
 # Development Environment Setup
 1. `git clone https://github.com/michelcrypt4d4mus/yaralyzer.git`

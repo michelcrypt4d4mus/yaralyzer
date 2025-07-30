@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.2
 * Upgrade `yara-python` to 4.5.4
 
 ### 1.0.1

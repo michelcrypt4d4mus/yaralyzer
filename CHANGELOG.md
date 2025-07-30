@@ -1,4 +1,6 @@
 # NEXT RELEASE
+* Show helpful message if logs are being sent to files in `YaralyzerConfig.LOG_DIR` instead of being written to stderr/stdout
+* Warn if `--debug` and `--log-level` args both provided
 
 # 1.0.0
 * Add `--export-json` option

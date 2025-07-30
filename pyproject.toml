@@ -58,11 +58,11 @@ keywords = [
 [tool.poetry.dependencies]
 python = "^3.9"
 chardet = ">=5.0.0,<6.0.0"
-#plyara = "^2.1.1"
 python-dotenv = "^0.21.0"
 rich = "^14.1.0"
 rich-argparse-plus = "^0.3.1"
 yara-python = "^4.5.4"
+#plyara = "^2.1.1"  # TODO: use plyara for YARA rule parsing and validation
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"

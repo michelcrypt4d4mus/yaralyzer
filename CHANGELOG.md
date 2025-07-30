@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Upgrade `yara-python` to 4.5.4
 
 ### 1.0.1
 * Fix iteration of byte offsets during attempted decodes for UTF-16 and UTF-32 (was starting at second byte instead of first)

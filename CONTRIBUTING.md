@@ -46,5 +46,5 @@ See [pytest's official docs](https://docs.pytest.org/en/7.1.x/how-to/usage.html)
 
 #### Hashtags
 ```
-#asciiArt #ascii #cybersecurity #detectionengineering #DFIR #FOSS #infosec #KaliLinux #malware #malwareDetection #malwareAnalysis #openSource #pdfalyzer #reverseEngineering #reversing #threathunting #yaralyze #yaralyzer #YARA #YARArule #YARArules
+#ascii #asciiArt #blueteam #cybersecurity #detectionengineering #DFIR #forensics #FOSS #hacking #infosec #KaliLinux #malware #malwareDetection #malwareAnalysis #openSource #pdfalyzer #redteam #reverseEngineering #reversing #threathunting #yaralyze #yaralyzer #YARA #YARArule #YARArules
 ```

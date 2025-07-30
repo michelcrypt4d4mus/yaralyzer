@@ -1,8 +1,7 @@
 import json
 import time
-from argparse import Namespace
-from pathlib import Path
 from os import path
+from typing import Optional
 
 from rich.terminal_theme import TerminalTheme
 
@@ -51,7 +50,7 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, output_basepath: str | None) -> str:
+def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
     """Export YARA scan results to JSON. Returns the path to the output file that was written."""
     output_path = f"{output_basepath or 'yara_matches'}.json"
 

@@ -46,10 +46,7 @@ RAW_BYTES = Text('Raw', style=f"bytes")
 
 
 def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
-    """
-    Build a new rich Table with two rows, the raw and hex views of the bytes_match data.
-    (Additional decoding attempt rows will be added later.)
-    """
+    """Build a new rich Table with two rows, the raw and hex views of the bytes_match data."""
     table = Table(show_lines=True, border_style='bytes', header_style='color(101) bold')
 
     def add_col(title, **kwargs):

@@ -1,8 +1,3 @@
-"""
-Class to handle attempting to decode a chunk of bytes into strings with various possible encodings.
-Leverages the chardet library to both guide what encodings are attempted as well as to rank decodings
-in the results.
-"""
 from collections import defaultdict
 from copy import deepcopy
 from operator import attrgetter
@@ -34,6 +29,11 @@ SCORE_SCALER = 100.0
 
 
 class BytesDecoder:
+    """Class to handle attempting to decode a chunk of bytes into strings with various possible encodings.
+    Leverages the chardet library to both guide what encodings are attempted as well as to rank decodings
+    in the results.
+    """
+
     def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
         self.bytes_match = bytes_match
         self.bytes = bytes_match.surrounding_bytes
@@ -51,7 +51,7 @@ class BytesDecoder:
         self.encoding_detector = EncodingDetector(self.bytes)
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
-        """Rich object generator (see Rich console docs)"""
+        """Rich object generator (see Rich console docs)."""
         yield NewLine(2)
         yield Align(self._decode_attempt_subheading(), CENTER)
 
@@ -70,7 +70,7 @@ class BytesDecoder:
         yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
     def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
-        """First rows are the raw / hex views of the bytes, next rows are the attempted decodings"""
+        """First rows are the raw / hex views of the bytes, next rows are the attempted decodings."""
         self.table = new_decoding_attempts_table(self.bytes_match)
 
         # Add the encoding rows to the table if not suppressed
@@ -115,7 +115,7 @@ class BytesDecoder:
         return Panel(headline, style='decode.subheading', expand=False)
 
     def _track_decode_stats(self) -> None:
-        """Track stats about successful vs. forced vs. failed decode attempts"""
+        """Track stats about successful vs. forced vs. failed decode attempts."""
         for decoding in self.decodings:
             if decoding.failed_to_decode:
                 self.was_match_undecodable[decoding.encoding] += 1
@@ -162,7 +162,7 @@ class BytesDecoder:
 
 
 def _build_encodings_metric_dict():
-    """One key for each key in ENCODINGS_TO_ATTEMPT, values are all 0"""
+    """One key for each key in ENCODINGS_TO_ATTEMPT, values are all 0."""
     metrics_dict = defaultdict(lambda: 0)
 
     for encoding in ENCODINGS_TO_ATTEMPT.keys():

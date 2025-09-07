@@ -18,16 +18,18 @@ MEGABYTE = 1024 * KILOBYTE
 
 def config_var_name(env_var: str) -> str:
     """
-    Get the name of env_var and strip off 'YARALYZER_', e.g.:
-        SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
-        config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
+    Get the name of env_var and strip off 'YARALYZER_' prefix.
+
+    Example:
+        $ SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
+        $ config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
     """
     env_var = env_var.removeprefix("YARALYZER_")
     return f'{env_var=}'.partition('=')[0]
 
 
 def is_env_var_set_and_not_false(var_name):
-    """Returns True if var_name is not empty and set to anything other than 'false' (capitalization agnostic)"""
+    """Returns True if var_name is not empty and set to anything other than 'false' (capitalization agnostic)."""
     if var_name in environ:
         var_value = environ[var_name]
         return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'

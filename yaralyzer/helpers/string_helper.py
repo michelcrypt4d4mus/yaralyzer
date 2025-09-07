@@ -22,8 +22,7 @@ def hex_to_string(_string: str) -> str:
 
 
 def str_join(_list: List[Any], separator: str, func: Callable = str) -> str:
-    """
-    Return a comma separated list of strings. If func is provided the output of calling
+    """Return a comma separated list of strings. If func is provided the output of calling
     it on each element of the list will be used instead of str()
     """
     func = func or str

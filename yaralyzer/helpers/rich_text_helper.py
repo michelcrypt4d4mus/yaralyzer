@@ -1,5 +1,6 @@
 """
 Methods to handle turning various objects into Rich text/table/etc representations
+
 Rich colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
@@ -41,12 +42,12 @@ def na_txt(style: Union[str, Style] = 'white'):
 
 
 def prefix_with_style(_str: str, style: str, root_style=None) -> Text:
-    """Sometimes you need a Text() object to start plain lest the underline or whatever last forever"""
+    """Sometimes you need a Text() object to start plain lest the underline or whatever last forever."""
     return Text('', style=root_style or 'white') + Text(_str, style)
 
 
 def meter_style(meter_pct):
-    """For coloring numbers between 0 and 100 (AKA pcts). Closer to 100 means greener, closer to 0.0 means bluer"""
+    """For coloring numbers between 0 and 100 (AKA pcts). Closer to 100 means greener, closer to 0.0 means bluer."""
     if meter_pct > 100 or meter_pct < 0:
         log.warning(f"Invalid meter_pct: {meter_pct}")
 
@@ -81,7 +82,7 @@ def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):
 
 
 def reverse_color(style: Style) -> Style:
-    """Reverses the color for a given style"""
+    """Reverses the color for a given style."""
     return Style(color=style.bgcolor, bgcolor=style.color, underline=style.underline, bold=style.bold)
 
 
@@ -104,7 +105,7 @@ def show_color_theme(styles: dict) -> None:
 
 
 def size_text(num_bytes: int) -> Text:
-    """Convert a number of bytes into (e.g.) 54,213 bytes (52 KB)"""
+    """Convert a number of bytes into (e.g.) 54,213 bytes (52 KB)."""
     kb_txt = prefix_with_style("{:,.1f}".format(num_bytes / 1024), style='bright_cyan', root_style='white')
     kb_txt.append(' kb ')
     bytes_txt = Text('(', 'white') + size_in_bytes_text(num_bytes) + Text(')')
@@ -116,4 +117,5 @@ def size_in_bytes_text(num_bytes: int) -> Text:
 
 
 def newline_join(texts: List[Text]) -> Text:
+    """Join a list of Text objects with newlines between them."""
     return Text("\n").join(texts)

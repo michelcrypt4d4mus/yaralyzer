@@ -1,5 +1,6 @@
 """
-Class to  measure what we enounter as we iterate over every single match of a relatively simple byte level regex
+Class to  measure what we enounter as we iterate over every single match of a relatively simple byte level regex.
+
 (e.g. "bytes between quotes") against a relatively large pool of close to random encrypted binary data
 
 Things like how much many of our matched bytes were we able to decode easily vs. by force vs. not at all,

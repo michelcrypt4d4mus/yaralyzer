@@ -1,7 +1,3 @@
-"""
-Manager class to ease dealing with the chardet encoding detection library 'chardet'.
-Each instance of this class manages a chardet.detect_all() scan on a single set of bytes.
-"""
 from operator import attrgetter
 from typing import List
 
@@ -18,6 +14,10 @@ CONFIDENCE_SCORE_RANGE = range(0, 101)
 
 
 class EncodingDetector:
+    """Manager class to ease dealing with the chardet encoding detection library 'chardet'.
+    Each instance of this class manages a chardet.detect_all() scan on a single set of bytes.
+    """
+
     # 10 as in 10%, 0.02, etc.  Encodings w/confidences below this will not be displayed in the decoded table
     force_display_threshold = 20.0
 
@@ -53,7 +53,7 @@ class EncodingDetector:
         self.force_display_assessments = self.assessments_above_confidence(type(self).force_display_threshold)
 
     def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
-        """If chardet produced one, return it, otherwise return a dummy node with confidence of 0"""
+        """If chardet produced one, return it, otherwise return a dummy node with confidence of 0."""
         assessment = next((r for r in self.unique_assessments if r.encoding == encoding), None)
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 
@@ -67,7 +67,7 @@ class EncodingDetector:
         return Padding(self.table, (0, 0, 0, 0))
 
     def _uniquify_results_and_build_table(self) -> None:
-        """Keep the highest result per encoding, ignoring the language chardet has indicated"""
+        """Keep the highest result per encoding, ignoring the language chardet has indicated."""
         already_seen_encodings = {}
 
         for i, result in enumerate(self.assessments):
@@ -95,7 +95,7 @@ class EncodingDetector:
 
 
 def _empty_chardet_results_table():
-    """Returns a fresh table"""
+    """Returns a fresh table."""
     table = Table(
         'Rank', 'Encoding', 'Confidence',
         title='chardet.detect results',

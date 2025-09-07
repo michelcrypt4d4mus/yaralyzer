@@ -1,5 +1,6 @@
 """
-Constants related to character encodings
+Constants related to character encodings.
+
 * https://www.mit.edu/people/kenta/two/iso8859.html
 * https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec
 """

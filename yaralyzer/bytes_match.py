@@ -13,8 +13,10 @@ from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 
 class BytesMatch:
     """
-    Simple class to keep track of regex matches against binary data.  Basically an re.match object with
-    some (not many) extra bells and whistles, most notably the surrounding_bytes property.
+    Simple class to keep track of regex matches against binary data.
+
+    Basically an re.match object with some (not many) extra bells and whistles, most notably
+    the surrounding_bytes property.
 
     pre_capture_len and post_capture_len refer to the regex sections before and after the capture group,
     e.g. a regex like '123(.*)x:' would have pre_capture_len of 3 and post_capture_len of 2.
@@ -191,8 +193,10 @@ class BytesMatch:
 
     def is_decodable(self) -> bool:
         """
-        Determine if the matched bytes should be decoded based on whether SUPPRESS_DECODES_TABLE is set
-        and match length between MIN/MAX_DECODE_LENGTH.
+        Determine if the matched bytes should be decoded.
+
+        Whether the bytes are decodable depends on whether SUPPRESS_DECODES_TABLE is set
+        and whether the match length is between MIN/MAX_DECODE_LENGTH.
 
         Returns:
             bool: True if decodable, False otherwise.
@@ -278,4 +282,5 @@ class BytesMatch:
         return headline + self.location()
 
     def __str__(self):
+        """Plain text (no rich colors) representation of the match for display."""
         return self.__rich__().plain

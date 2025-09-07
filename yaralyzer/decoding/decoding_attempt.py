@@ -1,13 +1,10 @@
-"""
-Class to manage attempting to decode a chunk of bytes into strings with a given encoding.
-"""
 from sys import byteorder
 from typing import Optional
 
 from rich.markup import escape
 from rich.text import Text
 
-from yaralyzer.bytes_match import BytesMatch  # Used to cause circular import issues
+from yaralyzer.bytes_match import BytesMatch  # Formerly caused circular import issues
 from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEMPT, SINGLE_BYTE_ENCODINGS,
      UTF_8, encoding_width, is_wide_utf)
 from yaralyzer.helpers.bytes_helper import clean_byte_string, truncate_for_encoding
@@ -17,6 +14,8 @@ from yaralyzer.util.logging import log
 
 
 class DecodingAttempt:
+    """Class to manage attempting to decode a chunk of bytes into strings with a given encoding."""
+
     def __init__(self, bytes_match: 'BytesMatch', encoding: str) -> None:
         # Args
         self.bytes = bytes_match.surrounding_bytes
@@ -31,7 +30,7 @@ class DecodingAttempt:
         self.decoded_string = self._decode_bytes()
 
     def is_wide_utf_encoding(self) -> bool:
-        """Returns True if the encoding is UTF-16 or UTF-32"""
+        """Returns True if the encoding is UTF-16 or UTF-32."""
         return is_wide_utf(self.encoding)
 
     def _decode_bytes(self) -> Text:
@@ -58,7 +57,7 @@ class DecodingAttempt:
             return self._custom_decode()
 
     def _custom_decode(self) -> Text:
-        """Returns a Text obj representing an attempt to force a UTF-8 encoding upon an array of bytes"""
+        """Returns a Text obj representing an attempt to force a UTF-8 encoding upon an array of bytes."""
         log.info(f"Custom decoding {self.bytes_match} with {self.encoding}...")
         unprintable_char_map = ENCODINGS_TO_ATTEMPT.get(self.encoding)
         output = Text('', style='bytes.decoded')
@@ -146,7 +145,7 @@ class DecodingAttempt:
             return self._failed_to_decode_msg_txt(last_exception)
 
     def _to_rich_text(self, _string: str, bytes_offset: int = 0) -> Text:
-        """Convert a decoded string to highlighted Text representation"""
+        """Convert a decoded string to highlighted Text representation."""
         # Adjust where we start the highlighting given the multibyte nature of the encodings
         log.debug(f"Stepping through {self.encoding} encoded string...")
         txt = Text('', style=self.bytes_match.style_at_position(0))

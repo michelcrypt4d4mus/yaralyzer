@@ -222,6 +222,7 @@ def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
 
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):
     r"""Find the position of the highlighted bytes string within the surrounding bytes string.
+
     Both arguments are string representations of binary data. This is needed because the string
     representation of bytes can be longer than the actual bytes (e.g., '\\xcc' is 4 chars for 1 byte).
 

@@ -1,3 +1,4 @@
+"""Main Yaralyzer class and alternate constructors."""
 from os import path
 from typing import Iterator, List, Optional, Tuple, Union
 
@@ -26,6 +27,7 @@ YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't
 class Yaralyzer:
     """
     Central class that handles setting up / compiling rules and reading binary data from files as needed.
+
     Alternate constructors are provided depending on whether:
 
     * YARA rules are already compiled
@@ -189,7 +191,7 @@ class Yaralyzer:
         return yara.CALLBACK_CONTINUE
 
     def _print_non_matches(self) -> None:
-        """Print info about the YARA rules that didn't match the bytes"""
+        """Print info about the YARA rules that didn't match the bytes."""
         if len(self.non_matches) == 0:
             return
 
@@ -206,21 +208,21 @@ class Yaralyzer:
         console.print(Padding(Text(', ', 'white').join(non_matches_text), (0, 0, 1, 4)))
 
     def _panel_text(self) -> Text:
-        """Inverted colors for the panel at the top of the match section of the output"""
+        """Inverted colors for the panel at the top of the match section of the output."""
         styles = [reverse_color(YARALYZER_THEME.styles[f"yara.{s}"]) for s in ('scanned', 'rules')]
         return self.__text__(*styles)
 
     def _filename_string(self):
-        """The string to use when exporting this yaralyzer to SVG/HTML/etc"""
+        """The string to use when exporting this yaralyzer to SVG/HTML/etc."""
         return str(self).replace('>', '').replace('<', '').replace(' ', '_')
 
     def __text__(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
-        """Text representation of this YARA scan (__text__() was taken)"""
+        """Text representation of this YARA scan (__text__() was taken)."""
         txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
-        """Does the stuff. TODO: not the best place to put the core logic"""
+        """Does the stuff. TODO: not the best place to put the core logic."""
         yield bytes_hashes_table(self.bytes, self.scannable_label)
 
         for _bytes_match, bytes_decoder in self.match_iterator():
@@ -228,4 +230,5 @@ class Yaralyzer:
                 yield attempt
 
     def __str__(self) -> str:
+        """Plain text (no rich colors) representation of the scan for display."""
         return self.__text__().plain

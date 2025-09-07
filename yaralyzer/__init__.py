@@ -24,7 +24,11 @@ PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', sty
 
 
 def yaralyze():
-    """Main entry point for yaralyzer when invoked as a script. Args are parsed from the command line."""
+    """
+    Entry point for yaralyzer when invoked as a script.
+
+    Args are parsed from the command line and environment variables. See yaralyzer --help for details.
+    """
     args = parse_arguments()
     output_basepath = None
 

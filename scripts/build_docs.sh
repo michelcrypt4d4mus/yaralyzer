@@ -6,9 +6,11 @@
 YARALYZER_PKG="yaralyzer"
 
 
+# Manually validate docstrings because lazydocs --validate doesn't correctly read pyproject.toml options
+pydocstyle
+
 # Generate documnentation markdown files using lazydocs
-lazydocs --validate \
-         --output-path docs/api \
+lazydocs --output-path docs/api \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
          "$YARALYZER_PKG" \

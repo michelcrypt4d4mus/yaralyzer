@@ -1,3 +1,6 @@
+"""
+Configuration management for Yaralyzer.
+"""
 import logging
 from argparse import ArgumentParser, Namespace
 from os import environ
@@ -38,6 +41,8 @@ def is_invoked_by_pytest():
 
 
 class YaralyzerConfig:
+    """Handles parsing of command line args and environment variables for Yaralyzer."""
+
     # Passed through to yara.set_config()
     DEFAULT_MAX_MATCH_LENGTH = 100 * KILOBYTE
     DEFAULT_YARA_STACK_SIZE = 2 * 65536

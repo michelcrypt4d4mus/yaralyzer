@@ -1,4 +1,6 @@
 # NEXT RELEASE
+* Use `mkdocs` and `lazydocs` to build automatic API documentation at https://michelcrypt4d4mus.github.io/yaralyzer/
+* Drop python 3.9 support (required by `mkdocs-awesome-nav` package)
 
 ### 1.0.7
 * Add `Changelog` to PyPi URLs, add some more PyPi classifiers

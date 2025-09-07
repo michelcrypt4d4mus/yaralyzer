@@ -15,7 +15,6 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -65,7 +64,7 @@ keywords = [
 #   Dependencies    #
 #####################
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 chardet = ">=5.0.0,<6.0.0"
 python-dotenv = "^0.21.0"
 rich = "^14.1.0"
@@ -75,6 +74,11 @@ yara-python = "^4.5.4"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
+lazydocs = "^0.4.8"
+mkdocs = "^1.6.1"
+mkdocs-awesome-nav = "^3.1.2"
+mkdocs-include-markdown-plugin = "^7.1.7"
+mkdocs-material = "^9.6.19"
 pytest = "^7.1.3"
 
 

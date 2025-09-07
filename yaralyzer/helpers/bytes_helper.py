@@ -26,14 +26,34 @@ HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
 
 def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:
     """
-    Get all bytes from num_before the start of the sequence up until num_after the end of the sequence
-    num_before and num_after will both default to the env var/CLI options having to do with surrounding
-    bytes. If only num_before is provided then num_after will use it as a default.
+    Get bytes before and after a regex match within a byte sequence.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        match (re.Match): The regex match object.
+        num_before (int, optional): Number of bytes before the match to include. Defaults to config.
+        num_after (int, optional): Number of bytes after the match to include. Defaults to either config or num_before value.
+
+    Returns:
+        bytes: The surrounding bytes including the match.
     """
     return get_bytes_surrounding_range(_bytes, match.start(), match.end(), num_before, num_after)
 
 
 def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num_before=None, num_after=None) -> bytes:
+    """
+    Get bytes surrounding a specified range in a byte sequence.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        start_idx (int): Start index of the range.
+        end_idx (int): End index of the range.
+        num_before (int, optional): Number of bytes before the range. Defaults to config.
+        num_after (int, optional): Number of bytes after the range. Defaults to config.
+
+    Returns:
+        bytes: The surrounding bytes including the range.
+    """
     num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
     num_before = num_before or YaralyzerConfig.args.surrounding_bytes
     start_idx = max(start_idx - num_before, 0)
@@ -42,7 +62,16 @@ def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num
 
 
 def clean_byte_string(bytes_array: bytes) -> str:
-    """Gives you a string representation of bytes w/no cruft e.g. '\x80\nx44' instead of "b'\x80\nx44'"."""
+    """
+    Return a clean string representation of bytes, without Python's b'' or b"" wrappers.
+    e.g. '\x80\nx44' instead of "b'\x80\nx44'".
+
+    Args:
+        bytes_array (bytes): The bytes to convert.
+
+    Returns:
+        str: Clean string representation of the bytes.
+    """
     byte_printer = Console(file=StringIO())
     byte_printer.out(bytes_array, end='')
     bytestr = byte_printer.file.getvalue()
@@ -58,7 +87,16 @@ def clean_byte_string(bytes_array: bytes) -> str:
 
 
 def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """Print raw bytes to a Text object, highlighing the bytes in the bytes_match BytesMatch"""
+    """
+    Return a rich Text object of raw bytes, highlighting the matched bytes.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
+
+    Returns:
+        Text: Rich Text object with highlighted match.
+    """
     surrounding_bytes_str = clean_byte_string(_bytes)
     highlighted_bytes_str = clean_byte_string(bytes_match.bytes)
     highlighted_bytes_str_length = len(highlighted_bytes_str)
@@ -72,6 +110,16 @@ def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
+    """
+    Return a hexadecimal view of raw bytes, highlighting the matched bytes.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
+
+    Returns:
+        Text: Rich Text object with highlighted match in hex view.
+    """
     hex_str = hex_text(_bytes)
     highlight_start_idx = bytes_match.highlight_start_idx * 3
     highlight_end_idx = bytes_match.highlight_end_idx * 3
@@ -81,6 +129,16 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
+    """
+    Return an ASCII view of raw bytes, highlighting the matched bytes.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
+
+    Returns:
+        Text: Rich Text object with highlighted match in ASCII view.
+    """
     txt = Text('', style=BYTES)
 
     for i, b in enumerate(_bytes):
@@ -113,23 +171,54 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_text(_bytes: bytes) -> Text:
+    """
+    Return a rich Text object of the hex string for the given bytes.
+
+    Args:
+        _bytes (bytes): The bytes to convert.
+
+    Returns:
+        Text: Rich Text object of the hex string.
+    """
     return Text(hex_string(_bytes), style=GREY)
 
 
 def hex_string(_bytes: bytes) -> str:
+    """
+    Return a hex string representation of the given bytes.
+
+    Args:
+        _bytes (bytes): The bytes to convert.
+
+    Returns:
+        str: Hex string representation of the bytes.
+    """
     return ' '.join([hex(b).removeprefix('0x').rjust(2, '0') for i, b in enumerate(_bytes)])
 
 
 def print_bytes(bytes_array: bytes, style=None) -> None:
-    """Convert bytes to a string representation and print to console"""
+    """
+    Print a string representation of bytes to the console.
+
+    Args:
+        bytes_array (bytes): The bytes to print.
+        style (str, optional): Style to use for printing. Defaults to 'bytes'.
+    """
     for line in bytes_array.split(NEWLINE_BYTE):
         console.print(escape(clean_byte_string(line)), style=style or 'bytes')
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
     """
-    Truncate bytes to the a modulus of the char width of the given encoding.
-    For utf-16 this means truncate to a multiple of 2, for utf-32 to a multiple of 4.
+    Truncate bytes to a multiple of the character width for the given encoding.
+    For example, for utf-16 this means truncating to a multiple of 2, for utf-32 to a multiple of 4.
+
+    Args:
+        _bytes (bytes): The bytes to truncate.
+        encoding (str): The encoding to consider.
+
+    Returns:
+        bytes: Truncated bytes.
     """
     char_width = encoding_width(encoding)
     num_bytes = len(_bytes)
@@ -143,10 +232,17 @@ def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
 
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):
     """
-    Find the position of bytes_str in surrounding_byte_str. Both args are raw text dumps of binary data.
-    Because strings are longer than bytes (stuff like '\xcc' are 4 chars when printed are one byte and
-    the ANSI unprintables include stuff like 'NegativeAcknowledgement' which is over 20 chars) they represent
-    so we have to re-find the location to highlight the bytes correctly.
+    Find the position of the highlighted bytes string within the surrounding bytes string.
+    Both arguments are string representations of binary data. This is needed because the string
+    representation of bytes can be longer than the actual bytes (e.g., '\\xcc' is 4 chars for 1 byte).
+
+    Args:
+        surrounding_bytes_str (str): String representation of the full byte sequence.
+        highlighted_bytes_str (str): String representation of the matched bytes.
+        highlighted_bytes (BytesMatch): The BytesMatch object for context.
+
+    Returns:
+        int: The index in the surrounding string where the highlighted bytes start, or -1 if not found.
     """
     # Start a few chars in to avoid errors: sometimes we're searching for 1 or 2 bytes and there's a false positive
     # in the extra bytes. Tthis isn't perfect - it's starting us at the first index into the *bytes* that's safe to

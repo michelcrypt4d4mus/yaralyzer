@@ -1,13 +1,3 @@
-"""
-Central class that handles setting up / compiling rules and reading binary data from files as needed.
-Alternate constructors are provided depending on whether:
-    1. YARA rules are already compiled
-    2. YARA rules should be compiled from a string
-    3. YARA rules should be read from a file
-    4. YARA rules should be read from a directory of .yara files
-
-The real action happens in the __rich__console__() dunder method.
-"""
 from os import path
 from typing import Iterator, List, Optional, Tuple, Union
 
@@ -34,6 +24,21 @@ YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't
 
 # TODO: might be worth introducing a Scannable namedtuple or similar
 class Yaralyzer:
+    """
+    Central class that handles setting up / compiling rules and reading binary data from files as needed.
+    Alternate constructors are provided depending on whether:
+
+    * YARA rules are already compiled
+
+    * YARA rules should be compiled from a string
+
+    * YARA rules should be read from a file
+
+    * YARA rules should be read from a directory of .yara files
+
+    The real action happens in the __rich__console__() dunder method.
+    """
+
     def __init__(
         self,
         rules: Union[str, yara.Rules],
@@ -43,10 +48,17 @@ class Yaralyzer:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> None:
         """
-        If rules is a string it will be compiled by yara
-        If scannable is bytes then scannable_label must be provided.
-        If scannable is a string it is assumed to be a file that bytes should be read from
-        and the scannable_label will be set to the file's basename.
+        Initialize a Yaralyzer instance for scanning binary data with YARA rules.
+
+        Args:
+            rules (Union[str, yara.Rules]): YARA rules to use for scanning. Can be a string (YARA rule source) or a pre-compiled yara.Rules object. If a string is provided, it will be compiled.
+            rules_label (str): Label to identify the ruleset in output and logs.
+            scannable (Union[bytes, str]): The data to scan. If bytes, raw data is scanned; if str, it is treated as a file path to load bytes from.
+            scannable_label (Optional[str], optional): Label for the scannable data. Required if scannable is bytes. If scannable is a file path, defaults to the file's basename.
+            highlight_style (str, optional): Style to use for highlighting matches in output. Defaults to YaralyzerConfig.HIGHLIGHT_STYLE.
+
+        Raises:
+            TypeError: If scannable is bytes and scannable_label is not provided.
         """
         if 'args' not in vars(YaralyzerConfig):
             YaralyzerConfig.set_default_args()
@@ -87,7 +99,7 @@ class Yaralyzer:
         scannable: Union[bytes, str],
         scannable_label: Optional[str] = None
     ) -> 'Yaralyzer':
-        """Alternate constructor loads yara rules from files, labels rules w/filenames"""
+        """Alternate constructor to load yara rules from files and label rules with the filenames."""
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
 
@@ -112,7 +124,7 @@ class Yaralyzer:
         scannable: Union[bytes, str],
         scannable_label: Optional[str] = None
     ) -> 'Yaralyzer':
-        """Alternate constructor that will load all .yara files in yara_rules_dir"""
+        """Alternate constructor that will load all .yara files in yara_rules_dir."""
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
 
@@ -130,7 +142,7 @@ class Yaralyzer:
         pattern_label: Optional[str] = None,
         regex_modifier: Optional[str] = None,
     ) -> 'Yaralyzer':
-        """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma"""
+        """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma."""
         rule_strings = []
 
         for i, pattern in enumerate(patterns):
@@ -149,7 +161,7 @@ class Yaralyzer:
         return cls(rules_string, rules_label, scannable, scannable_label)
 
     def yaralyze(self) -> None:
-        """Use YARA to find matches and then force decode them"""
+        """Use YARA to find matches and then force decode them."""
         console.print(self)
 
     def match_iterator(self) -> Iterator[Tuple[BytesMatch, BytesDecoder]]:
@@ -168,6 +180,7 @@ class Yaralyzer:
         self._print_non_matches()
 
     def _yara_callback(self, data: dict):
+        """YARA callback to handle matches and non-matches as they are discovered."""
         if data['matches']:
             self.matches.append(YaraMatch(data, self._panel_text()))
         else:

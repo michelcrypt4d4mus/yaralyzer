@@ -1,4 +1,4 @@
-site_name: Yaralyzer Documentation
+site_name: Yaralyzer API Documentation
 site_description: Documentation for Yaralyzer, a tool for analyzing and managing YARA rules.
 site_author: Michel de Cryptadamus
 plugins:
@@ -11,3 +11,8 @@ edit_uri: edit/master/docs
 docs_dir: docs
 theme:
   name: material
+exclude_docs: |
+  - dict_helper.md
+  - list_helper.md
+  - docs/api/dict_helper.md
+  - docs/api/list_helper.md

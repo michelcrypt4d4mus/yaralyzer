@@ -29,12 +29,33 @@ SCORE_SCALER = 100.0
 
 
 class BytesDecoder:
-    """Class to handle attempting to decode a chunk of bytes into strings with various possible encodings.
+    """
+    Class to handle attempting to decode a chunk of bytes into strings with various possible encodings.
+
     Leverages the chardet library to both guide what encodings are attempted as well as to rank decodings
     in the results.
     """
 
     def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
+        """
+        Initialize a BytesDecoder for attempting to decode a chunk of bytes using various encodings.
+
+        Args:
+            bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
+            label (Optional[str], optional): Optional label for this decoding attempt. Defaults to the match label.
+
+        Attributes:
+            bytes_match (BytesMatch): The BytesMatch instance being decoded.
+            bytes (bytes): The bytes (including surrounding context) to decode.
+            label (str): Label for this decoding attempt.
+            was_match_decodable (dict): Tracks successful decodes per encoding.
+            was_match_force_decoded (dict): Tracks forced decodes per encoding.
+            was_match_undecodable (dict): Tracks failed decodes per encoding.
+            decoded_strings (dict): Maps encoding to decoded string.
+            undecoded_rows (list): Stores undecoded table rows.
+            decodings (list): List of DecodingAttempt objects for each encoding tried.
+            encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
+        """
         self.bytes_match = bytes_match
         self.bytes = bytes_match.surrounding_bytes
         self.label = label or bytes_match.label

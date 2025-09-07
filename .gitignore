@@ -119,6 +119,9 @@ dmypy.json
 .vscode/
 .DS_Store
 
+# mkdocs
+docs/api/
+
 # Misc
 /log/
 /tests/tmp/

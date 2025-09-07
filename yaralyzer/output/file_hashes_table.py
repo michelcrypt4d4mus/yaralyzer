@@ -1,5 +1,5 @@
 """
-Methods for building Rich layout elements for display of results.
+Methods for computing and displaying various file hashes.
 """
 import hashlib
 from collections import namedtuple
@@ -18,7 +18,17 @@ def bytes_hashes_table(
     title: Optional[str] = None,
     title_justify: str = LEFT
 ) -> Table:
-    """Build a table to show the MD5, SHA1, SHA256, etc."""
+    """
+    Build a Rich Table displaying the size, MD5, SHA1, and SHA256 hashes of a byte sequence.
+
+    Args:
+        bytes_or_bytes_info (Union[bytes, BytesInfo]): The bytes to hash, or a BytesInfo namedtuple with precomputed values.
+        title (Optional[str], optional): Optional title for the table. Defaults to None.
+        title_justify (str, optional): Justification for the table title. Defaults to LEFT.
+
+    Returns:
+        Table: A Rich Table object with the size and hash values.
+    """
     if isinstance(bytes_or_bytes_info, bytes):
         bytes_info = compute_file_hashes(bytes_or_bytes_info)
     else:
@@ -40,6 +50,15 @@ def bytes_hashes_table(
 
 
 def compute_file_hashes(_bytes: bytes) -> BytesInfo:
+    """
+    Compute the size, MD5, SHA1, and SHA256 hashes for a given byte sequence.
+
+    Args:
+        _bytes (bytes): The bytes to hash.
+
+    Returns:
+        BytesInfo: Namedtuple containing size, md5, sha1, and sha256 values.
+    """
     return BytesInfo(
         size=len(_bytes),
         md5=hashlib.md5(_bytes).hexdigest().upper(),
@@ -49,5 +68,14 @@ def compute_file_hashes(_bytes: bytes) -> BytesInfo:
 
 
 def compute_file_hashes_for_file(file_path) -> BytesInfo:
+    """
+    Compute the size, MD5, SHA1, and SHA256 hashes for the contents of a file.
+
+    Args:
+        file_path (str): Path to the file to hash.
+
+    Returns:
+        BytesInfo: Namedtuple containing size, md5, sha1, and sha256 values for the file contents.
+    """
     with open(file_path, 'rb') as file:
         return compute_file_hashes(file.read())

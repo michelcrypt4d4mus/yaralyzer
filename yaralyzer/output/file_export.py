@@ -1,3 +1,4 @@
+"""Functions to export Yaralyzer results to various file formats."""
 import json
 import time
 from os import path

@@ -81,12 +81,13 @@ YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 
 
 def console_width_possibilities():
+    """Returns a list of possible console widths, the first being the current terminal width."""
     # Subtract 2 from terminal cols just as a precaution in case things get weird
     return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
 
 
 def console_width() -> int:
-    """Current width set in console obj"""
+    """Current width set in console obj."""
     return console._width or 40
 
 
@@ -104,7 +105,7 @@ console = Console(theme=YARALYZER_THEME, color_system='256', highlight=False, wi
 
 
 def console_print_with_fallback(_string, style=None) -> None:
-    """Fallback to regular print() if there's a Markup issue"""
+    """Fallback to regular print() if there's a Markup issue."""
     try:
         console.print(_string, style=style)
     except MarkupError:
@@ -113,10 +114,12 @@ def console_print_with_fallback(_string, style=None) -> None:
 
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:
+    """Return a list of (name, style) Text objects for all styles in the theme that start with 'prefix'."""
     return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
 
 
 def print_fatal_error_and_exit(error_message: str) -> None:
+    """Print a fatal error message in a panel and exit."""
     console.line(1)
     print_header_panel(error_message, style='bold red reverse')
     console.line(1)
@@ -124,4 +127,16 @@ def print_fatal_error_and_exit(error_message: str) -> None:
 
 
 def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0, 2)) -> None:
+    """
+    Print a headline inside a styled Rich Panel to the console.
+
+    Args:
+        headline (str): The text to display as the panel's headline.
+        style (str): The style to apply to the panel (e.g., color, bold, reverse).
+        expand (bool, optional): Whether the panel should expand to the full console width. Defaults to True.
+        padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to (0, 2).
+
+    Returns:
+        None
+    """
     console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))

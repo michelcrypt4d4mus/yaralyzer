@@ -1,3 +1,4 @@
+"""Argument parsing for yaralyzer CLI tool."""
 import logging
 import re
 import sys

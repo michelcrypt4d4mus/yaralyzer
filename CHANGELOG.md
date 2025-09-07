@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.7
 * Add `Changelog` to PyPi URLs, add some more PyPi classifiers
 * Add `.flake8` config file and fix style errors
 

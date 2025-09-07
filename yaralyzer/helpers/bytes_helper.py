@@ -25,7 +25,8 @@ HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
 
 
 def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:
-    """Get bytes before and after a regex match within a byte sequence.
+    """
+    Get bytes before and after a regex match within a byte sequence.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -40,7 +41,8 @@ def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=
 
 
 def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num_before=None, num_after=None) -> bytes:
-    """Get bytes surrounding a specified range in a byte sequence.
+    """
+    Get bytes surrounding a specified range in a byte sequence.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -60,7 +62,8 @@ def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num
 
 
 def clean_byte_string(bytes_array: bytes) -> str:
-    r"""Return a clean string representation of bytes, without Python's b'' or b"" wrappers.
+    r"""
+    Return a clean string representation of bytes, without Python's b'' or b"" wrappers.
     e.g. '\x80\nx44' instead of "b'\x80\nx44'".
 
     Args:
@@ -84,7 +87,8 @@ def clean_byte_string(bytes_array: bytes) -> str:
 
 
 def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """Return a rich Text object of raw bytes, highlighting the matched bytes.
+    """
+    Return a rich Text object of raw bytes, highlighting the matched bytes.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -106,7 +110,8 @@ def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """Return a hexadecimal view of raw bytes, highlighting the matched bytes.
+    """
+    Return a hexadecimal view of raw bytes, highlighting the matched bytes.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -124,7 +129,8 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """Return an ASCII view of raw bytes, highlighting the matched bytes.
+    """
+    Return an ASCII view of raw bytes, highlighting the matched bytes.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -165,7 +171,8 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_text(_bytes: bytes) -> Text:
-    """Return a rich Text object of the hex string for the given bytes.
+    """
+    Return a rich Text object of the hex string for the given bytes.
 
     Args:
         _bytes (bytes): The bytes to convert.
@@ -177,7 +184,8 @@ def hex_text(_bytes: bytes) -> Text:
 
 
 def hex_string(_bytes: bytes) -> str:
-    """Return a hex string representation of the given bytes.
+    """
+    Return a hex string representation of the given bytes.
 
     Args:
         _bytes (bytes): The bytes to convert.
@@ -189,7 +197,8 @@ def hex_string(_bytes: bytes) -> str:
 
 
 def print_bytes(bytes_array: bytes, style=None) -> None:
-    """Print a string representation of bytes to the console.
+    """
+    Print a string representation of bytes to the console.
 
     Args:
         bytes_array (bytes): The bytes to print.
@@ -200,7 +209,8 @@ def print_bytes(bytes_array: bytes, style=None) -> None:
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
-    """Truncate bytes to a multiple of the character width for the given encoding.
+    """
+    Truncate bytes to a multiple of the character width for the given encoding.
     For example, for utf-16 this means truncating to a multiple of 2, for utf-32 to a multiple of 4.
 
     Args:
@@ -221,7 +231,8 @@ def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
 
 
 def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: str, highlighted_bytes: BytesMatch):
-    r"""Find the position of the highlighted bytes string within the surrounding bytes string.
+    r"""
+    Find the position of the highlighted bytes string within the surrounding bytes string.
 
     Both arguments are string representations of binary data. This is needed because the string
     representation of bytes can be longer than the actual bytes (e.g., '\\xcc' is 4 chars for 1 byte).

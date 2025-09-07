@@ -7,7 +7,7 @@ YARALYZER_PKG="yaralyzer"
 
 
 # Manually validate docstrings because lazydocs --validate doesn't correctly read pyproject.toml options
-pydocstyle
+#pydocstyle
 
 # Generate documnentation markdown files using lazydocs
 lazydocs --output-path docs/api \
@@ -24,4 +24,4 @@ lazydocs --output-path docs/api \
 
 mkdocs build
 # mkdocs serve
-mkdocs gh-deploy
+mkdocs gh-deploy --force

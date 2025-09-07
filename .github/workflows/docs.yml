@@ -13,9 +13,10 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.12
-      - run: |
+      - name: Install dependencies
+        run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest
-          pip install lazydocs mkdocs mkdocs-awesome-nav mkdocs-include-markdown-plugin mkdocs-material pydocstyle
-      - run: ./scripts/build_docs.sh
-      - run: mkdocs gh-deploy --force
+          python -m pip install .
+          python -m pip install lazydocs mkdocs mkdocs-awesome-nav mkdocs-include-markdown-plugin mkdocs-material pydocstyle
+      - name: Build and deploy documentation
+        run: ./scripts/build_docs.sh

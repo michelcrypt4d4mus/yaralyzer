@@ -86,6 +86,9 @@ for bytes_match, bytes_decoder in yaralyzer.match_iterator():
     do_stuff()
 ```
 
+### API Documentation
+Auto generated documentation for Yaralyzer's various classes and methods can be found [here](https://michelcrypt4d4mus.github.io/yaralyzer/).
+
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich) as well as a (somewhat limited) plain text JSON format. SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or `cairosvg`. In our experience they both work though we've seen some glitchiness with `cairosvg`.
 

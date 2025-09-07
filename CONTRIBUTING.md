@@ -29,6 +29,9 @@ python -m venv .venv              # Create a virtualenv in .venv
 pip install .                     # Install packages
 ```
 
+# API Documentation
+Auto generated documentation for Yaralyzer's various classes and methods can be found [here](https://michelcrypt4d4mus.github.io/yaralyzer/).
+
 
 # Testing
 Test coverage is... decent. The test suite _must_ pass before you open a pull request.

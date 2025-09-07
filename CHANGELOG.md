@@ -3,6 +3,7 @@
 ### 1.0.7
 * Add `Changelog` to PyPi URLs, add some more PyPi classifiers
 * Add `.flake8` config file and fix style errors
+* Rename `prefix_with_plain_text_obj()` to `prefix_with_style()`
 
 ### 1.0.6
 * Add `Environment :: Console` and `Programming Language :: Python` to PyPi classifiers

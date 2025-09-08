@@ -76,10 +76,12 @@ class DecodingAttempt:
         if is_wide_utf(self.encoding):
             return self._decode_utf_multibyte()
         else:
-            return self._custom_decode()
+            return self._custom_utf_decode()
 
-    def _custom_decode(self) -> Text:
-        """Returns a `Text` obj representing an attempt to force a UTF-8 encoding upon an array of bytes."""
+    def _custom_utf_decode(self) -> Text:
+        """
+        Returns a `Text` obj representing an attempt to force a UTF-8 encoding onto an array of bytes.
+        """
         log.info(f"Custom decoding {self.bytes_match} with {self.encoding}...")
         unprintable_char_map = ENCODINGS_TO_ATTEMPT.get(self.encoding)
         output = Text('', style='bytes.decoded')
@@ -137,7 +139,13 @@ class DecodingAttempt:
         return output
 
     def _decode_utf_multibyte(self) -> Text:
-        """UTF-16/32 are fixed width and multibyte and therefore depend on the position of the starting byte."""
+        """
+        UTF-16/32 are fixed width and multibyte and therefore depend on the position of the starting byte
+        so we try several offsets until we find one that at least kind of works.
+
+        Returns:
+            Text: Rich `Text` object representing the decoded string with highlighting.
+        """
         char_width = encoding_width(self.encoding)
         last_exception = None
         decoded_str = None
@@ -167,7 +175,15 @@ class DecodingAttempt:
             return self._failed_to_decode_msg_txt(last_exception)
 
     def _to_rich_text(self, _string: str, bytes_offset: int = 0) -> Text:
-        """Convert a decoded string to highlighted `Text` representation."""
+        """
+        Convert a decoded string to highlighted `Text` representation.
+
+        Args:
+            _string (str): The decoded string to convert.
+            bytes_offset (int): The byte offset used during decoding (for multi-byte encodings).
+        Returns:
+            Text: The rich `Text` representation of the decoded string with appropriate highlighting.
+        """
         # Adjust where we start the highlighting given the multibyte nature of the encodings
         log.debug(f"Stepping through {self.encoding} encoded string...")
         txt = Text('', style=self.bytes_match.style_at_position(0))

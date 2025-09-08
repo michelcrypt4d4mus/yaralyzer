@@ -14,7 +14,17 @@ LANGUAGE = 'language'
 
 
 class EncodingAssessment:
-    """Class to smooth some of the rough edges around the dicts returned by `chardet.detect_all().`"""
+    """
+    Class to smooth some of the rough edges around the dicts returned by `chardet.detect_all()`.
+
+    Attributes:
+        assessment (dict): The dict returned by chardet.detect_all().
+        encoding (str): The encoding detected, in lowercase.
+        confidence (float): Confidence score from 0.0 to 100.0.
+        confidence_text (Text): Rich Text object representing the confidence with styling.
+        language (Optional[str]): The detected language, if any.
+        encoding_label (Text): Rich Text object for displaying the encoding with optional language info.
+    """
 
     def __init__(self, assessment: dict) -> None:
         """

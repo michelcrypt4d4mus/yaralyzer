@@ -5,6 +5,7 @@ description = "Visualize and force decode YARA and regex matches found in a file
 authors = ["Michel de Cryptadamus <michel@cryptadamus.com>"]
 readme = "README.md"
 license = "GPL-3.0-or-later"
+
 homepage = "https://github.com/michelcrypt4d4mus/yaralyzer"
 repository = "https://github.com/michelcrypt4d4mus/yaralyzer"
 documentation = "https://michelcrypt4d4mus.github.io/yaralyzer/"
@@ -60,9 +61,9 @@ keywords = [
 ]
 
 
-#####################
-#   Dependencies    #
-#####################
+####################
+#   Dependencies   #
+####################
 [tool.poetry.dependencies]
 python = "^3.10"
 chardet = ">=5.0.0,<6.0.0"
@@ -91,22 +92,22 @@ yaralyze = 'yaralyzer:yaralyze'
 yaralyzer_show_color_theme = 'yaralyzer.helpers.rich_text_helper:yaralyzer_show_color_theme'
 
 
-#################
-#   PyPi URLs   #
-#################
+###############
+#  PyPi URLs  #
+###############
 [tool.poetry.urls]
 Changelog = "https://github.com/michelcrypt4d4mus/yaralyzer/blob/master/CHANGELOG.md"
 
 
-#########################
-#  Poetry build system  #
-#########################
+#################
+#  Build Stuff  #
+#################
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
-
 [tool.pydocstyle]
+match-dir = "yaralyzer"
 ignore = [
     "D200",  # One-line docstring should fit on one line with quotes (found 3)
     "D203",  # 1 blank line required before class docstring"
@@ -116,4 +117,3 @@ ignore = [
     "D407",  # Missing dashed underline after section
     "D413",  # Missing blank line after last section
 ]
-match-dir = "yaralyzer"

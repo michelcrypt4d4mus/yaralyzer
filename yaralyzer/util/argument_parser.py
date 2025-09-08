@@ -225,6 +225,9 @@ def parse_arguments(args: Optional[Namespace] = None):
     Args:
         args (Optional[Namespace], optional): If provided, use these args instead of parsing from command line.
             Defaults to `None`.
+
+    Raises:
+        ArgumentError: If args are invalid.
     """
     if '--version' in sys.argv:
         print(f"yaralyzer {version('yaralyzer')}")

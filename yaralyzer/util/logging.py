@@ -47,11 +47,11 @@ def configure_logger(log_label: str) -> logging.Logger:
     Set up a file or stream `logger` depending on the configuration.
 
     Args:
-        log_label (str): The label for the logger, e.g. "run" or "invocation".
+        log_label (str): The label for the `logger`, e.g. "run" or "invocation".
             Actual name will be `"yaralyzer.{log_label}"`.
 
     Returns:
-        logging.Logger: The configured logger.
+        logging.Logger: The configured `logger`.
     """
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)

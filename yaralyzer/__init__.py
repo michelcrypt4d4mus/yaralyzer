@@ -27,7 +27,7 @@ def yaralyze():
     """
     Entry point for yaralyzer when invoked as a script.
 
-    Args are parsed from the command line and environment variables. See yaralyzer --help for details.
+    Args are parsed from the command line and environment variables. See `yaralyze --help` for details.
     """
     args = parse_arguments()
     output_basepath = None

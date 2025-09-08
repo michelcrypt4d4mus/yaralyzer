@@ -123,6 +123,7 @@ def safe_label(_label: str) -> str:
 
     Args:
         _label (str): The label to sanitize.
+
     Returns:
         str: A sanitized label safe for use in YARA rules.
     """

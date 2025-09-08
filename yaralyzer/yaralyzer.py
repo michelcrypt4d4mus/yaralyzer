@@ -5,6 +5,7 @@ from typing import Callable, Iterator, List, Optional, Tuple, Union
 import yara
 from rich.console import Console, ConsoleOptions, RenderResult
 from rich.padding import Padding
+from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
@@ -65,13 +66,13 @@ class Yaralyzer:
 
         Args:
             rules (Union[str, yara.Rules]): YARA rules to use for scanning. Can be a string or a pre-compiled
-                `yara.Rules` object. If it's a string it will be compiled to a `yara.Rules`.
+                `yara.Rules` object (strings will be compiled to an instance of `yara.Rules`).
             rules_label (str): Label to identify the ruleset in output and logs.
             scannable (Union[bytes, str]): The data to scan. If it's `bytes` type then that data is scanned;
                 if it's a string it is treated as a file path to load bytes from.
             scannable_label (Optional[str], optional): Label for the `scannable` arg data.
                 Required if `scannable` is `bytes`.
-                If `scannable` is a file path it will default to the file's basename.
+                If `scannable` is a file path `scannable_label` will default to the file's basename.
             highlight_style (str, optional): Style to use for highlighting matches in output.
                 Defaults to `YaralyzerConfig.HIGHLIGHT_STYLE`.
 
@@ -88,7 +89,7 @@ class Yaralyzer:
 
         if isinstance(scannable, bytes):
             if scannable_label is None:
-                raise TypeError("Must provide scannable_label arg when yaralyzing raw bytes")
+                raise TypeError("Must provide 'scannable_label' arg when yaralyzing raw bytes")
 
             self.bytes: bytes = scannable
             self.scannable_label: str = scannable_label
@@ -126,6 +127,10 @@ class Yaralyzer:
                 if `str`, it is treated as a file path to load bytes from.
             scannable_label (Optional[str], optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
+
+        Raises:
+            TypeError: If `yara_rules_files` is not a list.
+            ValueError: If any file in `yara_rules_files` does not exist.
         """
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
@@ -160,6 +165,9 @@ class Yaralyzer:
                 if `str`, it is treated as a file path to load bytes from.
             scannable_label (Optional[str], optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
+
+        Raises:
+            TypeError: If `dirs` is not a list of valid directories.
         """
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
@@ -278,7 +286,7 @@ class Yaralyzer:
         """The string to use when exporting this yaralyzer to SVG/HTML/etc."""
         return str(self).replace('>', '').replace('<', '').replace(' ', '_')
 
-    def __text__(self, byte_style: str = 'yara.scanned', rule_style: str = 'yara.rules') -> Text:
+    def __text__(self, byte_style: Style | str = 'yara.scanned', rule_style: Style | str = 'yara.rules') -> Text:
         """Text representation of this YARA scan (__text__() was taken)."""
         txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')

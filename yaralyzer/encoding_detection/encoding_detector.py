@@ -1,3 +1,4 @@
+"""EncodingDetector class for managing chardet encoding detection."""
 from operator import attrgetter
 from typing import List
 
@@ -14,14 +15,15 @@ CONFIDENCE_SCORE_RANGE = range(0, 101)
 
 
 class EncodingDetector:
-    """Manager class to ease dealing with the chardet encoding detection library 'chardet'.
+    """
+    Manager class to ease dealing with the chardet encoding detection library 'chardet'.
     Each instance of this class manages a chardet.detect_all() scan on a single set of bytes.
     """
 
-    # 10 as in 10%, 0.02, etc.  Encodings w/confidences below this will not be displayed in the decoded table
+    # Default value for encodings w/confidences below this will not be displayed in the decoded table
     force_display_threshold = 20.0
 
-    # At what chardet.detect() confidence % should we force a decode with an obscure encoding?
+    # Default value for what chardet.detect() confidence % should we force a decode with an obscure encoding.
     force_decode_threshold = 50.0
 
     def __init__(self, _bytes: bytes) -> None:
@@ -58,9 +60,11 @@ class EncodingDetector:
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 
     def has_enough_bytes(self) -> bool:
+        """Return true if we have enough bytes to run chardet.detect()."""
         return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
 
     def assessments_above_confidence(self, cutoff: float) -> List[EncodingAssessment]:
+        """Return the assessments above the given confidence cutoff."""
         return [a for a in self.unique_assessments if a.confidence >= cutoff]
 
     def __rich__(self) -> Padding:
@@ -87,6 +91,7 @@ class EncodingDetector:
         self.unique_assessments.sort(key=attrgetter('confidence'), reverse=True)
 
     def _set_empty_results(self) -> None:
+        """Set empty results for when chardet can't help us."""
         self.assessments = []
         self.unique_assessments = []
         self.raw_chardet_assessments = []

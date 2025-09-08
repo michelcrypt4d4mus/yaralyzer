@@ -18,7 +18,7 @@ CONFIDENCE_SCORE_RANGE = range(0, 101)
 
 class EncodingDetector:
     """
-    Manager class to ease dealing with the encoding detection library 'chardet'.
+    Manager class to ease dealing with the encoding detection library `chardet`.
 
     Each instance of this class manages a `chardet.detect_all()` scan on a single set of bytes.
 
@@ -32,8 +32,8 @@ class EncodingDetector:
         force_decode_assessments (List[EncodingAssessment]): Assessments above force decode threshold.
         force_display_assessments (List[EncodingAssessment]): Assessments above force display threshold.
         has_any_idea (Optional[bool]): `True` if `chardet` had any idea what the encoding might be, `False` if not, `None` if not run.
-        force_display_threshold (float): Default confidence threshold for forcing display in decoded table (class variable).
-        force_decode_threshold (float): Default confidence threshold for forcing a decode attempt (class variable).
+        force_display_threshold (float): (class variable) Default confidence threshold for forcing display in decoded table.
+        force_decode_threshold (float): (class variable) Default confidence threshold for forcing a decode attempt.
     """
 
     # Default value for encodings w/confidences below this will not be displayed in the decoded table
@@ -44,7 +44,7 @@ class EncodingDetector:
     def __init__(self, _bytes: bytes) -> None:
         """
         Args:
-            _bytes (bytes): The bytes to analyze with chardet.
+            _bytes (bytes): The bytes to analyze with `chardet`.
         """
         self.bytes = _bytes
         self.bytes_len = len(_bytes)

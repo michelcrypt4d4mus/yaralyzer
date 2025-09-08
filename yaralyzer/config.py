@@ -18,10 +18,10 @@ MEGABYTE = 1024 * KILOBYTE
 
 def config_var_name(env_var: str) -> str:
     """
-    Get the name of env_var and strip off `YARALYZER_` prefix.
+    Get the name of `env_var` and strip off `YARALYZER_` prefix.
 
     Example:
-        ```python
+        ```
         SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
         config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
         ```
@@ -31,7 +31,7 @@ def config_var_name(env_var: str) -> str:
 
 
 def is_env_var_set_and_not_false(var_name: str) -> bool:
-    """Return True if `var_name` is not empty and set to anything other than 'false' (capitalization agnostic)."""
+    """Return `True` if `var_name` is not empty and set to anything other than 'false' (capitalization agnostic)."""
     if var_name in environ:
         var_value = environ[var_name]
         return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'
@@ -39,8 +39,8 @@ def is_env_var_set_and_not_false(var_name: str) -> bool:
         return False
 
 
-def is_invoked_by_pytest():
-    """Return true if pytest is running."""
+def is_invoked_by_pytest() -> bool:
+    """Return `True` if invoked in a `pytest` context."""
     return is_env_var_set_and_not_false(PYTEST_FLAG)
 
 
@@ -85,13 +85,13 @@ class YaralyzerConfig:
 
     @classmethod
     def set_argument_parser(cls, parser: ArgumentParser) -> None:
-        """Sets the _argument_parser instance variable that will be used to parse command line args."""
+        """Sets the `_argument_parser` instance variable that will be used to parse command line args."""
         cls._argument_parser: ArgumentParser = parser
         cls._argparse_keys: List[str] = sorted([action.dest for action in parser._actions])
 
     @classmethod
     def set_args(cls, args: Namespace) -> None:
-        """Set the args class instance variable and update args with any environment variable overrides."""
+        """Set the `args` class instance variable and update args with any environment variable overrides."""
         cls.args = args
 
         for option in cls._argparse_keys:
@@ -116,7 +116,7 @@ class YaralyzerConfig:
 
     @classmethod
     def set_default_args(cls):
-        """Set args to their defaults as if parsed from the command line."""
+        """Set `self.args` to their defaults as if parsed from the command line."""
         cls.set_args(cls._argument_parser.parse_args(['dummy']))
 
     @classmethod

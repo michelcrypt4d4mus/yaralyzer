@@ -1,6 +1,8 @@
 """
-Rich text decorator for YARA match dicts, which look like this:
+Rich text decorator for YARA match dicts.
 
+YARA match obhjects are dicts with this structure:
+```
 {
     'tags': ['foo', 'bar'],
     'matches': True,
@@ -12,6 +14,7 @@ Rich text decorator for YARA match dicts, which look like this:
         StringMatch2
     ]
 }
+```
 """
 import re
 from numbers import Number

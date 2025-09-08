@@ -57,6 +57,10 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
     """
     Export YARA scan results to JSON.
 
+    Args:
+        yaralyzer (Yaralyzer): The `Yaralyzer` object containing the results to export.
+        output_basepath (Optional[str]): Base path to write output to. Should have no file extension.
+
     Returns:
         str: Path data was exported to.
     """

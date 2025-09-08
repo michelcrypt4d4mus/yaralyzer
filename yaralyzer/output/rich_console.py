@@ -86,11 +86,6 @@ def console_width_possibilities():
     return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
 
 
-def console_width() -> int:
-    """Current width set in console obj."""
-    return console._width or 40
-
-
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)
 if is_invoked_by_pytest():
     CONSOLE_WIDTH = DEFAULT_CONSOLE_WIDTH
@@ -113,9 +108,9 @@ def console_print_with_fallback(_string: Text | str, style=None) -> None:
         print(_string.plain if isinstance(_string, Text) else _string)
 
 
-def theme_colors_with_prefix(prefix: str) -> List[Text]:
-    """Return a list of (name, style) `Text` objects for all styles in the theme that start with `prefix`."""
-    return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
+def console_width() -> int:
+    """Current width set in `console` object."""
+    return console._width or 40
 
 
 def print_fatal_error_and_exit(error_message: str) -> None:
@@ -142,3 +137,8 @@ def print_header_panel(headline: str, style: str, expand: bool = True, padding: 
         padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
     """
     console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))
+
+
+def theme_colors_with_prefix(prefix: str) -> List[Text]:
+    """Return a list of (name, style) `Text` objects for all styles in the theme that start with `prefix`."""
+    return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]

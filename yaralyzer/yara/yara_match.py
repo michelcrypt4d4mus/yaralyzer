@@ -1,7 +1,7 @@
 """
 Rich text decorator for YARA match dicts.
 
-YARA match obhjects are dicts with this structure:
+A YARA match is returned as a `dict` with this structure:
 ```
 {
     'tags': ['foo', 'bar'],
@@ -33,11 +33,12 @@ from yaralyzer.output.rich_console import console_width, theme_colors_with_prefi
 from yaralyzer.util.logging import log
 
 MATCH_PADDING = (0, 0, 0, 1)
-URL_REGEX = re.compile('^https?:')
+
+DATE_REGEX = re.compile('\\d{4}-\\d{2}-\\d{2}')
 DIGITS_REGEX = re.compile("^\\d+$")
 HEX_REGEX = re.compile('^[0-9A-Fa-f]+$')
-DATE_REGEX = re.compile('\\d{4}-\\d{2}-\\d{2}')
 MATCHER_VAR_REGEX = re.compile('\\$[a-z_]+')
+URL_REGEX = re.compile('^https?:')
 
 YARA_STRING_STYLES: Dict[re.Pattern, str] = {
     URL_REGEX: 'yara.url',
@@ -75,7 +76,16 @@ class YaraMatch:
 
 
 def _rich_yara_match(element: Any, depth: int = 0) -> Text:
-    """Painful/hacky way of recursively coloring a yara result hash."""
+    """
+    Painful/hacky way of recursively coloring a yara result hash.
+
+    Args:
+        element (Any): The element to render (can be dict, list, str, bytes, int, bool).
+        depth (int): Current recursion depth (used for indentation).
+
+    Returns:
+        Text: The rich `Text` representation of the element.
+    """
     indent = Text((depth + 1) * INDENT_SPACES)
     end_indent = Text(depth * INDENT_SPACES)
 

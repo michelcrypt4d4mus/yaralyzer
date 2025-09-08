@@ -4,7 +4,7 @@ Methods to handle turning various objects into Rich text/table/etc representatio
 [Rich color names](https://rich.readthedocs.io/en/stable/appendix/colors.html)
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
-from typing import List, Union
+from typing import List, Optional, Union
 
 from rich.columns import Columns
 from rich.panel import Panel
@@ -42,7 +42,7 @@ def na_txt(style: Union[str, Style] = 'white'):
     return Text('N/A', style=style)
 
 
-def prefix_with_style(_str: str, style: str, root_style=None) -> Text:
+def prefix_with_style(_str: str, style: str, root_style: Optional[Union[Style, str]] = None) -> Text:
     """Sometimes you need a Text() object to start plain lest the underline or whatever last forever."""
     return Text('', style=root_style or 'white') + Text(_str, style)
 

@@ -79,6 +79,9 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
         is_forced (Text): Text indicating if the decode was forced.
         txt (Text): The decoded string as a rich `Text` object (with highlighting).
         score (float): The score to use for sorting this row in the table.
+
+    Returns:
+        DecodingTableRow: The constructed table row named tuple.
     """
     return DecodingTableRow(
         assessment.encoding_label,
@@ -93,12 +96,29 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
 
 
 def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
-    """Build a row with just `chardet` assessment confidence data and no actual decoding attempt string."""
+    """
+    Build a `DecodingTableRow` with just `chardet` assessment confidence data and no actual decoding attempt string.
+
+    Args:
+        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
+        score (float): The score to use for sorting this row within the table.
+
+    Returns:
+        DecodingTableRow: The constructed table row named tuple with no decoding attempt string.
+    """
     return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
 
 
 def _hex_preview_subtable(bytes_match: BytesMatch) -> Table:
-    """Build a sub `Table` for hex view row (hex on one side, ascii on the other side)."""
+    """
+    Build a sub `Table` for hex view row (hex on one side, ascii on the other side).
+
+    Args:
+        bytes_match (BytesMatch): The `BytesMatch` object containing the bytes to display.
+
+    Returns:
+        Table: A `rich.table` with hex and ascii views of the bytes.
+    """
     hex_table = Table(
         'hex',
         'ascii',

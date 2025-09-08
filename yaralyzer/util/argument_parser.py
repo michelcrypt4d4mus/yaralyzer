@@ -218,13 +218,13 @@ YaralyzerConfig.set_argument_parser(parser)
 
 def parse_arguments(args: Optional[Namespace] = None):
     """
-    Parse command line args. Most settings can be communicated to the app by setting env vars.
+    Parse command line args. Most arguments can also be communicated to the app by setting env vars.
     If `args` are passed neither rules nor a regex need be provided as it is assumed
-    the constructor will instantiate a Yaralyzer object directly.
+    the constructor will instantiate a `Yaralyzer` object directly.
 
     Args:
         args (Optional[Namespace], optional): If provided, use these args instead of parsing from command line.
-            Defaults to None.
+            Defaults to `None`.
     """
     if '--version' in sys.argv:
         print(f"yaralyzer {version('yaralyzer')}")

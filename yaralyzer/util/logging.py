@@ -1,28 +1,34 @@
 """
-There's two possible log sinks other than STDOUT:
+Handle logging for `yaralyzer`.
 
-  1. 'log' - the application log (standard log, what goes to STDOUT with -D option)
+There's two possible log sinks other than `STDOUT`:
+
+  1. 'log' - the application log (standard log, what goes to `STDOUT` with `-D` option)
   2. 'invocation_log' - tracks the exact command yaralyzer was invoked with, similar to a history file
 
-The regular log file at APPLICATION_LOG_PATH is where the quite verbose application logs
+The regular log file at `APPLICATION_LOG_PATH` is where the quite verbose application logs
 will be written if things ever need to get that formal. For now those logs are only accessible
-on STDOUT with the -D flag but the infrastructure for persistent logging exists if someone
+on `STDOUT` with the `-D` flag but the infrastructure for persistent logging exists if someone
 needs/wants that sort of thing.
 
-Logs are not normally ephemeral/not written  to files but can be configured to do so by setting
-the YARALYZER_LOG_DIR env var. See .yaralyzer.example for documentation about the side effects of setting
-YARALYZER_LOG_DIR to a value.
+Logs are not normally ephemeral/not written to files but can be configured to do so by setting
+the `YARALYZER_LOG_DIR` env var. See `.yaralyzer.example` for documentation about the side effects
+of setting `YARALYZER_LOG_DIR` to a value.
 
-https://docs.python.org/3/library/logging.html#logging.basicConfig
-https://realpython.com/python-logging/
+* https://docs.python.org/3/library/logging.html#logging.basicConfig
+
+* https://realpython.com/python-logging/
 
 Python log levels for reference:
+
+```
     CRITICAL 50
     ERROR 40
     WARNING 30
     INFO 20
     DEBUG 10
     NOTSET 0
+```
 """
 import logging
 import sys
@@ -37,7 +43,16 @@ ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
 
 
 def configure_logger(log_label: str) -> logging.Logger:
-    """Set up a file or stream `logger` depending on the configuration."""
+    """
+    Set up a file or stream `logger` depending on the configuration.
+
+    Args:
+        log_label (str): The label for the logger, e.g. "run" or "invocation".
+            Actual name will be `"yaralyzer.{log_label}"`.
+
+    Returns:
+        logging.Logger: The configured logger.
+    """
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)
 
@@ -71,7 +86,7 @@ if YaralyzerConfig.LOG_DIR:
 
 
 def log_and_print(msg: str, log_level: str = 'INFO'):
-    """Both print and log a string."""
+    """Both print (to console) and log (to file) a string."""
     log.log(logging.getLevelName(log_level), msg)
     print(msg)
 
@@ -88,7 +103,7 @@ def log_current_config():
 
 
 def log_invocation() -> None:
-    """Log the command used to launch the yaralyzer to the invocation log."""
+    """Log the command used to launch the `yaralyzer` to the invocation log."""
     msg = f"THE INVOCATION: '{' '.join(sys.argv)}'"
     log.info(msg)
     invocation_log.info(msg)

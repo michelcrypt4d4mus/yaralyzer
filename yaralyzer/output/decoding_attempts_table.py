@@ -51,7 +51,7 @@ RAW_BYTES = Text('Raw', style=f"bytes")
 
 
 def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
-    """Build a new rich Table with two rows, the raw and hex views of the bytes_match data."""
+    """Build a new rich `Table` with two rows, the raw and hex views of the `bytes_match` data."""
     table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
 
     def add_col(title, **kwargs):
@@ -93,12 +93,12 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
 
 
 def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
-    """Build a row with just chardet assessment confidence data and no actual decoding attempt string."""
+    """Build a row with just `chardet` assessment confidence data and no actual decoding attempt string."""
     return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
 
 
 def _hex_preview_subtable(bytes_match: BytesMatch) -> Table:
-    """Build a sub table for hex view (hex on one side, ascii on the other side)."""
+    """Build a sub `Table` for hex view row (hex on one side, ascii on the other side)."""
     hex_table = Table(
         'hex',
         'ascii',

@@ -19,15 +19,15 @@ def bytes_hashes_table(
     title_justify: str = LEFT
 ) -> Table:
     """
-    Build a Rich Table displaying the size, MD5, SHA1, and SHA256 hashes of a byte sequence.
+    Build a Rich `Table` displaying the size, MD5, SHA1, and SHA256 hashes of a byte sequence.
 
     Args:
-        bytes_or_bytes_info (Union[bytes, BytesInfo]): The bytes to hash, or a BytesInfo namedtuple with precomputed values.
-        title (Optional[str], optional): Optional title for the table. Defaults to None.
-        title_justify (str, optional): Justification for the table title. Defaults to LEFT.
+        bytes_or_bytes_info (Union[bytes, BytesInfo]): The `bytes` to hash, or a `BytesInfo` namedtuple with precomputed values.
+        title (Optional[str], optional): Optional title for the table. Defaults to `None`.
+        title_justify (str, optional): Justification for the table title. Defaults to `"LEFT"`.
 
     Returns:
-        Table: A Rich Table object with the size and hash values.
+        Table: A Rich `Table` object with the size and hash values.
     """
     if isinstance(bytes_or_bytes_info, bytes):
         bytes_info = compute_file_hashes(bytes_or_bytes_info)
@@ -54,10 +54,10 @@ def compute_file_hashes(_bytes: bytes) -> BytesInfo:
     Compute the size, MD5, SHA1, and SHA256 hashes for a given byte sequence.
 
     Args:
-        _bytes (bytes): The bytes to hash.
+        _bytes (bytes): The `bytes` to hash.
 
     Returns:
-        BytesInfo: Namedtuple containing size, md5, sha1, and sha256 values.
+        BytesInfo: `BytesInfo` namedtuple containing size, md5, sha1, and sha256 values.
     """
     return BytesInfo(
         size=len(_bytes),
@@ -75,7 +75,7 @@ def compute_file_hashes_for_file(file_path) -> BytesInfo:
         file_path (str): Path to the file to hash.
 
     Returns:
-        BytesInfo: Namedtuple containing size, md5, sha1, and sha256 values for the file contents.
+        BytesInfo: `BytesInfo` namedtuple containing size, md5, sha1, and sha256 values for the file contents.
     """
     with open(file_path, 'rb') as file:
         return compute_file_hashes(file.read())

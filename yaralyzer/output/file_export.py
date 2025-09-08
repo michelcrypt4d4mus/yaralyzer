@@ -1,4 +1,6 @@
-"""Functions to export Yaralyzer results to various file formats."""
+"""
+Functions to export Yaralyzer results to various file formats.
+"""
 import json
 import time
 from os import path
@@ -52,7 +54,12 @@ _EXPORT_KWARGS = {
 
 
 def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
-    """Export YARA scan results to JSON. Returns the path to the output file that was written."""
+    """
+    Export YARA scan results to JSON.
+
+    Returns:
+        str: Path data was exported to.
+    """
     output_path = f"{output_basepath or 'yara_matches'}.json"
 
     matches_data = [
@@ -69,10 +76,10 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
 
 def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> str:
     """
-    Announce the export, perform the export, announce completion.
+    Announce the export, perform the export, and announce completion.
 
     Args:
-        export_method (Callable): Rich.console.save_blah() method
+        export_method (Callable): Usually a `Rich.console.save_whatever()` method
         output_file_basepath (str): Path to write output to. Should have no file extension.
 
     Returns:

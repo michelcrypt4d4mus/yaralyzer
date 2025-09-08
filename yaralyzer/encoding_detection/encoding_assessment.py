@@ -18,12 +18,12 @@ class EncodingAssessment:
     Class to smooth some of the rough edges around the dicts returned by `chardet.detect_all()`.
 
     Attributes:
-        assessment (dict): The dict returned by chardet.detect_all().
+        assessment (dict): The dict returned by `chardet.detect_all()`.
         encoding (str): The encoding detected, in lowercase.
         confidence (float): Confidence score from 0.0 to 100.0.
-        confidence_text (Text): Rich Text object representing the confidence with styling.
+        confidence_text (Text): Rich `Text` object representing the confidence with styling.
         language (Optional[str]): The detected language, if any.
-        encoding_label (Text): Rich Text object for displaying the encoding with optional language info.
+        encoding_label (Text): Rich `Text` object for displaying the encoding with optional language info.
     """
 
     def __init__(self, assessment: dict) -> None:
@@ -74,7 +74,7 @@ class EncodingAssessment:
         return self.__rich__().plain
 
     def _get_dict_empty_value_as_None(self, key: str) -> Any:
-        """Return None if the value at :key is an empty string, empty list, etc."""
+        """Return `None` if the value at `key` is an empty string, empty list, etc."""
         value = self.assessment.get(key)
 
         if isinstance(value, (dict, list, str)) and len(value) == 0:

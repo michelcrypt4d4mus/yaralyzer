@@ -34,7 +34,7 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> None:
         """
-        Initialize a BytesMatch object representing a match against binary data.
+        Initialize a `BytesMatch` object representing a match against binary data.
 
         Args:
             matched_against (bytes): The full byte sequence that was searched.
@@ -71,7 +71,7 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> 'BytesMatch':
         """
-        Create a BytesMatch from a regex match object.
+        Construct a `BytesMatch` from a regex match object.
 
         Args:
             matched_against (bytes): The bytes searched.
@@ -95,7 +95,7 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> 'BytesMatch':
         """
-        Build a BytesMatch from a YARA string match instance.
+        Construct a `BytesMatch` from a YARA string match instance.
 
         Args:
             matched_against (bytes): The bytes searched.
@@ -132,7 +132,7 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> Iterator['BytesMatch']:
         """
-        Yield a BytesMatch for each string returned as part of a YARA match result dict.
+        Yield a `BytesMatch` for each string returned as part of a YARA match result dict.
 
         Args:
             matched_against (bytes): The bytes searched.

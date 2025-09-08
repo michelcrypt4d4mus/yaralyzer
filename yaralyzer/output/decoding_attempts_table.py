@@ -1,16 +1,20 @@
 """
-Methods to build the rich.table used to display decoding attempts of a given bytes array.
+Methods to build the `rich.table` used to display decoding attempts of a given bytes array.
 
-Final output should be rich.table of decoding attempts that are sorted like this:
+Final output should be a `rich.table` of decoding attempts that are sorted like this:
 
     1. String representation of undecoded bytes is always the first row
 
-    2. Encodings which chardet.detect() ranked as > 0% likelihood are sorted based on that confidence
+    2. Encodings which `chardet.detect()` ranked as > 0% likelihood are sorted based on that confidence
 
     3. Then the unchardetectable:
+
         1. Decodings that were successful, unforced, and new
+
         2. Decodings that 'successful' but forced
+
         3. Decodings that were the same as other decodings
+
         4. Failed decodings
 """
 from collections import namedtuple
@@ -71,9 +75,9 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
     Build a table row for a decoding attempt.
 
     Args:
-        assessment (EncodingAssessment): The chardet assessment for the encoding used.
+        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
         is_forced (Text): Text indicating if the decode was forced.
-        txt (Text): The decoded string as a Rich Text object (with highlighting).
+        txt (Text): The decoded string as a rich `Text` object (with highlighting).
         score (float): The score to use for sorting this row in the table.
     """
     return DecodingTableRow(

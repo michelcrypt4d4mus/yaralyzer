@@ -29,7 +29,7 @@ class EncodingAssessment:
     def __init__(self, assessment: dict) -> None:
         """
         Args:
-            assessment (dict): The dict returned by chardet.detect_all().
+            assessment (dict): The dict returned by `chardet.detect_all()`.
         """
         self.assessment = assessment
         self.encoding = assessment[ENCODING].lower()
@@ -45,7 +45,7 @@ class EncodingAssessment:
     @classmethod
     def dummy_encoding_assessment(cls, encoding: str) -> 'EncodingAssessment':
         """
-        Build an empty EncodingAssessment to use as a dummy when chardet gives us nothing.
+        Build an empty `EncodingAssessment` to use as a dummy when `chardet` gives us nothing.
 
         Args:
             encoding (str): The encoding to use for the dummy assessment.
@@ -59,7 +59,7 @@ class EncodingAssessment:
         Alt text is displayed below the encoding in slightly dimmer font.
 
         Args:
-            alt_text (Optional[str]): Alternate text to display with the encoding (often the inferred language)
+            alt_text (Optional[str]): Text to display along with the encoding (often the inferred language)
         """
         self.encoding_label = Text(self.encoding, 'encoding.header')
 

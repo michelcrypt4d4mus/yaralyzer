@@ -1,4 +1,6 @@
-"""EncodingAssessment class."""
+"""
+Help with chardet library.
+"""
 from typing import Any, Optional
 
 from rich.text import Text
@@ -17,7 +19,7 @@ class EncodingAssessment:
     def __init__(self, assessment: dict) -> None:
         """
         Args:
-            assessment (bytes): The dict returned by chardet.detect_all().
+            assessment (dict): The dict returned by chardet.detect_all().
         """
         self.assessment = assessment
         self.encoding = assessment[ENCODING].lower()
@@ -31,7 +33,7 @@ class EncodingAssessment:
         self.set_encoding_label(self.language.title() if self.language else None)
 
     @classmethod
-    def dummy_encoding_assessment(cls, encoding) -> 'EncodingAssessment':
+    def dummy_encoding_assessment(cls, encoding: str) -> 'EncodingAssessment':
         """Generate an empty EncodingAssessment to use as a dummy when chardet gives us nothing."""
         assessment = cls({ENCODING: encoding, CONFIDENCE: 0.0})
         assessment.confidence_text = Text('none', 'no_attempt')

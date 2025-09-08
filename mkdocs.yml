@@ -1,14 +1,14 @@
-site_name: Yaralyzer API Documentation
-site_description: Documentation for Yaralyzer, a tool for analyzing and managing YARA rules.
-site_author: Michel de Cryptadamus
-repo_name: yaralyzer
-repo_url: https://github.com/michelcrypt4d4mus/yaralyzer
 docs_dir: docs
 edit_uri: edit/master/docs
 plugins:
   - awesome-nav
   - include-markdown
   - search
+repo_name: yaralyzer
+repo_url: https://github.com/michelcrypt4d4mus/yaralyzer
+site_author: Michel de Cryptadamus
+site_description: Documentation for Yaralyzer, a tool for analyzing and managing YARA rules.
+site_name: Yaralyzer API Documentation
 theme:
   name: material
 exclude_docs: |

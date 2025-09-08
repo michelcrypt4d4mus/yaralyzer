@@ -219,8 +219,12 @@ YaralyzerConfig.set_argument_parser(parser)
 def parse_arguments(args: Optional[Namespace] = None):
     """
     Parse command line args. Most settings can be communicated to the app by setting env vars.
-    If args are passed neither rules nor a regex need be provided as it is assumed
+    If `args` are passed neither rules nor a regex need be provided as it is assumed
     the constructor will instantiate a Yaralyzer object directly.
+
+    Args:
+        args (Optional[Namespace], optional): If provided, use these args instead of parsing from command line.
+            Defaults to None.
     """
     if '--version' in sys.argv:
         print(f"yaralyzer {version('yaralyzer')}")
@@ -282,6 +286,7 @@ def parse_arguments(args: Optional[Namespace] = None):
 
 
 def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
+    """Get the basepath (directory + filename without extension) for exported files."""
     file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
     args.output_basename  = f"{file_prefix}{yaralyzer._filename_string()}"  # noqa: E221
     args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"

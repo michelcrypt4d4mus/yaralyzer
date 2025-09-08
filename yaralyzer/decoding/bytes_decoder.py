@@ -40,7 +40,7 @@ class BytesDecoder:
     interpretations of a byte sequence, especially in the context of YARA matches or binary analysis.
 
     Attributes:
-        bytes_match (BytesMatch): The BytesMatch instance being decoded.
+        bytes_match (BytesMatch): The `BytesMatch` instance being decoded.
         bytes (bytes): The bytes (including surrounding context) to decode.
         label (str): Label for this decoding attempt.
         was_match_decodable (dict): Tracks successful decodes per encoding.
@@ -54,10 +54,10 @@ class BytesDecoder:
 
     def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
         """
-        Initialize a BytesDecoder for attempting to decode a chunk of bytes using various encodings.
+        Initialize a `BytesDecoder` for attempting to decode a chunk of bytes using various encodings.
 
         Args:
-            bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
+            bytes_match (BytesMatch): The `BytesMatch` object containing the bytes to decode and match metadata.
             label (Optional[str], optional): Optional label for this decoding attempt. Defaults to the match label.
         """
         self.bytes_match = bytes_match
@@ -157,7 +157,7 @@ class BytesDecoder:
                 self.was_match_force_decoded[decoding.encoding] += 1
 
     def _row_from_decoding_attempt(self, decoding: DecodingAttempt) -> DecodingTableRow:
-        """Create a DecodingAttemptTable row from a DecodingAttempt."""
+        """Create a `DecodingAttemptTable` row from a `DecodingAttempt`."""
         assessment = self.encoding_detector.get_encoding_assessment(decoding.encoding)
 
         # If the decoding can have a start offset add an appropriate extension to the encoding label
@@ -192,7 +192,7 @@ class BytesDecoder:
 
 
 def _build_encodings_metric_dict():
-    """One key for each key in ENCODINGS_TO_ATTEMPT, values are all 0."""
+    """One key for each key in `ENCODINGS_TO_ATTEMPT`, values are all 0."""
     metrics_dict = defaultdict(lambda: 0)
 
     for encoding in ENCODINGS_TO_ATTEMPT.keys():

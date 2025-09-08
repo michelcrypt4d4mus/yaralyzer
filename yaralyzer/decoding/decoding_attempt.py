@@ -41,7 +41,7 @@ class DecodingAttempt:
         Initialize a `DecodingAttempt` for a specific `encoding` on a given `BytesMatch`.
 
         Args:
-            bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
+            bytes_match (BytesMatch): The `BytesMatch` object containing the bytes to decode and match metadata.
             encoding (str): The encoding to attempt for decoding the bytes.
         """
         self.bytes = bytes_match.surrounding_bytes
@@ -56,7 +56,7 @@ class DecodingAttempt:
         self.decoded_string = self._decode_bytes()
 
     def is_wide_utf_encoding(self) -> bool:
-        """Returns True if the encoding is UTF-16 or UTF-32."""
+        """Returns `True` if the encoding is UTF-16 or UTF-32."""
         return is_wide_utf(self.encoding)
 
     def _decode_bytes(self) -> Text:
@@ -205,6 +205,6 @@ class DecodingAttempt:
         return txt
 
     def _failed_to_decode_msg_txt(self, exception: Optional[Exception]) -> Text:
-        """Set failed_to_decode flag and return a Text object with the error message."""
+        """Set `self.failed_to_decode` flag and return a `Text` object with the error message."""
         self.failed_to_decode = True
         return prefix_with_style(f"(decode failed: {exception})", style='red dim italic')

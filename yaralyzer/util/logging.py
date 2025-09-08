@@ -37,7 +37,7 @@ ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
 
 
 def configure_logger(log_label: str) -> logging.Logger:
-    """Set up a file or stream logger depending on the configuration."""
+    """Set up a file or stream `logger` depending on the configuration."""
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)
 
@@ -70,14 +70,14 @@ if YaralyzerConfig.LOG_DIR:
     invocation_log.setLevel('INFO')
 
 
-def log_and_print(msg: str, log_level='INFO'):
-    """Both print and log (at INFO level) a string."""
+def log_and_print(msg: str, log_level: str = 'INFO'):
+    """Both print and log a string."""
     log.log(logging.getLevelName(log_level), msg)
     print(msg)
 
 
 def log_current_config():
-    """Write current state of YaralyzerConfig object to the logs."""
+    """Write current state of `YaralyzerConfig` object to the logs."""
     msg = f"{YaralyzerConfig.__name__} current attributes:\n"
     config_dict = {k: v for k, v in vars(YaralyzerConfig).items() if not k.startswith('__')}
 
@@ -95,7 +95,7 @@ def log_invocation() -> None:
 
 
 def log_argparse_result(args, label: str):
-    """Logs the result of argparse."""
+    """Logs the result of `argparse`."""
     args_dict = vars(args)
     log_msg = f'{label} argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
 

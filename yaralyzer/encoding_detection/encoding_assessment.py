@@ -15,7 +15,7 @@ LANGUAGE = 'language'
 
 class EncodingAssessment:
     """
-    Class to smooth some of the rough edges around the dicts returned by `chardet.detect_all()`.
+    Class to smooth some of the rough edges around the `dict`s returned by `chardet.detect_all()`.
 
     Attributes:
         assessment (dict): The dict returned by `chardet.detect_all()`.
@@ -29,7 +29,7 @@ class EncodingAssessment:
     def __init__(self, assessment: dict) -> None:
         """
         Args:
-            assessment (dict): The dict returned by `chardet.detect_all()`.
+            assessment (dict): The `dict` returned by `chardet.detect_all()`.
         """
         self.assessment = assessment
         self.encoding = assessment[ENCODING].lower()

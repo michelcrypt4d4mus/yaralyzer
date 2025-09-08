@@ -129,8 +129,8 @@ class Yaralyzer:
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
 
         Raises:
-            TypeError: If `yara_rules_files` is not a list.
             FileNotFoundError: If any file in `yara_rules_files` does not exist.
+            TypeError: If `yara_rules_files` is not a list.
         """
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")

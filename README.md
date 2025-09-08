@@ -45,7 +45,7 @@ YARA just tells you the byte position and the matched string but it can't tell y
 
 Enter **The Yaralyzer**, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were forced into various character encodings.
 
-It's important to note that **The Yaralyzer** isn't a full on malware reversing tool. It can't do all the things a tool like [CyberChef](https://gchq.github.io/CyberChef/) does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool like [CyberChef](https://gchq.github.io/CyberChef/).
+**The Yaralyzer** isn't a malware reversing tool. It can't do all the things a tool like [CyberChef](https://gchq.github.io/CyberChef/) does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool like [CyberChef](https://gchq.github.io/CyberChef/).
 
 # Installation
 Install it with [`pipx`](https://pypa.github.io/pipx/) or `pip3`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
@@ -75,7 +75,7 @@ Only one `.yaralyzer` file will be loaded and the working directory's `.yaralyze
 1. Scanning `bytes`
 1. Scanning a file
 
-Should you want to iterate over the `BytesMatch` (like a `re.Match` object for a YARA match) and `BytesDecoder` (tracks decoding attempt stats) objects returned by The Yaralyzer, you can do so like this:
+Should you want to iterate over the [`BytesMatch`](https://michelcrypt4d4mus.github.io/yaralyzer/api/bytes_match/) (like a `re.Match` object for a YARA match) and [`BytesDecoder`](https://michelcrypt4d4mus.github.io/yaralyzer/api/bytes_decoder/) (tracks decoding attempt stats) objects used by The Yaralyzer, you can do so like this:
 
 ```python
 from yaralyzer.yaralyzer import Yaralyzer

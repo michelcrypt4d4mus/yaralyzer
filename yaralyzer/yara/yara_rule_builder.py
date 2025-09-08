@@ -65,7 +65,20 @@ def yara_rule_string(
     pattern_label: Optional[str] = PATTERN,
     modifier: Optional[str] = None
 ) -> str:
-    """Build a YARA rule string for a given pattern"""
+    """
+    Build a YARA rule string for a given `pattern`.
+
+    Args:
+        pattern (str): The string or regex pattern to match.
+        pattern_type (str): Either 'regex' or 'hex'. Default is 'regex'.
+        rule_name (str): The name of the YARA rule. Default is 'YARALYZE'.
+        pattern_label (Optional[str]): The label for the pattern in the YARA rule. Default is 'pattern'.
+        modifier (Optional[str]): Optional regex modifier (e.g. 'nocase', 'ascii', 'wide', 'fullword').
+            Only valid if `pattern_type` is 'regex'.
+
+    Returns:
+        str: The constructed YARA rule as a string.
+    """
     if not (modifier is None or modifier in YARA_REGEX_MODIFIERS):
         raise TypeError(f"Modifier '{modifier}' is not one of {YARA_REGEX_MODIFIERS}")
 
@@ -81,7 +94,8 @@ def yara_rule_string(
         rule_name=rule_name,
         pattern_label=pattern_label,
         pattern=pattern,
-        modifier='' if modifier is None else f" {modifier}")
+        modifier='' if modifier is None else f" {modifier}"
+    )
 
     log.debug(f"Built YARA rule: \n{rule}")
     return rule
@@ -94,13 +108,13 @@ def build_yara_rule(
     pattern_label: Optional[str] = PATTERN,
     modifier: Optional[str] = None
 ) -> yara.Rule:
-    """Build a compiled YARA rule"""
+    """Build a compiled `yara.Rule` object."""
     rule_string = yara_rule_string(pattern, pattern_type, rule_name, pattern_label, modifier)
     return yara.compile(source=rule_string)
 
 
 def safe_label(_label: str) -> str:
-    """YARA rule and pattern names can only contain alphanumeric chars"""
+    """YARA rule and pattern names can only contain alphanumeric chars."""
     label = _label
 
     for char, replacement in SAFE_LABEL_REPLACEMENTS.items():

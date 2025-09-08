@@ -1,5 +1,7 @@
 """
-Builds bare bones YARA rules to match strings and regex patterns. Example rule string:
+Builds bare bones YARA rules to match strings and regex patterns.
+
+Example rule string:
 
 ```
 rule Just_A_Piano_Man {

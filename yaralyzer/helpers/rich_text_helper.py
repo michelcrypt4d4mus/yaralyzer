@@ -38,6 +38,7 @@ DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 
 
 def na_txt(style: Union[str, Style] = 'white'):
+    """Standard N/A text for tables and such."""
     return Text('N/A', style=style)
 
 
@@ -46,7 +47,7 @@ def prefix_with_style(_str: str, style: str, root_style=None) -> Text:
     return Text('', style=root_style or 'white') + Text(_str, style)
 
 
-def meter_style(meter_pct):
+def meter_style(meter_pct: float | int) -> str:
     """For coloring numbers between 0 and 100 (AKA pcts). Closer to 100 means greener, closer to 0.0 means bluer."""
     if meter_pct > 100 or meter_pct < 0:
         log.warning(f"Invalid meter_pct: {meter_pct}")
@@ -86,11 +87,6 @@ def reverse_color(style: Style) -> Style:
     return Style(color=style.bgcolor, bgcolor=style.color, underline=style.underline, bold=style.bold)
 
 
-def yaralyzer_show_color_theme() -> None:
-    """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
-    show_color_theme(YARALYZER_THEME_DICT)
-
-
 def show_color_theme(styles: dict) -> None:
     """Print all colors in 'styles' to screen in a grid"""
     console.print(Panel('The Yaralyzer Color Theme', style='reverse'))
@@ -119,3 +115,8 @@ def size_in_bytes_text(num_bytes: int) -> Text:
 def newline_join(texts: List[Text]) -> Text:
     """Join a list of Text objects with newlines between them."""
     return Text("\n").join(texts)
+
+
+def yaralyzer_show_color_theme() -> None:
+    """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
+    show_color_theme(YARALYZER_THEME_DICT)

@@ -1,7 +1,7 @@
 """
 Methods to handle turning various objects into Rich text/table/etc representations
 
-Rich colors: https://rich.readthedocs.io/en/stable/appendix/colors.html
+[Rich color names](https://rich.readthedocs.io/en/stable/appendix/colors.html)
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
 from typing import List, Union

@@ -15,9 +15,9 @@ Logs are not normally ephemeral/not written to files but can be configured to do
 the `YARALYZER_LOG_DIR` env var. See `.yaralyzer.example` for documentation about the side effects
 of setting `YARALYZER_LOG_DIR` to a value.
 
-* https://docs.python.org/3/library/logging.html#logging.basicConfig
+* [logging.basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig)
 
-* https://realpython.com/python-logging/
+* [realpython.com/python-logging/](https://realpython.com/python-logging/)
 
 Python log levels for reference:
 

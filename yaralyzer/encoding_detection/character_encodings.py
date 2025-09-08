@@ -3,9 +3,9 @@ Constants related to character encodings.
 
 Helpful links:
 
-* ISO-8859: https://www.mit.edu/people/kenta/two/iso8859.html
+* ISO-8859: [www.mit.edu/people/kenta/two/iso8859.html](https://www.mit.edu/people/kenta/two/iso8859.html)
 
-* UTF-8: https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec
+* UTF-8: [www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec](https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec)
 """
 
 # Bytes (TODO: why is this here?)

@@ -18,7 +18,7 @@ MEGABYTE = 1024 * KILOBYTE
 
 def config_var_name(env_var: str) -> str:
     """
-    Get the name of env_var and strip off 'YARALYZER_' prefix.
+    Get the name of env_var and strip off `YARALYZER_` prefix.
 
     Example:
         $ SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'

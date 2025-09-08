@@ -1,4 +1,6 @@
-"""BytesMatch class for tracking regex and YARA matches against binary data."""
+"""
+`BytesMatch` class for tracking regex and YARA matches against binary data.
+"""
 import re
 from typing import Iterator, Optional
 
@@ -16,11 +18,8 @@ class BytesMatch:
     """
     Simple class to keep track of regex matches against binary data.
 
-    Basically an re.match object with some (not many) extra bells and whistles, most notably
-    the surrounding_bytes property.
-
-    pre_capture_len and post_capture_len refer to the regex sections before and after the capture group,
-    e.g. a regex like '123(.*)x:' would have pre_capture_len of 3 and post_capture_len of 2.
+    Basically a Regex `re.match` object with some (not many) extra bells and whistles, most notably
+    the `surrounding_bytes` property.
     """
 
     def __init__(
@@ -160,7 +159,7 @@ class BytesMatch:
 
     def style_at_position(self, idx) -> str:
         """
-        Get the style for the byte at position idx within the matched bytes.
+        Get the style for the byte at position `idx` within the matched bytes.
 
         Args:
             idx (int): Index within the surrounding bytes.
@@ -175,7 +174,7 @@ class BytesMatch:
 
     def location(self) -> Text:
         """
-        Get a styled Text object describing the start and end index of the match.
+        Get a styled `Text` object describing the start and end index of the match.
 
         Returns:
             Text: Rich Text object like '(start idx: 348190, end idx: 348228)'.
@@ -196,11 +195,11 @@ class BytesMatch:
         """
         Determine if the matched bytes should be decoded.
 
-        Whether the bytes are decodable depends on whether SUPPRESS_DECODES_TABLE is set
-        and whether the match length is between MIN/MAX_DECODE_LENGTH.
+        Whether the bytes are decodable depends on whether `SUPPRESS_DECODES_TABLE` is set
+        and whether the match length is between `MIN`/`MAX_DECODE_LENGTH`.
 
         Returns:
-            bool: True if decodable, False otherwise.
+            bool: `True` if decodable, `False` otherwise.
         """
         return self.match_length >= YaralyzerConfig.args.min_decode_length \
            and self.match_length <= YaralyzerConfig.args.max_decode_length \
@@ -211,7 +210,7 @@ class BytesMatch:
         Build a table of MD5/SHA hashes for the matched bytes.
 
         Returns:
-            Table: Rich Table object with hashes.
+            Table: Rich `Table` object with hashes.
         """
         return bytes_hashes_table(
             self.bytes,
@@ -224,7 +223,7 @@ class BytesMatch:
         Generate a message for when the match is too short or too long to decode.
 
         Returns:
-            Text: Rich Text object with the suppression notice.
+            Text: Rich `Text` object with the suppression notice.
         """
         txt = self.__rich__()
 
@@ -238,7 +237,7 @@ class BytesMatch:
 
     def to_json(self) -> dict:
         """
-        Convert this BytesMatch to a JSON-serializable dictionary.
+        Convert this `BytesMatch` to a JSON-serializable dictionary.
 
         Returns:
             dict: Dictionary representation of the match, suitable for JSON serialization.
@@ -275,7 +274,7 @@ class BytesMatch:
         self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
 
     def __rich__(self) -> Text:
-        """Get a rich Text representation of the match for display."""
+        """Get a rich `Text` representation of the match for display."""
         headline = prefix_with_style(str(self.match_length), style='number', root_style='decode.subheading')
         headline.append(f" bytes matching ")
         headline.append(f"{self.label} ", style=ALERT_STYLE if self.highlight_style == ALERT_STYLE else 'regex')

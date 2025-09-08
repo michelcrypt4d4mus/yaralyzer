@@ -20,6 +20,19 @@ class EncodingDetector:
     """
     Manager class to ease dealing with the chardet encoding detection library 'chardet'.
     Each instance of this class manages a chardet.detect_all() scan on a single set of bytes.
+
+    Attributes:
+        bytes (bytes): The bytes to analyze.
+        bytes_len (int): The length of the bytes.
+        table (Table): A rich Table object summarizing the chardet results.
+        assessments (List[EncodingAssessment]): List of EncodingAssessment objects from chardet results.
+        unique_assessments (List[EncodingAssessment]): Unique assessments by encoding, highest confidence only.
+        raw_chardet_assessments (List[dict]): Raw list of dicts returned by chardet.detect_all().
+        force_decode_assessments (List[EncodingAssessment]): Assessments above force decode threshold.
+        force_display_assessments (List[EncodingAssessment]): Assessments above force display threshold.
+        has_any_idea (Optional[bool]): True if chardet had any idea what the encoding might be, False if not, None if not run.
+        force_display_threshold (float): Default confidence threshold for forcing display in decoded table (class variable).
+        force_decode_threshold (float): Default confidence threshold for forcing a decode attempt (class variable).
     """
 
     # Default value for encodings w/confidences below this will not be displayed in the decoded table
@@ -29,6 +42,10 @@ class EncodingDetector:
     force_decode_threshold = 50.0
 
     def __init__(self, _bytes: bytes) -> None:
+        """
+        Args:
+            _bytes (bytes): The bytes to analyze with chardet.
+        """
         self.bytes = _bytes
         self.bytes_len = len(_bytes)
         self.table = _empty_chardet_results_table()
@@ -57,7 +74,15 @@ class EncodingDetector:
         self.force_display_assessments = self.assessments_above_confidence(type(self).force_display_threshold)
 
     def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
-        """If chardet produced one, return it, otherwise return a dummy node with confidence of 0."""
+        """
+        Get the chardet assessment for a specific encoding.
+
+        Args:
+            encoding (str): The encoding to look for.
+
+        Returns:
+            EncodingAssessment: Assessment for the given encoding if it exists, otherwise a dummy with 0 confidence.
+        """
         assessment = next((r for r in self.unique_assessments if r.encoding == encoding), None)
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 

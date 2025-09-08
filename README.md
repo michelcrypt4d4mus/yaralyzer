@@ -66,7 +66,7 @@ If you place a file called `.yaralyzer` in your home directory or the current wo
 Only one `.yaralyzer` file will be loaded and the working directory's `.yaralyzer` takes precedence over the home directory's `.yaralyzer`.
 
 ### As A Library
-[`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class. Auto generated documentation for `Yaralyzer`'s various classes and methods can be found [here](https://michelcrypt4d4mus.github.io/yaralyzer/). It has a variety of constructors supporting:
+[`Yaralyzer`](yaralyzer/yaralyzer.py) is the main class. Auto generated documentation for `Yaralyzer`'s various classes and methods can be found [here](https://michelcrypt4d4mus.github.io/yaralyzer/). It has a variety of [alternate constructors](https://michelcrypt4d4mus.github.io/yaralyzer/api/yaralyzer/) supporting:
 
 1. Precompiled YARA rules
 1. Creating a YARA rule from a string

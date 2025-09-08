@@ -26,19 +26,19 @@ class DecodingAttempt:
 
     Attributes:
         bytes (bytes): The bytes (including context) to decode.
-        bytes_match (BytesMatch): The BytesMatch object containing match and context info.
+        bytes_match (BytesMatch): The `BytesMatch` object containing match and context info.
         encoding (str): The encoding to attempt.
         encoding_label (str): Label for the encoding (may include offset info).
         start_offset (int): Byte offset used for decoding (for multi-byte encodings).
         start_offset_label (Optional[str]): String label for the offset, if used.
         was_force_decoded (bool): True if a forced decode was attempted.
         failed_to_decode (bool): True if decoding failed.
-        decoded_string (Text): The decoded string as a Rich Text object (with highlighting).
+        decoded_string (Text): The decoded string as a Rich `Text` object (with highlighting).
     """
 
     def __init__(self, bytes_match: 'BytesMatch', encoding: str) -> None:
         """
-        Initialize a DecodingAttempt for a specific encoding on a given BytesMatch.
+        Initialize a `DecodingAttempt` for a specific `encoding` on a given `BytesMatch`.
 
         Args:
             bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
@@ -63,7 +63,7 @@ class DecodingAttempt:
         """
         Tries builtin decode, hands off to other methods for harsher treatment (byte shifting for
         UTF-16/32 and custom decode for the rest) if that fails. Has side effect of setting
-        'self.decoded_string' value.
+        `self.decoded_string` value.
         """
         try:
             decoded_string = self._to_rich_text(escape(self.bytes.decode(self.encoding)))
@@ -83,7 +83,7 @@ class DecodingAttempt:
             return self._custom_decode()
 
     def _custom_decode(self) -> Text:
-        """Returns a Text obj representing an attempt to force a UTF-8 encoding upon an array of bytes."""
+        """Returns a `Text` obj representing an attempt to force a UTF-8 encoding upon an array of bytes."""
         log.info(f"Custom decoding {self.bytes_match} with {self.encoding}...")
         unprintable_char_map = ENCODINGS_TO_ATTEMPT.get(self.encoding)
         output = Text('', style='bytes.decoded')
@@ -171,7 +171,7 @@ class DecodingAttempt:
             return self._failed_to_decode_msg_txt(last_exception)
 
     def _to_rich_text(self, _string: str, bytes_offset: int = 0) -> Text:
-        """Convert a decoded string to highlighted Text representation."""
+        """Convert a decoded string to highlighted `Text` representation."""
         # Adjust where we start the highlighting given the multibyte nature of the encodings
         log.debug(f"Stepping through {self.encoding} encoded string...")
         txt = Text('', style=self.bytes_match.style_at_position(0))
@@ -185,7 +185,7 @@ class DecodingAttempt:
             is_single_byte_encoding = False
             unprintable_chars = {}
 
-        for i, c in enumerate(_string):
+        for _i, c in enumerate(_string):
             char_bytes = bytes(c, self.encoding)
             char_width = len(char_bytes)
             style = self.bytes_match.style_at_position(current_byte_idx + bytes_offset)

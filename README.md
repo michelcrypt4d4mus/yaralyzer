@@ -53,6 +53,7 @@ Install it with [`pipx`](https://pypa.github.io/pipx/) or `pip3`. `pipx` is a ma
 pipx install yaralyzer
 ```
 
+
 # Usage
 Run `yaralyze -h` to see the command line options (screenshot below).
 

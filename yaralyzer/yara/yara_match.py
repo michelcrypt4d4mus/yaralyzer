@@ -50,14 +50,21 @@ RAW_YARA_THEME_TXT.justify = CENTER
 
 
 class YaraMatch:
+    """Rich text decorator for YARA match dicts."""
+
     def __init__(self, match: dict, matched_against_bytes_label: Text) -> None:
+        """
+        Args:
+            match (dict): The YARA match dict.
+            matched_against_bytes_label (Text): Label indicating what bytes were matched against.
+        """
         self.match = match
         self.rule_name = match['rule']
         self.label = matched_against_bytes_label.copy().append(f" matched rule: '", style='matched_rule')
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
-        """Renders a panel showing the color highlighted raw YARA match info."""
+        """Renders a rich `Panel` showing the color highlighted raw YARA match info."""
         yield Text("\n")
         yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse"), MATCH_PADDING)
         yield RAW_YARA_THEME_TXT
@@ -130,6 +137,7 @@ def _rich_yara_match(element: Any, depth: int = 0) -> Text:
 
 
 def _yara_string(_string: str) -> Text:
+    """Apply special styles to certain types of yara strings (e.g. URLs, numbers, hex, dates, matcher vars)."""
     for regex in YARA_STRING_STYLES.keys():
         if regex.match(_string):
             return Text(_string, YARA_STRING_STYLES[regex])

@@ -40,8 +40,8 @@ class BytesMatch:
             start_idx (int): Start index of the match in the byte sequence.
             length (int): Length of the match in bytes.
             label (str): Label for the match (e.g., regex or YARA rule name).
-            ordinal (int): The Nth match for this pattern.
-            match (Optional[re.Match]): Regex match object, if available.
+            ordinal (int): This was the Nth match for this pattern (used for labeling only).
+            match (Optional[re.Match]): Regex `match` object, if available.
             highlight_style (str): Style to use for highlighting the match.
         """
         self.matched_against: bytes = matched_against
@@ -70,16 +70,16 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> 'BytesMatch':
         """
-        Construct a `BytesMatch` from a regex match object.
+        Alternate constructor to build a `BytesMatch` from a regex match object.
 
         Args:
             matched_against (bytes): The bytes searched.
-            match (re.Match): The regex match object.
-            ordinal (int): The Nth match for this pattern.
+            match (re.Match): The regex `match` object.
+            ordinal (int): This was the Nth match for this pattern (used for labeling only).
             highlight_style (str): Style for highlighting.
 
         Returns:
-            BytesMatch: The constructed BytesMatch instance.
+            BytesMatch: The constructed `BytesMatch` instance.
         """
         return cls(matched_against, match.start(), len(match[0]), match.re.pattern, ordinal, match, highlight_style)
 
@@ -94,7 +94,7 @@ class BytesMatch:
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> 'BytesMatch':
         """
-        Construct a `BytesMatch` from a YARA string match instance.
+        Alternate constructor to build a `BytesMatch` from a YARA string match instance.
 
         Args:
             matched_against (bytes): The bytes searched.

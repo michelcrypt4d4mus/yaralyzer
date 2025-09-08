@@ -105,7 +105,7 @@ console = Console(theme=YARALYZER_THEME, color_system='256', highlight=False, wi
 
 
 def console_print_with_fallback(_string: Text | str, style=None) -> None:
-    """rich.console.print() with fallback to regular print() if there's a Markup issue."""
+    """`rich.console.print()` with fallback to regular `print()` if there's a Rich Markup issue."""
     try:
         console.print(_string, style=style)
     except MarkupError:
@@ -114,13 +114,13 @@ def console_print_with_fallback(_string: Text | str, style=None) -> None:
 
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:
-    """Return a list of (name, style) Text objects for all styles in the theme that start with 'prefix'."""
+    """Return a list of (name, style) `Text` objects for all styles in the theme that start with `prefix`."""
     return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]
 
 
 def print_fatal_error_and_exit(error_message: str) -> None:
     """
-    Print a fatal error message in a panel and exit.
+    Print a fatal error message in a `Panel` and exit.
 
     Args:
         error_message (str): The error message to display.
@@ -133,7 +133,7 @@ def print_fatal_error_and_exit(error_message: str) -> None:
 
 def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0, 2)) -> None:
     """
-    Print a headline inside a styled Rich Panel to the console.
+    Print a headline inside a styled Rich `Panel` to the console.
 
     Args:
         headline (str): The text to display as the panel's headline.

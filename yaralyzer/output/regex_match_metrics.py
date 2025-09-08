@@ -1,4 +1,6 @@
-"""RegexMatchMetrics class."""
+"""
+`RegexMatchMetrics` class.
+"""
 from collections import defaultdict
 
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
@@ -7,13 +9,25 @@ from yaralyzer.util.logging import log
 
 class RegexMatchMetrics:
     """
-    Class to  measure what we enounter as we iterate over every single match of a relatively simple byte level regex.
-
-    (e.g. "bytes between quotes") against a relatively large pool of close to random encrypted binary data.
+    Class to measure what we enounter as we iterate over all matches of a relatively simple byte level regex.
 
     Things like how much many of our matched bytes were we able to decode easily vs. by force vs. not at all,
-    were some encodings have a higher pct of success than others (indicating part of our mystery data might be encoded
-    that way?
+    were some encodings have a higher pct of success than others (indicating part of our mystery data might be
+    encoded that way?
+
+    Example:
+        "Find bytes between quotes" against a relatively large pool of close to random encrypted binary data.
+
+    Attributes:
+        match_count (int): Total number of matches found.
+        bytes_matched (int): Total number of bytes matched across all matches.
+        matches_decoded (int): Number of matches where we were able to decode at least some of the matched bytes.
+        easy_decode_count (int): Number of matches where we were able to decode the matched bytes without forcing.
+        forced_decode_count (int): Number of matches where we were only able to decode the matched bytes by forcing.
+        undecodable_count (int): Number of matches where we were unable to decode any of the matched bytes.
+        skipped_matches_lengths (defaultdict): Dictionary mapping lengths of skipped matches to their counts.
+        bytes_match_objs (list): List of `BytesMatch` objects for all matches encountered.
+        per_encoding_stats (defaultdict): Dictionary mapping encoding names to their respective `RegexMatchMetrics`.
 
     TODO: use @dataclass decorator https://realpython.com/python-data-classes/
     """
@@ -30,12 +44,20 @@ class RegexMatchMetrics:
         self.per_encoding_stats = defaultdict(lambda: RegexMatchMetrics())
 
     def num_matches_skipped_for_being_empty(self) -> int:
+        """Number of matches skipped for being empty (0 length)."""
         return self.skipped_matches_lengths[0]
 
     def num_matches_skipped_for_being_too_big(self) -> int:
+        """Number of matches skipped for being too big to decode."""
         return sum({k: v for k, v in self.skipped_matches_lengths.items() if k > 0}.values())
 
     def tally_match(self, decoder: BytesDecoder) -> None:
+        """
+        Tally statistics from a `BytesDecoder` after it has processed a match.
+
+        Args:
+            decoder (BytesDecoder): The `BytesDecoder` that processed a match.
+        """
         log.debug(f"Tallying {decoder.bytes_match} ({len(decoder.decodings)} decodings)")
         self.match_count += 1
         self.bytes_matched += decoder.bytes_match.match_length

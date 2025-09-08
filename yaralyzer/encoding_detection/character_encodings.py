@@ -1,8 +1,11 @@
 """
 Constants related to character encodings.
 
-* https://www.mit.edu/people/kenta/two/iso8859.html
-* https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec
+Helpful links:
+
+* ISO-8859: https://www.mit.edu/people/kenta/two/iso8859.html
+
+* UTF-8: https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec
 """
 
 # Bytes (TODO: why is this here?)

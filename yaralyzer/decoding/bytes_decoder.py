@@ -99,7 +99,7 @@ class BytesDecoder:
         First rows are the raw / hex views of the bytes, next rows are the attempted decodings.
 
         Args:
-            suppress_decodes (bool, optional): If True, do not add decoding attempts to the table.
+            suppress_decodes (bool, optional): If `True`, do not add decoding attempts to the table. Defaults to `False`.
         """
         self.table = new_decoding_attempts_table(self.bytes_match)
 

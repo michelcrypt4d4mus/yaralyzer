@@ -88,7 +88,7 @@ def clean_byte_string(bytes_array: bytes) -> str:
 
 def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     """
-    Return a rich Text object of raw bytes, highlighting the matched bytes.
+    Return a rich `Text` object of raw bytes, highlighting the matched bytes.
 
     Args:
         _bytes (bytes): The full byte sequence.
@@ -198,7 +198,7 @@ def hex_string(_bytes: bytes) -> str:
 
 def print_bytes(bytes_array: bytes, style=None) -> None:
     """
-    Print a string representation of bytes to the console.
+    Print a string representation of some bytes to the console.
 
     Args:
         bytes_array (bytes): The bytes to print.

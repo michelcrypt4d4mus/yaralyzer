@@ -45,7 +45,7 @@ class EncodingAssessment:
     @classmethod
     def dummy_encoding_assessment(cls, encoding: str) -> 'EncodingAssessment':
         """
-        Build an empty `EncodingAssessment` to use as a dummy when `chardet` gives us nothing.
+        Construct an empty `EncodingAssessment` to use as a dummy when `chardet` gives us nothing.
 
         Args:
             encoding (str): The encoding to use for the dummy assessment.

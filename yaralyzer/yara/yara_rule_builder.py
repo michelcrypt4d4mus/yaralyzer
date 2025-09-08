@@ -118,7 +118,14 @@ def build_yara_rule(
 
 
 def safe_label(_label: str) -> str:
-    """YARA rule and pattern names can only contain alphanumeric chars."""
+    """
+    YARA rule and pattern names can only contain alphanumeric chars.
+
+    Args:
+        _label (str): The label to sanitize.
+    Returns:
+        str: A sanitized label safe for use in YARA rules.
+    """
     label = _label
 
     for char, replacement in SAFE_LABEL_REPLACEMENTS.items():

@@ -55,10 +55,6 @@ class DecodingAttempt:
         self.failed_to_decode = False
         self.decoded_string = self._decode_bytes()
 
-    def is_wide_utf_encoding(self) -> bool:
-        """Returns `True` if the encoding is UTF-16 or UTF-32."""
-        return is_wide_utf(self.encoding)
-
     def _decode_bytes(self) -> Text:
         """
         Tries builtin decode, hands off to other methods for harsher treatment (byte shifting for
@@ -77,7 +73,7 @@ class DecodingAttempt:
 
         self.was_force_decoded = True
 
-        if self.is_wide_utf_encoding():
+        if is_wide_utf(self.encoding):
             return self._decode_utf_multibyte()
         else:
             return self._custom_decode()

@@ -1,4 +1,6 @@
-"""BytesDecoder class for attempting to decode bytes with various encodings."""
+"""
+BytesDecoder class for attempting to decode bytes with various encodings.
+"""
 from collections import defaultdict
 from copy import deepcopy
 from operator import attrgetter
@@ -31,10 +33,23 @@ SCORE_SCALER = 100.0
 
 class BytesDecoder:
     """
-    Class to handle attempting to decode a chunk of bytes into strings with various possible encodings.
+    Handles decoding a chunk of bytes into strings using various possible encodings, ranking and displaying results.
 
-    Leverages the chardet library to both guide what encodings are attempted as well as to rank decodings
-    in the results.
+    This class leverages the chardet library and custom logic to try multiple encodings, track decoding outcomes,
+    and present the results in a rich, user-friendly format. It is used to analyze and display the possible
+    interpretations of a byte sequence, especially in the context of YARA matches or binary analysis.
+
+    Attributes:
+        bytes_match (BytesMatch): The BytesMatch instance being decoded.
+        bytes (bytes): The bytes (including surrounding context) to decode.
+        label (str): Label for this decoding attempt.
+        was_match_decodable (dict): Tracks successful decodes per encoding.
+        was_match_force_decoded (dict): Tracks forced decodes per encoding.
+        was_match_undecodable (dict): Tracks failed decodes per encoding.
+        decoded_strings (dict): Maps encoding to decoded string.
+        undecoded_rows (list): Stores undecoded table rows.
+        decodings (list): List of DecodingAttempt objects for each encoding tried.
+        encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
     """
 
     def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
@@ -44,18 +59,6 @@ class BytesDecoder:
         Args:
             bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
             label (Optional[str], optional): Optional label for this decoding attempt. Defaults to the match label.
-
-        Attributes:
-            bytes_match (BytesMatch): The BytesMatch instance being decoded.
-            bytes (bytes): The bytes (including surrounding context) to decode.
-            label (str): Label for this decoding attempt.
-            was_match_decodable (dict): Tracks successful decodes per encoding.
-            was_match_force_decoded (dict): Tracks forced decodes per encoding.
-            was_match_undecodable (dict): Tracks failed decodes per encoding.
-            decoded_strings (dict): Maps encoding to decoded string.
-            undecoded_rows (list): Stores undecoded table rows.
-            decodings (list): List of DecodingAttempt objects for each encoding tried.
-            encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
         """
         self.bytes_match = bytes_match
         self.bytes = bytes_match.surrounding_bytes
@@ -92,7 +95,12 @@ class BytesDecoder:
         yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
     def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
-        """First rows are the raw / hex views of the bytes, next rows are the attempted decodings."""
+        """
+        First rows are the raw / hex views of the bytes, next rows are the attempted decodings.
+
+        Args:
+            suppress_decodes (bool, optional): If True, do not add decoding attempts to the table.
+        """
         self.table = new_decoding_attempts_table(self.bytes_match)
 
         # Add the encoding rows to the table if not suppressed
@@ -124,15 +132,15 @@ class BytesDecoder:
         return self._undecoded_assessments(self.encoding_detector.force_display_assessments)
 
     def _undecoded_assessments(self, assessments: List[EncodingAssessment]) -> List[EncodingAssessment]:
-        """Filter out the already decoded assessments from a set of assessments"""
+        """Filter out the already decoded assessments from a set of assessments."""
         return [a for a in assessments if not self._was_decoded(a.encoding)]
 
     def _was_decoded(self, encoding: str) -> bool:
-        """Check whether a given encoding is in the table already"""
+        """Check whether a given encoding is in the table already."""
         return any(row.encoding == encoding for row in self.decodings)
 
     def _decode_attempt_subheading(self) -> Panel:
-        """Generate a rich.Panel for displaying decode attempts"""
+        """Generate a rich.Panel for displaying decode attempts."""
         headline = Text(f"Found ", style='decode.subheading') + self.bytes_match.__rich__()
         return Panel(headline, style='decode.subheading', expand=False)
 

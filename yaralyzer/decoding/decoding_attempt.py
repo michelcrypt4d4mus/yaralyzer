@@ -1,4 +1,6 @@
-"""Class to manage attempting to decode a chunk of bytes into strings with a given encoding."""
+"""
+Class to manage attempting to decode a chunk of bytes into strings with a given encoding.
+"""
 from sys import byteorder
 from typing import Optional
 
@@ -15,10 +17,33 @@ from yaralyzer.util.logging import log
 
 
 class DecodingAttempt:
-    """Class to manage attempting to decode a chunk of bytes into strings with a given encoding."""
+    """
+    Manages the process of attempting to decode a chunk of bytes into a string using a specified encoding.
+
+    This class tries to decode the bytes using the provided encoding, handling both standard and custom decoding
+    strategies (including multi-byte encodings and forced decoding attempts). It tracks the outcome, highlights
+    the decoded output, and provides information about the decoding process.
+
+    Attributes:
+        bytes (bytes): The bytes (including context) to decode.
+        bytes_match (BytesMatch): The BytesMatch object containing match and context info.
+        encoding (str): The encoding to attempt.
+        encoding_label (str): Label for the encoding (may include offset info).
+        start_offset (int): Byte offset used for decoding (for multi-byte encodings).
+        start_offset_label (Optional[str]): String label for the offset, if used.
+        was_force_decoded (bool): True if a forced decode was attempted.
+        failed_to_decode (bool): True if decoding failed.
+        decoded_string (Text): The decoded string as a Rich Text object (with highlighting).
+    """
 
     def __init__(self, bytes_match: 'BytesMatch', encoding: str) -> None:
-        # Args
+        """
+        Initialize a DecodingAttempt for a specific encoding on a given BytesMatch.
+
+        Args:
+            bytes_match (BytesMatch): The BytesMatch object containing the bytes to decode and match metadata.
+            encoding (str): The encoding to attempt for decoding the bytes.
+        """
         self.bytes = bytes_match.surrounding_bytes
         self.bytes_match = bytes_match
         self.encoding = encoding
@@ -36,9 +61,9 @@ class DecodingAttempt:
 
     def _decode_bytes(self) -> Text:
         """
-        Tries builtin decode, hands off to other methods for harsher treatement
-        (byte shifting for UTF-16/32 and custom decode for the rest) if that fails.
-        Has side effect of setting 'self.decoded_string' value.
+        Tries builtin decode, hands off to other methods for harsher treatment (byte shifting for
+        UTF-16/32 and custom decode for the rest) if that fails. Has side effect of setting
+        'self.decoded_string' value.
         """
         try:
             decoded_string = self._to_rich_text(escape(self.bytes.decode(self.encoding)))

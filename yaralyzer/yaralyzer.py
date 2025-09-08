@@ -39,6 +39,17 @@ class Yaralyzer:
     * YARA rules should be read from a directory of .yara files
 
     The real action happens in the `__rich__console__()` dunder method.
+
+    Attributes:
+        bytes (bytes): The binary data to scan.
+        bytes_length (int): The length of the binary data.
+        scannable_label (str): A label for the binary data, typically the filename or a user-provided label.
+        rules (yara.Rules): The compiled YARA rules to use for scanning.
+        rules_label (str): A label for the ruleset, typically derived from filenames or user input.
+        highlight_style (str): The style to use for highlighting matches in the output.
+        non_matches (List[dict]): A list of YARA rules that did not match the binary data.
+        matches (List[YaraMatch]): A list of YaraMatch objects representing the matches found.
+        extraction_stats (RegexMatchMetrics): Metrics related to decoding attempts on matched data
     """
 
     def __init__(

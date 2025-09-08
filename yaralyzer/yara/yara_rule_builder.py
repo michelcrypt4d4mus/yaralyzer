@@ -26,9 +26,9 @@ PatternType = Literal['hex', 'regex']
 YaraModifierType = Literal['ascii', 'fullword', 'nocase', 'wide']
 
 HEX = 'hex'
+PATTERN = 'pattern'
 REGEX = 'regex'
 RULE = 'rule'
-PATTERN = 'pattern'
 UNDERSCORE = '_'
 YARA_REGEX_MODIFIERS = ['nocase', 'ascii', 'wide', 'fullword']
 

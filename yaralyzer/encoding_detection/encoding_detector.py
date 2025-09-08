@@ -125,7 +125,7 @@ class EncodingDetector:
         self.force_display_assessments = []
 
 
-def _empty_chardet_results_table():
+def _empty_chardet_results_table() -> Table:
     """Returns a fresh table."""
     table = Table(
         'Rank', 'Encoding', 'Confidence',

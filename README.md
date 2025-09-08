@@ -86,7 +86,7 @@ for bytes_match, bytes_decoder in yaralyzer.match_iterator():
     do_stuff()
 ```
 
-### API Documentation
+#### API Documentation
 Auto generated documentation for Yaralyzer's various classes and methods can be found [here](https://michelcrypt4d4mus.github.io/yaralyzer/).
 
 # Example Output

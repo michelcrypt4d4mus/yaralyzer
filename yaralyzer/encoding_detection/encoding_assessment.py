@@ -1,6 +1,4 @@
-"""
-Class to smooth some of the rough edges around the dicts returned by chardet.detect_all()
-"""
+"""EncodingAssessment class."""
 from typing import Any, Optional
 
 from rich.text import Text
@@ -14,7 +12,13 @@ LANGUAGE = 'language'
 
 
 class EncodingAssessment:
+    """Class to smooth some of the rough edges around the dicts returned by chardet.detect_all()"""
+
     def __init__(self, assessment: dict) -> None:
+        """
+        Args:
+            assessment (bytes): The dict returned by chardet.detect_all().
+        """
         self.assessment = assessment
         self.encoding = assessment[ENCODING].lower()
 

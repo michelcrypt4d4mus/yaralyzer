@@ -38,7 +38,7 @@ class Yaralyzer:
 
     * YARA rules should be read from a directory of .yara files
 
-    The real action happens in the __rich__console__() dunder method.
+    The real action happens in the `__rich__console__()` dunder method.
     """
 
     def __init__(

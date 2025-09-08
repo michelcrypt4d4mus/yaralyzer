@@ -1,5 +1,5 @@
 """
-Help with chardet library.
+Helps with `chardet` library.
 """
 from typing import Any, Optional
 
@@ -14,7 +14,7 @@ LANGUAGE = 'language'
 
 
 class EncodingAssessment:
-    """Class to smooth some of the rough edges around the dicts returned by chardet.detect_all()."""
+    """Class to smooth some of the rough edges around the dicts returned by `chardet.detect_all().`"""
 
     def __init__(self, assessment: dict) -> None:
         """

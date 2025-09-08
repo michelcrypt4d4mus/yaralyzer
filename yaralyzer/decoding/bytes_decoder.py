@@ -35,7 +35,7 @@ class BytesDecoder:
     """
     Handles decoding a chunk of bytes into strings using various possible encodings, ranking and displaying results.
 
-    This class leverages the chardet library and custom logic to try multiple encodings, track decoding outcomes,
+    This class leverages the `chardet` library and custom logic to try multiple encodings, track decoding outcomes,
     and present the results in a rich, user-friendly format. It is used to analyze and display the possible
     interpretations of a byte sequence, especially in the context of YARA matches or binary analysis.
 

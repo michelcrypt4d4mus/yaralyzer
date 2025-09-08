@@ -1,4 +1,6 @@
-"""EncodingDetector class for managing chardet encoding detection."""
+"""
+EncodingDetector class for managing chardet encoding detection.
+"""
 from operator import attrgetter
 from typing import List
 

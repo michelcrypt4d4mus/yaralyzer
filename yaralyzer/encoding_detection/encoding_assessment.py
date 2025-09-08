@@ -14,7 +14,7 @@ LANGUAGE = 'language'
 
 
 class EncodingAssessment:
-    """Class to smooth some of the rough edges around the dicts returned by chardet.detect_all()"""
+    """Class to smooth some of the rough edges around the dicts returned by chardet.detect_all()."""
 
     def __init__(self, assessment: dict) -> None:
         """
@@ -40,7 +40,12 @@ class EncodingAssessment:
         return assessment
 
     def set_encoding_label(self, alt_text: Optional[str]) -> None:
-        """Alt text is displayed below the encoding in slightly dimmer font."""
+        """
+        Alt text is displayed below the encoding in slightly dimmer font.
+
+        Args:
+            alt_text (Optional[str]): Alternate text to display with the encoding (often the inferred language)
+        """
         self.encoding_label = Text(self.encoding, 'encoding.header')
 
         if alt_text is not None:

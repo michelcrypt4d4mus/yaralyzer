@@ -25,7 +25,7 @@ HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
 
 
 def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:
-    r"""
+    """
     Get bytes before and after a regex match within a byte sequence.
 
     Args:
@@ -41,7 +41,7 @@ def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=
 
 
 def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num_before=None, num_after=None) -> bytes:
-    r"""
+    """
     Get bytes surrounding a specified range in a byte sequence.
 
     Args:
@@ -87,7 +87,7 @@ def clean_byte_string(bytes_array: bytes) -> str:
 
 
 def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    r"""
+    """
     Return a rich Text object of raw bytes, highlighting the matched bytes.
 
     Args:
@@ -110,7 +110,7 @@ def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    r"""
+    """
     Return a hexadecimal view of raw bytes, highlighting the matched bytes.
 
     Args:
@@ -129,7 +129,7 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    r"""
+    """
     Return an ASCII view of raw bytes, highlighting the matched bytes.
 
     Args:
@@ -171,7 +171,7 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
 
 
 def hex_text(_bytes: bytes) -> Text:
-    r"""
+    """
     Return a rich Text object of the hex string for the given bytes.
 
     Args:
@@ -184,7 +184,7 @@ def hex_text(_bytes: bytes) -> Text:
 
 
 def hex_string(_bytes: bytes) -> str:
-    r"""
+    """
     Return a hex string representation of the given bytes.
 
     Args:
@@ -197,7 +197,7 @@ def hex_string(_bytes: bytes) -> str:
 
 
 def print_bytes(bytes_array: bytes, style=None) -> None:
-    r"""
+    """
     Print a string representation of bytes to the console.
 
     Args:
@@ -209,7 +209,7 @@ def print_bytes(bytes_array: bytes, style=None) -> None:
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:
-    r"""
+    """
     Truncate bytes to a multiple of the character width for the given encoding.
     For example, for utf-16 this means truncating to a multiple of 2, for utf-32 to a multiple of 4.
 

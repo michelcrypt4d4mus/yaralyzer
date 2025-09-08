@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Bump `python-dotenv` to v1.1.1
 * Use `mkdocs` and `lazydocs` to build automatic API documentation at https://michelcrypt4d4mus.github.io/yaralyzer/
 * Drop python 3.9 support (required by `mkdocs-awesome-nav` package)
 

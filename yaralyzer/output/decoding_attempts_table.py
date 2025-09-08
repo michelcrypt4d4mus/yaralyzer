@@ -4,7 +4,9 @@ Methods to build the rich.table used to display decoding attempts of a given byt
 Final output should be rich.table of decoding attempts that are sorted like this:
 
     1. String representation of undecoded bytes is always the first row
+
     2. Encodings which chardet.detect() ranked as > 0% likelihood are sorted based on that confidence
+
     3. Then the unchardetectable:
         1. Decodings that were successful, unforced, and new
         2. Decodings that 'successful' but forced
@@ -65,7 +67,15 @@ def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
 
 
 def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> DecodingTableRow:
-    """Build a table row for a decoding attempt."""
+    """
+    Build a table row for a decoding attempt.
+
+    Args:
+        assessment (EncodingAssessment): The chardet assessment for the encoding used.
+        is_forced (Text): Text indicating if the decode was forced.
+        txt (Text): The decoded string as a Rich Text object (with highlighting).
+        score (float): The score to use for sorting this row in the table.
+    """
     return DecodingTableRow(
         assessment.encoding_label,
         assessment.confidence_text,
@@ -78,7 +88,7 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
     )
 
 
-def assessment_only_row(assessment: EncodingAssessment, score) -> DecodingTableRow:
+def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
     """Build a row with just chardet assessment confidence data and no actual decoding attempt string."""
     return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
 

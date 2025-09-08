@@ -30,8 +30,8 @@ def config_var_name(env_var: str) -> str:
     return f'{env_var=}'.partition('=')[0]
 
 
-def is_env_var_set_and_not_false(var_name):
-    """Return True if var_name is not empty and set to anything other than 'false' (capitalization agnostic)."""
+def is_env_var_set_and_not_false(var_name: str) -> bool:
+    """Return True if `var_name` is not empty and set to anything other than 'false' (capitalization agnostic)."""
     if var_name in environ:
         var_value = environ[var_name]
         return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'
@@ -121,6 +121,6 @@ class YaralyzerConfig:
 
     @classmethod
     def get_default_arg(cls, arg: str) -> Any:
-        """Return the default value for arg as defined by a DEFAULT_ style class variable."""
+        """Return the default value for `arg` as defined by a `DEFAULT_` style class variable."""
         default_var = f"DEFAULT_{arg.upper()}"
         return vars(cls).get(default_var)

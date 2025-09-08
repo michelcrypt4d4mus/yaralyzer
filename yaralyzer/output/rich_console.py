@@ -104,8 +104,8 @@ CONSOLE_PRINT_BYTE_WIDTH = int(CONSOLE_WIDTH / 4.0)
 console = Console(theme=YARALYZER_THEME, color_system='256', highlight=False, width=CONSOLE_WIDTH)
 
 
-def console_print_with_fallback(_string, style=None) -> None:
-    """Fallback to regular print() if there's a Markup issue."""
+def console_print_with_fallback(_string: Text | str, style=None) -> None:
+    """rich.console.print() with fallback to regular print() if there's a Markup issue."""
     try:
         console.print(_string, style=style)
     except MarkupError:
@@ -119,7 +119,12 @@ def theme_colors_with_prefix(prefix: str) -> List[Text]:
 
 
 def print_fatal_error_and_exit(error_message: str) -> None:
-    """Print a fatal error message in a panel and exit."""
+    """
+    Print a fatal error message in a panel and exit.
+
+    Args:
+        error_message (str): The error message to display.
+    """
     console.line(1)
     print_header_panel(error_message, style='bold red reverse')
     console.line(1)
@@ -135,8 +140,5 @@ def print_header_panel(headline: str, style: str, expand: bool = True, padding: 
         style (str): The style to apply to the panel (e.g., color, bold, reverse).
         expand (bool, optional): Whether the panel should expand to the full console width. Defaults to True.
         padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to (0, 2).
-
-    Returns:
-        None
     """
     console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))

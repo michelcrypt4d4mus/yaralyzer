@@ -2,7 +2,7 @@
 import json
 import time
 from os import path
-from typing import Optional
+from typing import Callable, Optional
 
 from rich.terminal_theme import TerminalTheme
 
@@ -67,11 +67,16 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
     return output_path
 
 
-def invoke_rich_export(export_method, output_file_basepath) -> str:
+def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> str:
     """
     Announce the export, perform the export, announce completion.
-    export_method is a Rich.console.save_blah() method, output_file_path is file path w/no extname.
-    Returns the path to path data was exported to.
+
+    Args:
+        export_method (Callable): Rich.console.save_blah() method
+        output_file_basepath (str): Path to write output to. Should have no file extension.
+
+    Returns:
+        str: Path data was exported to.
     """
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]

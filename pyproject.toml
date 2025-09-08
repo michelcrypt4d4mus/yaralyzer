@@ -7,7 +7,7 @@ readme = "README.md"
 license = "GPL-3.0-or-later"
 homepage = "https://github.com/michelcrypt4d4mus/yaralyzer"
 repository = "https://github.com/michelcrypt4d4mus/yaralyzer"
-documentation = "https://github.com/michelcrypt4d4mus/yaralyzer"
+documentation = "https://michelcrypt4d4mus.github.io/yaralyzer/"
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",

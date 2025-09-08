@@ -22,7 +22,8 @@ def bytes_hashes_table(
     Build a Rich `Table` displaying the size, MD5, SHA1, and SHA256 hashes of a byte sequence.
 
     Args:
-        bytes_or_bytes_info (Union[bytes, BytesInfo]): The `bytes` to hash, or a `BytesInfo` namedtuple with precomputed values.
+        bytes_or_bytes_info (Union[bytes, BytesInfo]): The `bytes` to hash, or a `BytesInfo`
+            namedtuple with precomputed values.
         title (Optional[str], optional): Optional title for the table. Defaults to `None`.
         title_justify (str, optional): Justification for the table title. Defaults to `"LEFT"`.
 

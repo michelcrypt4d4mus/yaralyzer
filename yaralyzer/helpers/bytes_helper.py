@@ -30,9 +30,10 @@ def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=
 
     Args:
         _bytes (bytes): The full byte sequence.
-        match (re.Match): The regex match object.
-        num_before (int, optional): Number of bytes before the match to include. Defaults to config.
-        num_after (int, optional): Number of bytes after the match to include. Defaults to either config or num_before value.
+        match (re.Match): The regex `Match` object.
+        num_before (int, optional): Number of bytes before the match to include. Defaults to configured value.
+        num_after (int, optional): Number of bytes after the match to include. Defaults to either configured value
+            or the `num_before` arg value.
 
     Returns:
         bytes: The surrounding bytes including the match.
@@ -48,8 +49,8 @@ def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num
         _bytes (bytes): The full byte sequence.
         start_idx (int): Start index of the range.
         end_idx (int): End index of the range.
-        num_before (int, optional): Number of bytes before the range. Defaults to config.
-        num_after (int, optional): Number of bytes after the range. Defaults to config.
+        num_before (int, optional): Number of bytes before the range. Defaults to configured value.
+        num_after (int, optional): Number of bytes after the range. Defaults to configured value.
 
     Returns:
         bytes: The surrounding bytes including the range.
@@ -246,8 +247,8 @@ def _find_str_rep_of_bytes(surrounding_bytes_str: str, highlighted_bytes_str: st
         int: The index in the surrounding string where the highlighted bytes start, or -1 if not found.
     """
     # Start a few chars in to avoid errors: sometimes we're searching for 1 or 2 bytes and there's a false positive
-    # in the extra bytes. Tthis isn't perfect - it's starting us at the first index into the *bytes* that's safe to
-    # check but this is almost certainly far too soon given the large % of bytes that take 4 chars to print ('\x02' etc)
+    # in the extra bytes. This isn't perfect - it's starting us at the first index into the *bytes* that's safe to
+    # check but this is almost certainly too soon given the large % of bytes that take 4 chars to print ('\x02' etc)
     highlight_idx = surrounding_bytes_str.find(highlighted_bytes_str, highlighted_bytes.highlight_start_idx)
 
     # TODO: Somehow \' and ' don't always come out the same :(

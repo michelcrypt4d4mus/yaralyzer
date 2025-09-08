@@ -1,6 +1,6 @@
 """Main Yaralyzer class and alternate constructors."""
 from os import path
-from typing import Iterator, List, Optional, Tuple, Union
+from typing import Callable, Iterator, List, Optional, Tuple, Union
 
 import yara
 from rich.console import Console, ConsoleOptions, RenderResult
@@ -64,11 +64,16 @@ class Yaralyzer:
         Initialize a `Yaralyzer` instance for scanning binary data with YARA rules.
 
         Args:
-            rules (Union[str, yara.Rules]): YARA rules to use for scanning. Can be a string (YARA rule source) or a pre-compiled yara.Rules object. If a string is provided, it will be compiled.
+            rules (Union[str, yara.Rules]): YARA rules to use for scanning. Can be a string or a pre-compiled
+                `yara.Rules` object. If it's a string it will be compiled to a `yara.Rules`.
             rules_label (str): Label to identify the ruleset in output and logs.
-            scannable (Union[bytes, str]): The data to scan. If bytes, raw data is scanned; if str, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the scannable data. Required if scannable is bytes. If scannable is a file path, defaults to the file's basename.
-            highlight_style (str, optional): Style to use for highlighting matches in output. Defaults to YaralyzerConfig.HIGHLIGHT_STYLE.
+            scannable (Union[bytes, str]): The data to scan. If it's `bytes` type then that data is scanned;
+                if it's a string it is treated as a file path to load bytes from.
+            scannable_label (Optional[str], optional): Label for the `scannable` arg data.
+                Required if `scannable` is `bytes`.
+                If `scannable` is a file path it will default to the file's basename.
+            highlight_style (str, optional): Style to use for highlighting matches in output.
+                Defaults to `YaralyzerConfig.HIGHLIGHT_STYLE`.
 
         Raises:
             TypeError: If `scannable` is `bytes` and `scannable_label` is not provided.
@@ -117,8 +122,10 @@ class Yaralyzer:
 
         Args:
             yara_rules_files (List[str]): List of file paths to YARA rules files.
-            scannable (Union[bytes, str]): The data to scan. If bytes, raw data is scanned; if str, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the scannable data. Required if scannable is bytes. If scannable is a file path, defaults to the file's basename.
+            scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
+                if `str`, it is treated as a file path to load bytes from.
+            scannable_label (Optional[str], optional): Label for the `scannable` data.
+                Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
         """
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
@@ -149,8 +156,10 @@ class Yaralyzer:
 
         Args:
             dirs (List[str]): List of directories to search for `.yara` files.
-            scannable (Union[bytes, str]): The data to scan. If bytes, raw data is scanned; if str, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the scannable data. Required if scannable is bytes. If scannable is a file path, defaults to the file's basename.
+            scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
+                if `str`, it is treated as a file path to load bytes from.
+            scannable_label (Optional[str], optional): Label for the `scannable` data.
+                Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
         """
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
             raise TypeError(f"'{dirs}' is not a list of valid directories")
@@ -169,7 +178,22 @@ class Yaralyzer:
         pattern_label: Optional[str] = None,
         regex_modifier: Optional[str] = None,
     ) -> 'Yaralyzer':
-        """Constructor taking regex pattern strings. Rules label defaults to patterns joined by comma."""
+        """
+        Alternate constructor taking regex pattern strings. Rules label defaults to the patterns joined by comma.
+
+        Args:
+            patterns (List[str]): List of regex or hex patterns to build rules from.
+            patterns_type (str): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
+            scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
+                if `str`, it is treated as a file path to load bytes from.
+            scannable_label (Optional[str], optional): Label for the `scannable` data.
+                Required if `scannable` is `bytes`.
+                If scannable is a file path, defaults to the file's basename.
+            rules_label (Optional[str], optional): Label for the ruleset. Defaults to the patterns joined by comma.
+            pattern_label (Optional[str], optional): Label for each pattern in the YARA rules. Defaults to "pattern".
+            regex_modifier (Optional[str], optional): Optional regex modifier (e.g. "nocase", "ascii", "wide", etc).
+                Only valid if `patterns_type` is `"regex"`.
+        """
         rule_strings = []
 
         for i, pattern in enumerate(patterns):
@@ -211,8 +235,16 @@ class Yaralyzer:
 
         self._print_non_matches()
 
-    def _yara_callback(self, data: dict):
-        """Callback invoked by `yara-python` to handle matches and non-matches as they are discovered."""
+    def _yara_callback(self, data: dict) -> Callable:
+        """
+        Callback invoked by `yara-python` to handle matches and non-matches as they are discovered.
+
+        Args:
+            data (dict): Data provided when `yara-python` invokes the callback.
+
+        Returns:
+            Callable: Always returns `yara.CALLBACK_CONTINUE` to signal `yara-python` should continue processing.
+        """
         if data['matches']:
             self.matches.append(YaraMatch(data, self._panel_text()))
         else:

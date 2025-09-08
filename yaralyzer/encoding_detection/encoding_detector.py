@@ -31,9 +31,11 @@ class EncodingDetector:
         raw_chardet_assessments (List[dict]): Raw list of dicts returned by `chardet.detect_all()`.
         force_decode_assessments (List[EncodingAssessment]): Assessments above force decode threshold.
         force_display_assessments (List[EncodingAssessment]): Assessments above force display threshold.
-        has_any_idea (Optional[bool]): `True` if `chardet` had any idea what the encoding might be, `False` if not, `None` if not run.
-        force_display_threshold (float): (class variable) Default confidence threshold for forcing display in decoded table.
-        force_decode_threshold (float): (class variable) Default confidence threshold for forcing a decode attempt.
+        has_any_idea (Optional[bool]): `True` if `chardet` had any idea what the encoding might be,
+            `False` if not, `None` if `chardet` wasn't run yet.
+        force_display_threshold (float): `[class variable]` Default confidence threshold for forcing display
+            in decoded table.
+        force_decode_threshold (float): `[class variable]` Default confidence threshold for forcing a decode attempt.
     """
 
     # Default value for encodings w/confidences below this will not be displayed in the decoded table

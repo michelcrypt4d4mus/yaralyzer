@@ -1,6 +1,7 @@
 """
 Builds bare bones YARA rules to match strings and regex patterns. Example rule string:
 
+```
 rule Just_A_Piano_Man {
     meta:
         author           = "Tim"
@@ -9,6 +10,7 @@ rule Just_A_Piano_Man {
     condition:
         $hilton_producer
 }
+```
 """
 import re
 from typing import Optional

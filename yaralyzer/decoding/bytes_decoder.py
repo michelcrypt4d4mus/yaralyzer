@@ -1,3 +1,4 @@
+"""BytesDecoder class for attempting to decode bytes with various encodings."""
 from collections import defaultdict
 from copy import deepcopy
 from operator import attrgetter

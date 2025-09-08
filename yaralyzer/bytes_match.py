@@ -1,3 +1,4 @@
+"""BytesMatch class for tracking regex and YARA matches against binary data."""
 import re
 from typing import Iterator, Optional
 

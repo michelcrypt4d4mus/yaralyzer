@@ -1,3 +1,4 @@
+"""Class to manage attempting to decode a chunk of bytes into strings with a given encoding."""
 from sys import byteorder
 from typing import Optional
 

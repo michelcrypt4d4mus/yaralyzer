@@ -21,9 +21,10 @@ def config_var_name(env_var: str) -> str:
     Get the name of env_var and strip off `YARALYZER_` prefix.
 
     Example:
-        $ SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
-        $ config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
-
+        ```python
+        SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
+        config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
+        ```
     """
     env_var = env_var.removeprefix("YARALYZER_")
     return f'{env_var=}'.partition('=')[0]

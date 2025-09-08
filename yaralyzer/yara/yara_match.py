@@ -79,10 +79,10 @@ class YaraMatch:
 
 def _rich_yara_match(element: Any, depth: int = 0) -> Text:
     """
-    Painful/hacky way of recursively coloring a yara result hash.
+    Painful/hacky way of recursively coloring a YARA match dict.
 
     Args:
-        element (Any): The element to render (can be dict, list, str, bytes, int, bool).
+        element (Any): The element to render (can be `dict`, `list`, `str`, `bytes`, `int`, `bool`).
         depth (int): Current recursion depth (used for indentation).
 
     Returns:

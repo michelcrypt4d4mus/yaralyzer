@@ -11,7 +11,7 @@ Final output should be a `rich.table` of decoding attempts that are sorted like 
 
         1. Decodings that were successful, unforced, and new
 
-        2. Decodings that 'successful' but forced
+        2. Decodings that were "successful" but forced
 
         3. Decodings that were the same as other decodings
 

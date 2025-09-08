@@ -31,7 +31,7 @@ def config_var_name(env_var: str) -> str:
 
 
 def is_env_var_set_and_not_false(var_name: str) -> bool:
-    """Return `True` if `var_name` is not empty and set to anything other than 'false' (capitalization agnostic)."""
+    """Return `True` if `var_name` is not empty and set to anything other than "false" (capitalization agnostic)."""
     if var_name in environ:
         var_value = environ[var_name]
         return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'

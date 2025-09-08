@@ -69,10 +69,10 @@ UNPRINTABLE_ASCII = {
 }
 
 
-def scrub_c1_control_chars(char_map):
+def scrub_c1_control_chars(char_map: dict) -> None:
     """
-    Fill in a dict with integer keys/values corresponding to where a given char encoding has no chars
-    because this range is for C1 control chars (AKA the 'undefined' part of the character map)
+    Fill in a `dict` with integer keys/values corresponding to where a given char encoding has no chars
+    because this range is for C1 control chars (AKA the "undefined" part of most character maps).
     """
     for i in range(128, 160):
         char_map[i] = f"C1.CHAR{i}"
@@ -164,7 +164,7 @@ WIDE_UTF_ENCODINGS = {
 
 
 def encoding_offsets(encoding: str) -> list:
-    """Get possible offsets for a given encoding. If the encoding is not in WIDE_UTF_ENCODINGS, return [0]."""
+    """Get possible offsets for a given encoding. If the encoding is not in `WIDE_UTF_ENCODINGS`, return `[0]`."""
     return WIDE_UTF_ENCODINGS.get(encoding, [0])
 
 

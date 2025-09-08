@@ -2,19 +2,21 @@
 Rich text decorator for YARA match dicts.
 
 A YARA match is returned as a `dict` with this structure:
-```
-{
-    'tags': ['foo', 'bar'],
-    'matches': True,
-    'namespace': 'default',
-    'rule': 'my_rule',
-    'meta': {},
-    'strings': [
-        StringMatch1,
-        StringMatch2
-    ]
-}
-```
+
+Example:
+    ```
+    {
+        'tags': ['foo', 'bar'],
+        'matches': True,
+        'namespace': 'default',
+        'rule': 'my_rule',
+        'meta': {},
+        'strings': [
+            StringMatch1,
+            StringMatch2
+        ]
+    }
+    ```
 """
 import re
 from numbers import Number

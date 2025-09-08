@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.9
 * Raise `FileNotFoundError` instead of `ValueError` if provided YARA rules files or dirs don't exist
 
 ### 1.0.8

@@ -130,14 +130,14 @@ class Yaralyzer:
 
         Raises:
             TypeError: If `yara_rules_files` is not a list.
-            ValueError: If any file in `yara_rules_files` does not exist.
+            FileNotFoundError: If any file in `yara_rules_files` does not exist.
         """
         if not isinstance(yara_rules_files, list):
             raise TypeError(f"{yara_rules_files} is not a list")
 
         for file in yara_rules_files:
             if not path.exists(file):
-                raise ValueError(f"'{file}' {YARA_FILE_DOES_NOT_EXIST_ERROR_MSG}")
+                raise FileNotFoundError(f"'{file}' {YARA_FILE_DOES_NOT_EXIST_ERROR_MSG}")
 
         filepaths_arg = {path.basename(file): file for file in yara_rules_files}
 
@@ -167,10 +167,10 @@ class Yaralyzer:
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
 
         Raises:
-            TypeError: If `dirs` is not a list of valid directories.
+            FileNotFoundError: If `dirs` is not a list of valid directories.
         """
         if not (isinstance(dirs, list) and all(path.isdir(dir) for dir in dirs)):
-            raise TypeError(f"'{dirs}' is not a list of valid directories")
+            raise FileNotFoundError(f"'{dirs}' is not a list of valid directories")
 
         rules_files = [path.join(dir, f) for dir in dirs for f in files_in_dir(dir)]
         return cls.for_rules_files(rules_files, scannable, scannable_label)

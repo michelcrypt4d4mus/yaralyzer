@@ -93,6 +93,8 @@ def yara_rule_string(
         pattern = f"/{pattern}/"
     elif pattern_type == HEX:
         pattern = f"{{{pattern}}}"
+    else:
+        raise ValueError(f"pattern_type must be either '{REGEX}' or '{HEX}'")
 
     if modifier:
         pattern += f" {modifier}"

@@ -58,7 +58,7 @@ def configure_logger(log_label: str) -> logging.Logger:
 
     if YaralyzerConfig.LOG_DIR:
         if not path.isdir(YaralyzerConfig.LOG_DIR) or not path.isabs(YaralyzerConfig.LOG_DIR):
-            raise RuntimeError(f"Log dir '{YaralyzerConfig.LOG_DIR}' doesn't exist or is not absolute")
+            raise FileNotFoundError(f"Log dir '{YaralyzerConfig.LOG_DIR}' doesn't exist or is not absolute")
 
         log_file_path = path.join(YaralyzerConfig.LOG_DIR, f"{log_name}.log")
         log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')

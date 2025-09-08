@@ -5,6 +5,8 @@ from math import isclose
 from os.path import dirname
 from typing import Tuple
 
+import pytest
+
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.yara.yara_rule_builder import REGEX
@@ -22,6 +24,9 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
     result = _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path))
     assert result[0], result[1]
 
+    with pytest.raises(FileNotFoundError):
+        Yaralyzer.for_rules_files(['nonexistent.file.yara'], il_tulipano_path)
+
 
 def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
     result = _check_output_linecount(
@@ -34,6 +39,9 @@ def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
 def test_yaralyzer_for_rules_dir(il_tulipano_path, tulips_yara_path):
     result = _check_output_linecount(Yaralyzer.for_rules_dirs([dirname(tulips_yara_path)], il_tulipano_path))
     assert result[0], result[1]
+
+    with pytest.raises(FileNotFoundError):
+        Yaralyzer.for_rules_dirs(['nonexistent/dir/'], il_tulipano_path)
 
 
 def test_hex_rules(binary_file_path, tulips_yara_path):

@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Raise `FileNotFoundError` instead of `ValueError` if provided YARA rules files or dirs don't exist
 
 ### 1.0.8
 * Bump `python-dotenv` to v1.1.1

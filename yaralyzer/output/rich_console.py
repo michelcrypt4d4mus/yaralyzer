@@ -138,7 +138,7 @@ def print_header_panel(headline: str, style: str, expand: bool = True, padding: 
     Args:
         headline (str): The text to display as the panel's headline.
         style (str): The style to apply to the panel (e.g., color, bold, reverse).
-        expand (bool, optional): Whether the panel should expand to the full console width. Defaults to True.
-        padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to (0, 2).
+        expand (bool, optional): Whether the panel should expand to the full console width. Defaults to `True`.
+        padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
     """
     console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))

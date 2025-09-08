@@ -37,7 +37,6 @@ class EncodingDetector:
 
     # Default value for encodings w/confidences below this will not be displayed in the decoded table
     force_display_threshold = 20.0
-
     # Default value for what chardet.detect() confidence % should we force a decode with an obscure encoding.
     force_decode_threshold = 50.0
 

@@ -34,7 +34,12 @@ class EncodingAssessment:
 
     @classmethod
     def dummy_encoding_assessment(cls, encoding: str) -> 'EncodingAssessment':
-        """Generate an empty EncodingAssessment to use as a dummy when chardet gives us nothing."""
+        """
+        Build an empty EncodingAssessment to use as a dummy when chardet gives us nothing.
+
+        Args:
+            encoding (str): The encoding to use for the dummy assessment.
+        """
         assessment = cls({ENCODING: encoding, CONFIDENCE: 0.0})
         assessment.confidence_text = Text('none', 'no_attempt')
         return assessment

@@ -1,7 +1,7 @@
-<!-- ![Tests](https://img.shields.io/github/workflow/status/michelcrypt4d4mus/yaralyzer/tests?label=tests) -->
-![Python Version](https://img.shields.io/pypi/pyversions/yaralyzer)
 ![Release](https://img.shields.io/pypi/v/yaralyzer)
 ![Downloads](https://img.shields.io/pypi/dm/yaralyzer)
+[![Tests](https://github.com/michelcrypt4d4mus/yaralyzer/actions/workflows/python-package.yml/badge.svg)](https://github.com/michelcrypt4d4mus/yaralyzer/actions/workflows/python-package.yml)
+![Python Version](https://img.shields.io/pypi/pyversions/yaralyzer)
 
 # THE YARALYZER
 

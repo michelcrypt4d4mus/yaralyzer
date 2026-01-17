@@ -50,24 +50,18 @@ HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
 
 
-def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
-    """Build a new rich `Table` with two rows, the raw and hex views of the `bytes_match` data."""
-    table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
+def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
+    """
+    Build a `DecodingTableRow` with just `chardet` assessment confidence data and no actual decoding attempt string.
 
-    def add_col(title, **kwargs):
-        kwargs['justify'] = kwargs.get('justify', CENTER)
-        table.add_column(title, overflow=FOLD, vertical=MIDDLE, **kwargs)
+    Args:
+        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
+        score (float): The score to use for sorting this row within the table.
 
-    add_col('Encoding', justify=RIGHT, width=12)
-    add_col('Detect Odds', width=len('Detect'))
-    add_col('Used\nForce?', width=len('Force?'))
-    add_col('Decoded Output', justify='left')
-
-    na = na_txt(style=HEX.style)
-    table.add_row(HEX, na, na, _hex_preview_subtable(bytes_match))
-    na = na_txt(style=RAW_BYTES.style)
-    table.add_row(RAW_BYTES, na, na, rich_text_view_of_raw_bytes(bytes_match.surrounding_bytes, bytes_match))
-    return table
+    Returns:
+        DecodingTableRow: The constructed table row named tuple with no decoding attempt string.
+    """
+    return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
 
 
 def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> DecodingTableRow:
@@ -95,18 +89,24 @@ def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Tex
     )
 
 
-def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
-    """
-    Build a `DecodingTableRow` with just `chardet` assessment confidence data and no actual decoding attempt string.
+def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
+    """Build a new rich `Table` with two rows, the raw and hex views of the `bytes_match` data."""
+    table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
 
-    Args:
-        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
-        score (float): The score to use for sorting this row within the table.
+    def add_col(title, **kwargs):
+        kwargs['justify'] = kwargs.get('justify', CENTER)
+        table.add_column(title, overflow=FOLD, vertical=MIDDLE, **kwargs)
 
-    Returns:
-        DecodingTableRow: The constructed table row named tuple with no decoding attempt string.
-    """
-    return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
+    add_col('Encoding', justify=RIGHT, width=12)
+    add_col('Detect Odds', width=len('Detect'))
+    add_col('Used\nForce?', width=len('Force?'))
+    add_col('Decoded Output', justify='left')
+
+    na = na_txt(style=HEX.style)
+    table.add_row(HEX, na, na, _hex_preview_subtable(bytes_match))
+    na = na_txt(style=RAW_BYTES.style)
+    table.add_row(RAW_BYTES, na, na, rich_text_view_of_raw_bytes(bytes_match.surrounding_bytes, bytes_match))
+    return table
 
 
 def _hex_preview_subtable(bytes_match: BytesMatch) -> Table:

@@ -37,14 +37,14 @@ NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
 DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 
 
-def na_txt(style: Union[str, Style] = 'white'):
-    """Standard N/A text for tables and such."""
-    return Text('N/A', style=style)
+def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):
+    """Apply 'dim' style if 'is_dim'. 'style' overrides for Text and applies for strings."""
+    txt = txt.copy() if isinstance(txt, Text) else Text(txt, style=style or '')
 
+    if is_dim:
+        txt.stylize('dim')
 
-def prefix_with_style(_str: str, style: str, root_style: Optional[Union[Style, str]] = None) -> Text:
-    """Sometimes you need a Text() object to start plain lest the underline or whatever last forever."""
-    return Text('', style=root_style or 'white') + Text(_str, style)
+    return txt
 
 
 def meter_style(meter_pct: float | int) -> str:
@@ -63,23 +63,19 @@ def meter_style(meter_pct: float | int) -> str:
     return style
 
 
-def unprintable_byte_to_text(code: str, style: str = '') -> Text:
-    """Used with ASCII escape codes and the like, gives colored results like '[NBSP]'."""
-    style = BYTES_HIGHLIGHT if style == BYTES_BRIGHTEST else style
-    txt = Text('[', style=style)
-    txt.append(code.upper(), style=f"{style} italic dim")
-    txt.append(Text(']', style=style))
-    return txt
+def na_txt(style: Union[str, Style] = 'white'):
+    """Standard N/A text for tables and such."""
+    return Text('N/A', style=style)
 
 
-def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):
-    """Apply 'dim' style if 'is_dim'. 'style' overrides for Text and applies for strings."""
-    txt = txt.copy() if isinstance(txt, Text) else Text(txt, style=style or '')
+def newline_join(texts: List[Text]) -> Text:
+    """Join a list of Text objects with newlines between them."""
+    return Text("\n").join(texts)
 
-    if is_dim:
-        txt.stylize('dim')
 
-    return txt
+def prefix_with_style(_str: str, style: str, root_style: Optional[Union[Style, str]] = None) -> Text:
+    """Sometimes you need a Text() object to start plain lest the underline or whatever last forever."""
+    return Text('', style=root_style or 'white') + Text(_str, style)
 
 
 def reverse_color(style: Style) -> Style:
@@ -100,6 +96,10 @@ def show_color_theme(styles: dict) -> None:
     console.print(Columns(colors, column_first=True, padding=(0, 5), equal=True))
 
 
+def size_in_bytes_text(num_bytes: int) -> Text:
+    return Text(f"{num_bytes:,d}", 'number').append(' bytes', style='white')
+
+
 def size_text(num_bytes: int) -> Text:
     """Convert a number of bytes into (e.g.) 54,213 bytes (52 KB)."""
     kb_txt = prefix_with_style("{:,.1f}".format(num_bytes / 1024), style='bright_cyan', root_style='white')
@@ -108,13 +108,13 @@ def size_text(num_bytes: int) -> Text:
     return kb_txt + bytes_txt
 
 
-def size_in_bytes_text(num_bytes: int) -> Text:
-    return Text(f"{num_bytes:,d}", 'number').append(' bytes', style='white')
-
-
-def newline_join(texts: List[Text]) -> Text:
-    """Join a list of Text objects with newlines between them."""
-    return Text("\n").join(texts)
+def unprintable_byte_to_text(code: str, style: str = '') -> Text:
+    """Used with ASCII escape codes and the like, gives colored results like '[NBSP]'."""
+    style = BYTES_HIGHLIGHT if style == BYTES_BRIGHTEST else style
+    txt = Text('[', style=style)
+    txt.append(code.upper(), style=f"{style} italic dim")
+    txt.append(Text(']', style=style))
+    return txt
 
 
 def yaralyzer_show_color_theme() -> None:

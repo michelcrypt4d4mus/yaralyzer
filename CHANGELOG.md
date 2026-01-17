@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Catch yara internal errors in `yaralyze()` script so they are still raised when `Yaralyzer` used as a library
 
 ### 1.0.10
 * Better handling and messaging around internal YARA errors

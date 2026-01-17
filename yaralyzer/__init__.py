@@ -1,4 +1,5 @@
 import code
+import yara as python_yara
 from os import environ, getcwd, path
 
 from dotenv import load_dotenv
@@ -11,9 +12,11 @@ if not environ.get('INVOKED_BY_PYTEST', False):
             load_dotenv(dotenv_path=dotenv_file)
             break
 
+from yaralyzer.helpers.rich_text_helper import print_fatal_error_and_exit
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
+from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
@@ -51,7 +54,10 @@ def yaralyze():
         console.print(f"Will render yaralyzer data to '{output_basepath}'...", style='yellow')
         console.record = True
 
-    yaralyzer.yaralyze()
+    try:
+        yaralyzer.yaralyze()
+    except python_yara.Error as e:
+        print_fatal_error_and_exit(yara_error_msg(e))
 
     if args.export_txt:
         invoke_rich_export(console.save_text, output_basepath)

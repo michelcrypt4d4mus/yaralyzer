@@ -4,8 +4,10 @@ Methods to handle turning various objects into Rich text/table/etc representatio
 [Rich color names](https://rich.readthedocs.io/en/stable/appendix/colors.html)
 TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
+from sys import exit
 from typing import List, Optional, Union
 
+from rich import box
 from rich.columns import Columns
 from rich.panel import Panel
 from rich.style import Style
@@ -76,6 +78,32 @@ def newline_join(texts: List[Text]) -> Text:
 def prefix_with_style(_str: str, style: str, root_style: Optional[Union[Style, str]] = None) -> Text:
     """Sometimes you need a Text() object to start plain lest the underline or whatever last forever."""
     return Text('', style=root_style or 'white') + Text(_str, style)
+
+
+def print_fatal_error_and_exit(error_message: str) -> None:
+    """
+    Print a fatal error message in a `Panel` and exit.
+
+    Args:
+        error_message (str): The error message to display.
+    """
+    console.line(1)
+    print_header_panel(error_message, style='bold red reverse')
+    console.line(1)
+    exit()
+
+
+def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple | None = None) -> None:
+    """
+    Print a headline inside a styled Rich `Panel` to the console.
+
+    Args:
+        headline (str): The text to display as the panel's headline.
+        style (str): The style to apply to the panel (e.g., color, bold, reverse).
+        expand (bool, optional): Whether the panel should expand to the full console width. Defaults to `True`.
+        padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
+    """
+    console.print(Panel(headline, box=box.DOUBLE_EDGE, expand=expand, padding=padding or (0, 2), style=style))
 
 
 def reverse_color(style: Style) -> Style:

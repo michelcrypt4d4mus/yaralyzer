@@ -2,13 +2,10 @@
 Variables and methods for working with Rich text output.
 """
 from shutil import get_terminal_size
-from sys import exit
 from typing import List
 
-from rich import box
 from rich.console import Console
 from rich.errors import MarkupError
-from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 from rich.theme import Theme
@@ -110,32 +107,6 @@ def console_print_with_fallback(_string: Text | str, style=None) -> None:
 def console_width() -> int:
     """Current width set in `console` object."""
     return console._width or 40
-
-
-def print_fatal_error_and_exit(error_message: str) -> None:
-    """
-    Print a fatal error message in a `Panel` and exit.
-
-    Args:
-        error_message (str): The error message to display.
-    """
-    console.line(1)
-    print_header_panel(error_message, style='bold red reverse')
-    console.line(1)
-    exit()
-
-
-def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple | None = None) -> None:
-    """
-    Print a headline inside a styled Rich `Panel` to the console.
-
-    Args:
-        headline (str): The text to display as the panel's headline.
-        style (str): The style to apply to the panel (e.g., color, bold, reverse).
-        expand (bool, optional): Whether the panel should expand to the full console width. Defaults to `True`.
-        padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
-    """
-    console.print(Panel(headline, box=box.DOUBLE_EDGE, expand=expand, padding=padding or (0, 2), style=style))
 
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:

@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.10
 * Better handling and messaging around internal YARA errors
 * Make `DecodingTableRow` and `BytesMatch` into dataclasses
 * `print_bytes()` takes an `indent` argument

@@ -20,8 +20,8 @@ from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.helpers.dict_helper import get_dict_key_by_value
 from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
-from yaralyzer.output.decoding_attempts_table import (DecodingTableRow, assessment_only_row,
-     decoding_table_row, new_decoding_attempts_table)
+from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
+from yaralyzer.output.decoding_table_row import DecodingTableRow
 from yaralyzer.util.logging import log
 
 # A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
@@ -118,11 +118,17 @@ class BytesDecoder:
 
             # Build the table rows from the decoding attempts
             rows = [self._row_from_decoding_attempt(decoding) for decoding in self.decodings]
-            rows += [assessment_only_row(a, a.confidence * SCORE_SCALER) for a in self._forced_displays()]
+
+            # Add assessments with no decode attempt
+            rows += [
+                DecodingTableRow.from_undecoded_assessment(a, a.confidence * SCORE_SCALER)
+                for a in self._forced_displays()
+            ]
+
             self._track_decode_stats()
 
             for row in sorted(rows, key=attrgetter('sort_score', 'encoding_label_plain'), reverse=True):
-                self.table.add_row(*row[0:4])
+                self.table.add_row(*row.to_row_list())
 
         return self.table
 
@@ -188,7 +194,7 @@ class BytesDecoder:
             sort_score -= 10
 
         was_forced = WAS_DECODABLE_YES_NO[int(decoding.was_force_decoded)]
-        return decoding_table_row(assessment, was_forced, display_text, sort_score)
+        return DecodingTableRow.from_decoded_assessment(assessment, was_forced, display_text, sort_score)
 
 
 def _build_encodings_metric_dict():

@@ -2,6 +2,7 @@
 `BytesMatch` class for tracking regex and YARA matches against binary data.
 """
 import re
+from dataclasses import dataclass, field
 from typing import Iterator, Optional
 
 from rich.table import Table
@@ -14,52 +15,54 @@ from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.rich_console import ALERT_STYLE, GREY_ADDRESS
 
 
+@dataclass
 class BytesMatch:
     """
     Simple class to keep track of regex matches against binary data.
 
     Basically a Regex `re.match` object with some (not many) extra bells and whistles, most notably
     the `surrounding_bytes` property.
+
+    Args:
+        matched_against (bytes): The full byte sequence that was searched.
+        start_idx (int): Start index of the match in the byte sequence.
+        match_length (int): Length of the match in bytes.
+        label (str): Label for the match (e.g., regex or YARA rule name).
+        ordinal (int): This was the Nth match for this pattern (used for labeling only).
+        match (Optional[re.Match]): Regex `match` object, if available.
+        highlight_style (str): Style to use for highlighting the match.
+
+    Attributes:
+        end_idx (int): End index of the match in the byte sequence.
+        bytes: (bytes): The bytes that matched the regex.
     """
+    matched_against: bytes
+    start_idx: int
+    match_length: int
+    label: str
+    ordinal: int
+    match: re.Match | None = None   # It's rough to get the regex from yara :(
+    highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+    end_idx: int = field(init=False)
+    match_grooups: tuple = field(init=False)
+    highlight_start_idx: int = field(init=False)
+    highlight_end_idx: int = field(init=False)
+    surrounding_start_idx: int = field(init=False)
+    surrounding_end_idx: int = field(init=False)
+    surrounding_bytes: bytes = field(init=False)
 
-    def __init__(
-        self,
-        matched_against: bytes,
-        start_idx: int,
-        length: int,
-        label: str,
-        ordinal: int,
-        match: Optional[re.Match] = None,  # It's rough to get the regex from yara :(
-        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
-    ) -> None:
-        """
-        Initialize a `BytesMatch` object representing a match against binary data.
-
-        Args:
-            matched_against (bytes): The full byte sequence that was searched.
-            start_idx (int): Start index of the match in the byte sequence.
-            length (int): Length of the match in bytes.
-            label (str): Label for the match (e.g., regex or YARA rule name).
-            ordinal (int): This was the Nth match for this pattern (used for labeling only).
-            match (Optional[re.Match]): Regex `match` object, if available.
-            highlight_style (str): Style to use for highlighting the match.
-        """
-        self.matched_against: bytes = matched_against
-        self.start_idx: int = start_idx
-        self.end_idx: int = start_idx + length
-        self.match_length: int = length
-        self.length: int = length
-        self.label: str = label
-        self.ordinal: int = ordinal
-        self.match: Optional[re.Match] = match
-        self.bytes = matched_against[start_idx:self.end_idx]  # TODO: Maybe should be called "matched_bytes"
-        self.match_groups: Optional[tuple] = match.groups() if match else None
-        self._find_surrounding_bytes()
-
-        # Adjust the highlighting start point in case this match is very early in the stream
-        self.highlight_start_idx = start_idx - self.surrounding_start_idx
-        self.highlight_end_idx = self.highlight_start_idx + self.length
-        self.highlight_style = highlight_style
+    def __post_init__(self):
+        self.end_idx: int = self.start_idx + self.match_length
+        self.bytes = self.matched_against[self.start_idx:self.end_idx]  # TODO: Maybe should be called "matched_bytes"
+        self.match_groups: Optional[tuple] = self.match.groups() if self.match else None
+        num_after = YaralyzerConfig.args.surrounding_bytes
+        num_before = YaralyzerConfig.args.surrounding_bytes
+        # Adjust the highlighting start point in case this match is very early or late in the stream
+        self.surrounding_start_idx: int = max(self.start_idx - num_before, 0)
+        self.surrounding_end_idx: int = min(self.end_idx + num_after, len(self.matched_against))
+        self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
+        self.highlight_start_idx = self.start_idx - self.surrounding_start_idx
+        self.highlight_end_idx = self.highlight_start_idx + self.match_length
 
     @classmethod
     def from_regex_match(
@@ -118,10 +121,11 @@ class BytesMatch:
         return cls(
             matched_against=matched_against,
             start_idx=yara_str_match_instance.offset,
-            length=yara_str_match_instance.matched_length,
+            match_length=yara_str_match_instance.matched_length,
             label=label,
             ordinal=ordinal,
-            highlight_style=highlight_style)
+            highlight_style=highlight_style
+        )
 
     @classmethod
     def from_yara_match(
@@ -258,20 +262,6 @@ class BytesMatch:
             json_dict['pattern'] = self.match.re.pattern
 
         return json_dict
-
-    def _find_surrounding_bytes(self, num_before: Optional[int] = None, num_after: Optional[int] = None) -> None:
-        """
-        Find and set the bytes surrounding the match, ensuring indices stay within bounds.
-
-        Args:
-            num_before (Optional[int]): Number of bytes before the match to include.
-            num_after (Optional[int]): Number of bytes after the match to include.
-        """
-        num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
-        num_before = num_before or YaralyzerConfig.args.surrounding_bytes
-        self.surrounding_start_idx: int = max(self.start_idx - num_before, 0)
-        self.surrounding_end_idx: int = min(self.end_idx + num_after, len(self.matched_against))
-        self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
 
     def __rich__(self) -> Text:
         """Get a rich `Text` representation of the match for display."""

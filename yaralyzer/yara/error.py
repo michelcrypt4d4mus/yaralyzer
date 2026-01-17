@@ -2,12 +2,10 @@ import re
 
 import yara
 
+INTERNAL_ERROR_REGEX = re.compile(r"internal error: (\d+)$")
 YARA_ERRORS_REPO_PATH = 'master/libyara/include/yara/error.h'
 YARA_ERRORS_RAW_URL = f"https://raw.githubusercontent.com/VirusTotal/yara/refs/heads/{YARA_ERRORS_REPO_PATH}"
 YARA_ERRORS_URL = f"https://github.com/VirusTotal/yara/blob/{YARA_ERRORS_REPO_PATH}"
-
-INTERNAL_YARA_ERROR_MSG = f"Internal YARA error! YARA's error codes can be checked here: {YARA_ERRORS_URL}"  # noqa: E501
-INTERNAL_ERROR_REGEX = re.compile(r"internal error: (\d+)$")
 
 # Extracted from YARA_ERRORS_RAW_URL
 YARA_ERROR_CODES = {
@@ -87,6 +85,6 @@ def yara_error_msg(exception: yara.Error) -> str:
     if internal_error_match:
         error_code = int(internal_error_match.group(1))
         error_msg = YARA_ERROR_CODES[error_code]
-        return f"Internal YARA error (code: {error_code}, type: {error_msg})"
+        return f"Internal YARA error! (code: {error_code}, type: {error_msg})"
     else:
         return f"YARA error: {exception}"

@@ -15,8 +15,6 @@ from rich.theme import Theme
 
 from yaralyzer.config import is_env_var_set_and_not_false, is_invoked_by_pytest
 
-DEFAULT_CONSOLE_WIDTH = 160
-
 # Colors
 ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 BYTES = 'color(100) dim'
@@ -78,6 +76,7 @@ YARALYZER_THEME_DICT = {
 }
 
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
+DEFAULT_CONSOLE_WIDTH = 160
 
 
 def console_width_possibilities():
@@ -126,7 +125,7 @@ def print_fatal_error_and_exit(error_message: str) -> None:
     exit()
 
 
-def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple = (0, 2)) -> None:
+def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple | None = None) -> None:
     """
     Print a headline inside a styled Rich `Panel` to the console.
 
@@ -136,7 +135,7 @@ def print_header_panel(headline: str, style: str, expand: bool = True, padding: 
         expand (bool, optional): Whether the panel should expand to the full console width. Defaults to `True`.
         padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
     """
-    console.print(Panel(headline, box=box.DOUBLE_EDGE, style=style, expand=expand, padding=padding))
+    console.print(Panel(headline, box=box.DOUBLE_EDGE, expand=expand, padding=padding or (0, 2), style=style))
 
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:

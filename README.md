@@ -88,6 +88,9 @@ for bytes_match, bytes_decoder in yaralyzer.match_iterator():
     do_stuff()
 ```
 
+### Troubleshooting
+If you get a `yara.Error` with a numerical error code you can check what that code might mean [here](https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h).
+
 
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich) as well as a (somewhat limited) plain text JSON format. SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or `cairosvg`. In our experience they both work though we've seen some glitchiness with `cairosvg`.

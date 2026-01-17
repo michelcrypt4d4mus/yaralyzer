@@ -1,7 +1,7 @@
 # NEXT RELEASE
 * Better handling and messaging around internal YARA errors
-* `print_bytes()` takes an `indent` argument
 * Make `DecodingTableRow` and `BytesMatch` into dataclasses
+* `print_bytes()` takes an `indent` argument
 
 ### 1.0.9
 * Raise `FileNotFoundError` instead of `ValueError` if provided YARA rules files or dirs don't exist

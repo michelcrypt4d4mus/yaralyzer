@@ -24,69 +24,11 @@ from rich.table import Table
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
-from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
 from yaralyzer.helpers.rich_text_helper import CENTER, FOLD, MIDDLE, RIGHT, na_txt
 
-DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='no_attempt')
 HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
-
-# The confidence and encoding will not be shown in the final display - instead their Text versions are shown.
-# TODO: this should become a dataclass (requires Python 3.7+)
-DecodingTableRow = namedtuple(
-    'DecodingTableRow',
-    [
-        'encoding_label',
-        'confidence_text',
-        'errors_while_decoded',
-        'decoded_string',
-        # Properties below here are not displayed in the table but are used for sorting etc.
-        'confidence',
-        'encoding',
-        'sort_score',
-        'encoding_label_plain',  # For sorting purposes, if confidences match
-    ]
-)
-
-
-def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:
-    """
-    Build a `DecodingTableRow` with just `chardet` assessment confidence data and no actual decoding attempt string.
-
-    Args:
-        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
-        score (float): The score to use for sorting this row within the table.
-
-    Returns:
-        DecodingTableRow: The constructed table row named tuple with no decoding attempt string.
-    """
-    return decoding_table_row(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
-
-
-def decoding_table_row(assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> DecodingTableRow:
-    """
-    Build a table row for a decoding attempt.
-
-    Args:
-        assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
-        is_forced (Text): Text indicating if the decode was forced.
-        txt (Text): The decoded string as a rich `Text` object (with highlighting).
-        score (float): The score to use for sorting this row in the table.
-
-    Returns:
-        DecodingTableRow: The constructed table row named tuple.
-    """
-    return DecodingTableRow(
-        assessment.encoding_label,
-        assessment.confidence_text,
-        is_forced,
-        txt,
-        assessment.confidence,
-        assessment.encoding,
-        sort_score=score,
-        encoding_label_plain=assessment.encoding_label.plain
-    )
 
 
 def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:

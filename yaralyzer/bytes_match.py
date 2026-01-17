@@ -147,7 +147,6 @@ class BytesMatch:
         """
         i = 0  # For numbered labeling
 
-        # yara-python's internals changed with 4.3.0: https://github.com/VirusTotal/yara-python/releases/tag/v4.3.0
         for yara_str_match in yara_match['strings']:
             for yara_str_match_instance in yara_str_match.instances:
                 i += 1

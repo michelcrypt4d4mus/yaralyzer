@@ -18,6 +18,7 @@ from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.rich_console import YARALYZER_THEME, console
 from yaralyzer.util.logging import log
+from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
@@ -230,7 +231,10 @@ class Yaralyzer:
         Yields:
             Tuple[BytesMatch, BytesDecoder]: Match and decode data tuple.
         """
-        self.rules.match(data=self.bytes, callback=self._yara_callback)
+        try:
+            self.rules.match(data=self.bytes, callback=self._yara_callback)
+        except yara.Error as e:
+            print_fatal_error_and_exit(yara_error_msg(e))
 
         for yara_match in self.matches:
             console.print(yara_match)

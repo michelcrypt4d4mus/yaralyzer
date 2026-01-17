@@ -88,7 +88,7 @@ def print_fatal_error_and_exit(error_message: str) -> None:
         error_message (str): The error message to display.
     """
     console.line(1)
-    print_header_panel(error_message, style='bold red reverse')
+    print_header_panel(error_message, expand=False, style='blink bold bright_red')
     console.line(1)
     exit()
 

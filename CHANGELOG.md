@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Better handling and messaging around internal YARA errors
 * `print_bytes()` takes an `indent` argument
 
 ### 1.0.9

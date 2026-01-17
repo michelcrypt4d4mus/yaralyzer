@@ -28,6 +28,10 @@ from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
 from yaralyzer.helpers.rich_text_helper import CENTER, FOLD, MIDDLE, RIGHT, na_txt
 
+DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='no_attempt')
+HEX = Text('HEX', style='bytes.title')
+RAW_BYTES = Text('Raw', style=f"bytes")
+
 # The confidence and encoding will not be shown in the final display - instead their Text versions are shown.
 # TODO: this should become a dataclass (requires Python 3.7+)
 DecodingTableRow = namedtuple(
@@ -44,10 +48,6 @@ DecodingTableRow = namedtuple(
         'encoding_label_plain',  # For sorting purposes, if confidences match
     ]
 )
-
-DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='no_attempt')
-HEX = Text('HEX', style='bytes.title')
-RAW_BYTES = Text('Raw', style=f"bytes")
 
 
 def assessment_only_row(assessment: EncodingAssessment, score: float) -> DecodingTableRow:

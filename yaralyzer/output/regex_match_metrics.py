@@ -2,11 +2,14 @@
 `RegexMatchMetrics` class.
 """
 from collections import defaultdict
+from dataclasses import dataclass, field
 
+from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.util.logging import log
 
 
+@dataclass
 class RegexMatchMetrics:
     """
     Class to measure what we enounter as we iterate over all matches of a relatively simple byte level regex.
@@ -28,20 +31,16 @@ class RegexMatchMetrics:
         skipped_matches_lengths (defaultdict): Dictionary mapping lengths of skipped matches to their counts.
         bytes_match_objs (list): List of `BytesMatch` objects for all matches encountered.
         per_encoding_stats (defaultdict): Dictionary mapping encoding names to their respective `RegexMatchMetrics`.
-
-    TODO: use @dataclass decorator https://realpython.com/python-data-classes/
     """
-
-    def __init__(self) -> None:
-        self.match_count = 0
-        self.bytes_matched = 0
-        self.matches_decoded = 0
-        self.easy_decode_count = 0
-        self.forced_decode_count = 0
-        self.undecodable_count = 0
-        self.skipped_matches_lengths = defaultdict(lambda: 0)
-        self.bytes_match_objs = []  # Keep a copy of all matches in memory
-        self.per_encoding_stats = defaultdict(lambda: RegexMatchMetrics())
+    match_count: int = 0
+    bytes_matched: int = 0
+    matches_decoded: int = 0
+    easy_decode_count: int = 0
+    forced_decode_count: int = 0
+    undecodable_count: int = 0
+    skipped_matches_lengths: dict[int, int] = field(default_factory=lambda: defaultdict(lambda: 0))
+    bytes_match_objs: list[BytesMatch] = field(default_factory=list)
+    per_encoding_stats: dict[int, 'RegexMatchMetrics'] = field(default_factory=lambda: defaultdict(lambda: RegexMatchMetrics()))
 
     def num_matches_skipped_for_being_empty(self) -> int:
         """Number of matches skipped for being empty (0 length)."""

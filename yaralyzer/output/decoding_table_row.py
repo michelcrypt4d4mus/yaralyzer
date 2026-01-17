@@ -24,6 +24,7 @@ class DecodingTableRow:
         self.encoding_label_plain = self.encoding_label.plain
 
     def to_row_list(self) -> list[Text]:
+        """Returns a row for the decoding attempts table."""
         return [self.encoding_label, self.confidence_text, self.errors_while_decoded, self.decoded_string]
 
     @classmethod

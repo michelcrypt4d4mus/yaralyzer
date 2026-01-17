@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Convert `RegexMatchMetrics` to a dataclass
 
 ### 1.0.11
 * Catch yara internal errors in `yaralyze()` script so they are still raised when `Yaralyzer` used as a library

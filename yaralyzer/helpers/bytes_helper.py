@@ -7,6 +7,7 @@ from sys import byteorder
 
 from rich.console import Console
 from rich.markup import escape
+from rich.padding import Padding
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
@@ -197,7 +198,7 @@ def hex_string(_bytes: bytes) -> str:
     return ' '.join([hex(b).removeprefix('0x').rjust(2, '0') for i, b in enumerate(_bytes)])
 
 
-def print_bytes(bytes_array: bytes, style=None) -> None:
+def print_bytes(bytes_array: bytes, style: str | None = None, indent: int = 0) -> None:
     """
     Print a string representation of some bytes to the console.
 
@@ -206,7 +207,8 @@ def print_bytes(bytes_array: bytes, style=None) -> None:
         style (str, optional): Style to use for printing. Defaults to 'bytes'.
     """
     for line in bytes_array.split(NEWLINE_BYTE):
-        console.print(escape(clean_byte_string(line)), style=style or 'bytes')
+        padded_bytes = Padding(escape(clean_byte_string(line)), (0, 0, 0, indent))
+        console.print(padded_bytes, style=style or 'bytes')
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:

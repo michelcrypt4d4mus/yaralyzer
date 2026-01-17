@@ -1,5 +1,6 @@
 # This workflow will automatically build and deploy the documentation to GitHub Pages.
 # Mildly out of date tutorial: https://sorokin.engineer/posts/en/github-pages-lazydocs-mkdocs.html
+
 name: docs
 
 on:

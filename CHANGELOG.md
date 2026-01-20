@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.0.13
 * `TRACE` option for `--log-level` argument, `log_trace()` method
 * Add API docs URL to help text
 

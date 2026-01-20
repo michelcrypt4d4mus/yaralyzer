@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* `log_trace()` method, remove some cruft from debug config log
 
 ### 1.0.12
 * Send logs to `stderr` instead of `stdout`

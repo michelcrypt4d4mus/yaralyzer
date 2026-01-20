@@ -10,7 +10,7 @@ from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
 
-from yaralyzer.config import YaralyzerConfig
+from yaralyzer.config import YARALYZER, YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
@@ -23,19 +23,29 @@ from yaralyzer.yaralyzer import Yaralyzer
 # NamedTuple to keep our argument selection orderly
 OutputSection = namedtuple('OutputSection', ['argument', 'method'])
 
+YARALYZER_API_DOCS_URL = 'https://michelcrypt4d4mus.github.io/yaralyzer'
 YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "
 
-EPILOG = "* Values for various config options can be set permanently by a .yaralyzer file in your home directory; " + \
-         "see the documentation for details.\n" + \
-         f"* A registry of previous yaralyzer invocations will be incribed to a file if the " + \
-         f"{YaralyzerConfig.LOG_DIR_ENV_VAR} environment variable is configured."
 
+def epilog(_package: str) -> str:
+    colored = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
+    package = _package.lower()
+
+    msg = f"Values for various config options can be set permanently by a {colored(f'.{package}')} " \
+          f"file in your home directory; see the documentation for details.\n" \
+          f"A registry of previous {package} invocations will be inscribed to a file if the " \
+          f"{colored(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured."
+
+    if _package == YARALYZER:
+        msg += f"\nAPI documentation: [argparse.groups]{YARALYZER_API_DOCS_URL}[/argparse.groups]"
+
+    return msg
 
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')
-parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=EPILOG)
+parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER))
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 

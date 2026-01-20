@@ -32,7 +32,9 @@ Python log levels for reference:
 """
 import logging
 import sys
+from argparse import Namespace
 from os import path
+from pathlib import Path
 from typing import Union
 
 from rich.console import Console
@@ -41,9 +43,10 @@ from rich.logging import RichHandler
 from yaralyzer.config import YaralyzerConfig
 
 ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
+LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 
 
-def configure_logger(log_label: str, console: Console) -> logging.Logger:
+def configure_logger(log_label: str) -> logging.Logger:
     """
     Set up a file or stream `logger` depending on the configuration.
 
@@ -56,42 +59,45 @@ def configure_logger(log_label: str, console: Console) -> logging.Logger:
     """
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)
-    rich_stream_handler = RichHandler(console=log_console, rich_tracebacks=True)
+    rich_stream_handler = RichHandler(console=log_console, omit_repeated_times=False, rich_tracebacks=True)
 
     if YaralyzerConfig.LOG_DIR:
         if not path.isdir(YaralyzerConfig.LOG_DIR) or not path.isabs(YaralyzerConfig.LOG_DIR):
             raise FileNotFoundError(f"Log dir '{YaralyzerConfig.LOG_DIR}' doesn't exist or is not absolute")
 
         log_file_path = path.join(YaralyzerConfig.LOG_DIR, f"{log_name}.log")
-        log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
         log_file_handler = logging.FileHandler(log_file_path)
-        log_file_handler.setFormatter(log_formatter)
+        log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
         logger.addHandler(log_file_handler)
-        # rich_stream_handler is only for printing warnings when writing to log file
-        rich_stream_handler.setLevel('WARN')
+        rich_stream_handler.setLevel('WARN') # Rich handler is only for warnings when writing to log file
 
     logger.addHandler(rich_stream_handler)
     logger.setLevel(YaralyzerConfig.LOG_LEVEL)
     return logger
 
 
-# See comment at top. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
-log_console = Console(stderr=True)
-log = configure_logger('run', log_console)
-invocation_log = configure_logger('invocation', log_console)
-
-# If we're logging to files make sure invocation_log has the right level
-if YaralyzerConfig.LOG_DIR:
-    invocation_log.setLevel('INFO')
-
-
-def log_and_print(msg: str, log_level: str = 'INFO'):
+def log_and_print(msg: str, log_level: str = 'INFO') -> None:
     """Both print (to console) and log (to file) a string."""
     log.log(logging.getLevelName(log_level), msg)
     print(msg)
 
 
-def log_current_config():
+def log_argparse_result(args: Namespace, label: str) -> None:
+    """Logs the result of `argparse`."""
+    args_dict = vars(args)
+    log_msg = f'{label} argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+
+    for arg_var in sorted(args_dict.keys()):
+        arg_val = args_dict[arg_var]
+        row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
+        log_msg += row
+
+    log_msg += "\n"
+    invocation_log.info(log_msg)
+    log.info(log_msg)
+
+
+def log_current_config() -> None:
     """Write current state of `YaralyzerConfig` object to the logs."""
     msg = f"{YaralyzerConfig.__name__} current attributes:\n"
     config_dict = {k: v for k, v in vars(YaralyzerConfig).items() if not k.startswith('__')}
@@ -109,19 +115,9 @@ def log_invocation() -> None:
     invocation_log.info(msg)
 
 
-def log_argparse_result(args, label: str):
-    """Logs the result of `argparse`."""
-    args_dict = vars(args)
-    log_msg = f'{label} argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
-
-    for arg_var in sorted(args_dict.keys()):
-        arg_val = args_dict[arg_var]
-        row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
-        log_msg += row
-
-    log_msg += "\n"
-    invocation_log.info(log_msg)
-    log.info(log_msg)
+def log_trace(*args) -> None:
+    """Log below logging.DEBUG level."""
+    log.log(logging.DEBUG - 1, *args)
 
 
 def set_log_level(level: Union[str, int]) -> None:
@@ -129,6 +125,15 @@ def set_log_level(level: Union[str, int]) -> None:
     for handler in log.handlers + [log]:
         handler.setLevel(level)
 
+
+# See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
+log_console = Console(stderr=True)
+log = configure_logger('run')
+invocation_log = configure_logger('invocation')
+
+# If we're logging to files make sure invocation_log has the right level
+if YaralyzerConfig.LOG_DIR:
+    invocation_log.setLevel('INFO')
 
 # Suppress annoying chardet library logs
 for submodule in ['universaldetector', 'charsetprober', 'codingstatemachine']:

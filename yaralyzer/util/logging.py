@@ -35,6 +35,7 @@ import sys
 from argparse import Namespace
 from os import path
 from pathlib import Path
+from types import FunctionType
 from typing import Union
 
 from rich.console import Console
@@ -85,7 +86,8 @@ def log_and_print(msg: str, log_level: str = 'INFO') -> None:
 def log_argparse_result(args: Namespace, label: str) -> None:
     """Logs the result of `argparse`."""
     args_dict = vars(args)
-    log_msg = f'{label} argparse results:\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+    log_msg = f'{label} argparse results:\n\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+    log_msg += f"{ARGPARSE_LOG_FORMAT.format('------', '----', '-----')}"
 
     for arg_var in sorted(args_dict.keys()):
         arg_val = args_dict[arg_var]
@@ -99,8 +101,12 @@ def log_argparse_result(args: Namespace, label: str) -> None:
 
 def log_current_config() -> None:
     """Write current state of `YaralyzerConfig` object to the logs."""
-    msg = f"{YaralyzerConfig.__name__} current attributes:\n"
-    config_dict = {k: v for k, v in vars(YaralyzerConfig).items() if not k.startswith('__')}
+    msg = f"{YaralyzerConfig.__name__} current attributes:\n\n"
+
+    config_dict = {
+        k: v for k, v in vars(YaralyzerConfig).items()
+        if not (k.startswith('__') or 'classmethod' in str(v))
+    }
 
     for k in sorted(config_dict.keys()):
         msg += f"   {k: >35}  {config_dict[k]}\n"

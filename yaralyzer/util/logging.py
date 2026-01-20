@@ -35,7 +35,6 @@ import sys
 from argparse import Namespace
 from os import path
 from pathlib import Path
-from types import FunctionType
 from typing import Union
 
 from rich.console import Console
@@ -45,6 +44,8 @@ from yaralyzer.config import YaralyzerConfig
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
+TRACE = 'TRACE'
+TRACE_LEVEL = logging.DEBUG - 1
 
 
 def configure_logger(log_label: str) -> logging.Logger:
@@ -123,13 +124,13 @@ def log_invocation() -> None:
 
 def log_trace(*args) -> None:
     """Log below logging.DEBUG level."""
-    log.log(logging.DEBUG - 1, *args)
+    log.log(TRACE_LEVEL, *args)
 
 
 def set_log_level(level: Union[str, int]) -> None:
     """Set the log level at any time."""
     for handler in log.handlers + [log]:
-        handler.setLevel(level)
+        handler.setLevel(TRACE_LEVEL if level == TRACE else level)
 
 
 # See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs

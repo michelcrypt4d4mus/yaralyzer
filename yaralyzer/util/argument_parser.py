@@ -3,7 +3,6 @@ import logging
 import re
 import sys
 from argparse import ArgumentError, ArgumentParser, Namespace
-from collections import namedtuple
 from importlib.metadata import version
 from os import getcwd, path
 from typing import Optional
@@ -15,32 +14,37 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
+from yaralyzer.util.logging import TRACE, TRACE_LEVEL, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
-from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 from yaralyzer.yaralyzer import Yaralyzer
 
+DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
+GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 YARALYZER_API_DOCS_URL = 'https://michelcrypt4d4mus.github.io/yaralyzer'
 YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
-DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match. "
 
 
 def epilog(_package: str) -> str:
-    colored = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
+    color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
+    color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = _package.lower()
+    readme_url = f"{GITHUB_BASE_URL}/{package}"
 
-    msg = f"Values for various config options can be set permanently by a {colored(f'.{package}')} " \
-          f"file in your home directory; see the documentation for details.\n" \
-          f"A registry of previous {package} invocations will be inscribed to a file if the " \
-          f"{colored(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured."
+    msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
+          f"file. See the documentation for details.\n" \
+          f"A log of previous {package} invocation args will be inscribed to a file if the " \
+          f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured.\n" \
 
     if _package == YARALYZER:
-        msg += f"\nAPI documentation: [argparse.groups]{YARALYZER_API_DOCS_URL}[/argparse.groups]"
+        msg += f"  API docs: {color_link(YARALYZER_API_DOCS_URL)}  "
 
-    return msg
+    return msg # + f"README: {color_link(readme_url)}"
+
 
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')
+# print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER))
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
@@ -217,7 +221,7 @@ debug.add_argument('-D', '--debug', action='store_true',
 
 debug.add_argument('-L', '--log-level',
                     help='set the log level',
-                    choices=['DEBUG', 'INFO', 'WARN', 'ERROR'])
+                    choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
 
 YaralyzerConfig.set_argument_parser(parser)
 
@@ -247,12 +251,12 @@ def parse_arguments(args: Optional[Namespace] = None):
     args.invoked_at_str = timestamp_for_filename()
 
     if args.debug:
-        log.setLevel(logging.DEBUG)
+        set_log_level(logging.DEBUG)
 
         if args.log_level and args.log_level != 'DEBUG':
             log.warning("Ignoring --log-level option as debug mode means log level is DEBUG")
     elif args.log_level:
-        log.setLevel(args.log_level)
+        set_log_level(args.log_level)
 
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 

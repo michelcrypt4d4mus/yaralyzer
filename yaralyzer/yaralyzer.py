@@ -17,7 +17,7 @@ from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.rich_console import YARALYZER_THEME, console
-from yaralyzer.util.logging import log
+from yaralyzer.util.logging import log, log_trace
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 

@@ -1,5 +1,5 @@
 # NEXT RELEASE
-* `log_trace()` method, remove some cruft from debug config log
+* `TRACE` option for `--log-level` argument, `log_trace()` method
 * Add API docs URL to help epilog
 
 ### 1.0.12

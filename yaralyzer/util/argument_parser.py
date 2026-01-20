@@ -37,7 +37,7 @@ def epilog(_package: str) -> str:
           f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured.\n" \
 
     if _package == YARALYZER:
-        msg += f"  API docs: {color_link(YARALYZER_API_DOCS_URL)}  "
+        msg += f"[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
 
     return msg # + f"README: {color_link(readme_url)}"
 

@@ -72,7 +72,7 @@ class YaralyzerConfig:
 
     HIGHLIGHT_STYLE = 'orange1'
 
-    ONLY_CLI_ARGS = [
+    _ONLY_CLI_ARGS = [
         'debug',
         'help',
         'hex_patterns',
@@ -95,7 +95,7 @@ class YaralyzerConfig:
         cls.args = args
 
         for option in cls._argparse_keys:
-            if option.startswith('export') or option in cls.ONLY_CLI_ARGS:
+            if option.startswith('export') or option in cls._ONLY_CLI_ARGS:
                 continue
 
             arg_value = vars(args)[option]

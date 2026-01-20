@@ -43,7 +43,7 @@ from rich.logging import RichHandler
 
 from yaralyzer.config import YaralyzerConfig
 
-ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
+ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 
 
@@ -105,7 +105,7 @@ def log_current_config() -> None:
 
     config_dict = {
         k: v for k, v in vars(YaralyzerConfig).items()
-        if not (k.startswith('__') or 'classmethod' in str(v))
+        if not (k.startswith('_') or 'classmethod' in str(v))
     }
 
     for k in sorted(config_dict.keys()):

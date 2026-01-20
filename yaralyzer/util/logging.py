@@ -35,6 +35,7 @@ import sys
 from os import path
 from typing import Union
 
+from rich.console import Console
 from rich.logging import RichHandler
 
 from yaralyzer.config import YaralyzerConfig
@@ -42,7 +43,7 @@ from yaralyzer.config import YaralyzerConfig
 ARGPARSE_LOG_FORMAT = '{0: >30}    {1: <17} {2: <}\n'
 
 
-def configure_logger(log_label: str) -> logging.Logger:
+def configure_logger(log_label: str, console: Console) -> logging.Logger:
     """
     Set up a file or stream `logger` depending on the configuration.
 
@@ -55,6 +56,7 @@ def configure_logger(log_label: str) -> logging.Logger:
     """
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)
+    rich_stream_handler = RichHandler(console=log_console, rich_tracebacks=True)
 
     if YaralyzerConfig.LOG_DIR:
         if not path.isdir(YaralyzerConfig.LOG_DIR) or not path.isabs(YaralyzerConfig.LOG_DIR):
@@ -65,20 +67,18 @@ def configure_logger(log_label: str) -> logging.Logger:
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(log_formatter)
         logger.addHandler(log_file_handler)
-        # rich_stream_handler is for printing warnings
-        rich_stream_handler = RichHandler(rich_tracebacks=True)
+        # rich_stream_handler is only for printing warnings when writing to log file
         rich_stream_handler.setLevel('WARN')
-        logger.addHandler(rich_stream_handler)
-    else:
-        logger.addHandler(RichHandler(rich_tracebacks=True))
 
+    logger.addHandler(rich_stream_handler)
     logger.setLevel(YaralyzerConfig.LOG_LEVEL)
     return logger
 
 
 # See comment at top. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
-log = configure_logger('run')
-invocation_log = configure_logger('invocation')
+log_console = Console(stderr=True)
+log = configure_logger('run', log_console)
+invocation_log = configure_logger('invocation', log_console)
 
 # If we're logging to files make sure invocation_log has the right level
 if YaralyzerConfig.LOG_DIR:

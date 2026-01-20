@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Send logs to `stderr` instead of `stdout`
 * Convert `RegexMatchMetrics` to a dataclass
 
 ### 1.0.11

@@ -34,10 +34,10 @@ def epilog(_package: str) -> str:
     msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
           f"file. See the documentation for details.\n" \
           f"A log of previous {package} invocation args will be inscribed to a file if the " \
-          f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured.\n" \
+          f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured." \
 
     if _package == YARALYZER:
-        msg += f"[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
+        msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
 
     return msg # + f"README: {color_link(readme_url)}"
 

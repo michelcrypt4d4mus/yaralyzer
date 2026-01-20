@@ -43,8 +43,7 @@ def epilog(_package: str) -> str:
 
 
 # Positional args, version, help, etc
-RichHelpFormatterPlus.choose_theme('prince')
-# print(RichHelpFormatterPlus.styles)
+RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER))
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')

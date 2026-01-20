@@ -1,6 +1,6 @@
 # NEXT RELEASE
 * `TRACE` option for `--log-level` argument, `log_trace()` method
-* Add API docs URL to help epilog
+* Add API docs URL to help text
 
 ### 1.0.12
 * Send logs to `stderr` instead of `stdout`

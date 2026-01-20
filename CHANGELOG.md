@@ -2,6 +2,7 @@
 
 ### 1.0.13
 * `TRACE` option for `--log-level` argument, `log_trace()` method
+* Set `omit_repeated_times=False` in log handler
 * Add API docs URL to help text
 
 ### 1.0.12

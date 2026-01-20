@@ -59,7 +59,7 @@ source.add_argument('--yara-file', '-Y',
                     dest='yara_rules_files')
 
 source.add_argument('--rule-dir', '-dir',
-                    help='directory with yara rules files (all files are used, can be supplied more than once)',
+                    help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs')
@@ -77,7 +77,7 @@ source.add_argument('--hex-pattern', '-hex',
                     dest='hex_patterns')
 
 source.add_argument('--patterns-label', '-rpl',
-                    help='supplying an optional STRING to label your YARA patterns makes it easier to scan results',
+                    help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
                     metavar='STRING')
 
 source.add_argument('--regex-modifier', '-mod',

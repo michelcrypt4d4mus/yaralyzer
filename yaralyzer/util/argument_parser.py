@@ -19,10 +19,6 @@ from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation
 from yaralyzer.yaralyzer import Yaralyzer
 
-
-# NamedTuple to keep our argument selection orderly
-OutputSection = namedtuple('OutputSection', ['argument', 'method'])
-
 YARALYZER_API_DOCS_URL = 'https://michelcrypt4d4mus.github.io/yaralyzer'
 YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']

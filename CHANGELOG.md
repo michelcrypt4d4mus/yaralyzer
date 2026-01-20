@@ -1,5 +1,6 @@
 # NEXT RELEASE
 * `log_trace()` method, remove some cruft from debug config log
+* Add API docs URL to help epilog
 
 ### 1.0.12
 * Send logs to `stderr` instead of `stdout`

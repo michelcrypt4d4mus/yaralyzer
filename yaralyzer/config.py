@@ -4,6 +4,7 @@ Configuration management for Yaralyzer.
 import logging
 from argparse import ArgumentParser, Namespace
 from os import environ
+from pathlib import Path
 from typing import Any, List
 
 from rich.console import Console
@@ -64,8 +65,9 @@ class YaralyzerConfig:
     # Number of bytes to show before/after byte previews and decodes. Configured by command line or env var
     DEFAULT_SURROUNDING_BYTES = 64
 
+    # logging module requires absolute paths
     LOG_DIR_ENV_VAR = 'YARALYZER_LOG_DIR'
-    LOG_DIR = environ.get(LOG_DIR_ENV_VAR)
+    LOG_DIR = Path(environ.get(LOG_DIR_ENV_VAR)).resolve() if environ.get(LOG_DIR_ENV_VAR) else None
     LOG_LEVEL_ENV_VAR = f"{YARALYZER}_LOG_LEVEL"
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
 

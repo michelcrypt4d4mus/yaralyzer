@@ -49,9 +49,9 @@
 
 
 
-# Directory to write application logs to. Must be an absolute path, not a relative one.
-# These logs are not normally written to a file and the default log level means that the standard behavior
-# is to more or less discard them. Be aware that if you configure this variable a few things will change:
+# Directory to write application logs to. Yaralyzer logs are not normally written to a file and the default
+# log level means that the standard behavior is to more or less discard them. Be aware that if you configure
+# this variable a few things will change:
 #
 #   1. Logs WILL NOT be written to STDOUT. They will stream ONLY to files in the configured directory.
 #      This is true even with the -D option.

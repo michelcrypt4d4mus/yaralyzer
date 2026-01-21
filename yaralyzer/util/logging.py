@@ -33,8 +33,6 @@ Python log levels for reference:
 import logging
 import sys
 from argparse import Namespace
-from os import path
-from pathlib import Path
 from typing import Union
 
 from rich.console import Console
@@ -46,6 +44,12 @@ ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 TRACE = 'TRACE'
 TRACE_LEVEL = logging.DEBUG - 1
+
+DEFAULT_LOG_HANDLER_KWARGS = {
+    'console': Console(color_system='256', stderr=True),
+    'omit_repeated_times': False,
+    'rich_tracebacks': True,
+}
 
 
 def configure_logger(log_label: str) -> logging.Logger:
@@ -61,13 +65,13 @@ def configure_logger(log_label: str) -> logging.Logger:
     """
     log_name = f"yaralyzer.{log_label}"
     logger = logging.getLogger(log_name)
-    rich_stream_handler = RichHandler(console=log_console, omit_repeated_times=False, rich_tracebacks=True)
+    rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
 
     if YaralyzerConfig.LOG_DIR:
-        if not path.isdir(YaralyzerConfig.LOG_DIR) or not path.isabs(YaralyzerConfig.LOG_DIR):
+        if not (YaralyzerConfig.LOG_DIR.is_dir() and YaralyzerConfig.LOG_DIR.is_absolute()):
             raise FileNotFoundError(f"Log dir '{YaralyzerConfig.LOG_DIR}' doesn't exist or is not absolute")
 
-        log_file_path = path.join(YaralyzerConfig.LOG_DIR, f"{log_name}.log")
+        log_file_path = YaralyzerConfig.LOG_DIR.joinpath(f"{log_name}.log")
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
         logger.addHandler(log_file_handler)
@@ -134,7 +138,7 @@ def set_log_level(level: Union[str, int]) -> None:
 
 
 # See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
-log_console = Console(stderr=True)
+log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
 log = configure_logger('run')
 invocation_log = configure_logger('invocation')
 

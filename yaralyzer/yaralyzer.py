@@ -57,7 +57,7 @@ class Yaralyzer:
         self,
         rules: Union[str, yara.Rules],
         rules_label: str,
-        scannable: Union[bytes, str],
+        scannable: Union[bytes, str, Path],
         scannable_label: Optional[str] = None,
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> None:
@@ -112,7 +112,7 @@ class Yaralyzer:
     def for_rules_files(
         cls,
         yara_rules_files: Union[list[str], list[Path]],
-        scannable: Union[bytes, str],
+        scannable: Union[bytes, str, Path],
         scannable_label: Optional[str] = None
     ) -> 'Yaralyzer':
         """
@@ -151,7 +151,7 @@ class Yaralyzer:
     def for_rules_dirs(
         cls,
         dirs: List[str | Path],
-        scannable: Union[bytes, str],
+        scannable: Union[bytes, str, Path],
         scannable_label: Optional[str] = None
     ) -> 'Yaralyzer':
         """
@@ -178,7 +178,7 @@ class Yaralyzer:
         cls,
         patterns: List[str],
         patterns_type: str,
-        scannable: Union[bytes, str],
+        scannable: Union[bytes, str, Path],
         scannable_label: Optional[str] = None,
         rules_label: Optional[str] = None,
         pattern_label: Optional[str] = None,

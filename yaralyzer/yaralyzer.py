@@ -79,9 +79,6 @@ class Yaralyzer:
         Raises:
             TypeError: If `scannable` is `bytes` and `scannable_label` is not provided.
         """
-        if 'args' not in vars(YaralyzerConfig):
-            YaralyzerConfig.set_default_args()
-
         yara.set_config(
             stack_size=YaralyzerConfig.args.yara_stack_size,
             max_match_data=YaralyzerConfig.args.max_match_length

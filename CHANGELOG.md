@@ -1,5 +1,5 @@
 # NEXT RELEASE
-* Use `@classproperty` decorator to ensure that `YaralyzerConfig` exists even when requested outside of a CLI invocation
+* Use `@classproperty` decorator to ensure that `YaralyzerConfig.args` exists even when requested outside of a CLI invocation
 
 ### 1.0.13
 * `TRACE` option for `--log-level` argument, `log_trace()` method

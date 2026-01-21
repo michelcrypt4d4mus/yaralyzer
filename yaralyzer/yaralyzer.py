@@ -1,5 +1,6 @@
 """Main Yaralyzer class and alternate constructors."""
 from os import path
+from pathlib import Path
 from typing import Callable, Iterator, List, Optional, Tuple, Union
 
 import yara
@@ -79,9 +80,6 @@ class Yaralyzer:
         Raises:
             TypeError: If `scannable` is `bytes` and `scannable_label` is not provided.
         """
-        if 'args' not in vars(YaralyzerConfig):
-            YaralyzerConfig.set_default_args()
-
         yara.set_config(
             stack_size=YaralyzerConfig.args.yara_stack_size,
             max_match_data=YaralyzerConfig.args.max_match_length
@@ -114,7 +112,7 @@ class Yaralyzer:
     @classmethod
     def for_rules_files(
         cls,
-        yara_rules_files: List[str],
+        yara_rules_files: List[str | Path],
         scannable: Union[bytes, str],
         scannable_label: Optional[str] = None
     ) -> 'Yaralyzer':

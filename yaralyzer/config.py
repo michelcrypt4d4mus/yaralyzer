@@ -8,6 +8,8 @@ from typing import Any, List
 
 from rich.console import Console
 
+from yaralyzer.util.classproperty import classproperty
+
 YARALYZE = 'yaralyze'
 YARALYZER = f"{YARALYZE}r".upper()
 PYTEST_FLAG = 'INVOKED_BY_PYTEST'
@@ -83,6 +85,13 @@ class YaralyzerConfig:
         'version'
     ]
 
+    @classproperty
+    def args(cls) -> Namespace:
+        if '_args' not in dir(cls):
+            cls.set_default_args()
+
+        return cls._args
+
     @classmethod
     def set_argument_parser(cls, parser: ArgumentParser) -> None:
         """Sets the `_argument_parser` instance variable that will be used to parse command line args."""
@@ -90,15 +99,15 @@ class YaralyzerConfig:
         cls._argparse_keys: List[str] = sorted([action.dest for action in parser._actions])
 
     @classmethod
-    def set_args(cls, args: Namespace) -> None:
+    def set_args(cls, _args: Namespace) -> None:
         """Set the `args` class instance variable and update args with any environment variable overrides."""
-        cls.args = args
+        cls._args = _args
 
         for option in cls._argparse_keys:
             if option.startswith('export') or option in cls._ONLY_CLI_ARGS:
                 continue
 
-            arg_value = vars(args)[option]
+            arg_value = vars(_args)[option]
             env_var = f"{YARALYZER}_{option.upper()}"
             env_value = environ.get(env_var)
             default_value = cls.get_default_arg(option)
@@ -106,16 +115,16 @@ class YaralyzerConfig:
 
             # TODO: as is you can't override env vars with CLI args
             if isinstance(arg_value, bool):
-                setattr(args, option, arg_value or is_env_var_set_and_not_false(env_var))
+                setattr(_args, option, arg_value or is_env_var_set_and_not_false(env_var))
             elif isinstance(arg_value, (int, float)):
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
-                    setattr(args, option, int(env_value) or arg_value)  # TODO: float args not handled
+                    setattr(_args, option, int(env_value) or arg_value)  # TODO: float args not handled
             else:
-                setattr(args, option, arg_value or env_value)
+                setattr(_args, option, arg_value or env_value)
 
     @classmethod
-    def set_default_args(cls):
+    def set_default_args(cls) -> None:
         """Set `self.args` to their defaults as if parsed from the command line."""
         cls.set_args(cls._argument_parser.parse_args(['dummy']))
 

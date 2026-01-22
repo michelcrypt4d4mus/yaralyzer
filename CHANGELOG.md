@@ -1,5 +1,6 @@
 # NEXT RELEASE
 * Fix type hint for `per_encoding_stats`
+* `files_in_dir()` returns `Path`s, prepends `'.` to `with_extname` arg if not provided
 
 ### 1.0.14
 * Use `@classproperty` decorator to ensure that `YaralyzerConfig.args` exists even when requested outside of a CLI invocation

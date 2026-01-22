@@ -2,12 +2,11 @@
 Helper methods to work with files.
 """
 from datetime import datetime
-from os import listdir, path
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 
-def files_in_dir(dir: Path | str, with_extname: Optional[str] = None) -> List[str]:
+def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> List[Path]:
     """
     Returns paths for all non dot files in `dir` (optionally filtered to only those ending in 'with_extname').
 
@@ -18,18 +17,14 @@ def files_in_dir(dir: Path | str, with_extname: Optional[str] = None) -> List[st
     Returns:
         List[str]: List of file paths.
     """
-    files = [path.join(dir, path.basename(file)) for file in listdir(dir) if not file.startswith('.')]
-    files = [file for file in files if not path.isdir(file)]
+    dir = Path(_dir)
+    with_extname = f".{with_extname}" if (with_extname and not with_extname.startswith('.')) else ''
+    glob_pattern = f"*{with_extname}"
 
-    if with_extname:
-        return files_with_extname(files, with_extname)
-    else:
-        return files
+    if not dir.is_dir():
+        raise FileNotFoundError(f"'{_dir}' is not a directory!")
 
-
-def files_with_extname(files: List[str], extname: str) -> List[str]:
-    """Return only files from the list that end with the given `extname`."""
-    return [f for f in files if f.endswith(f".{extname}")]
+    return [f for f in dir.glob(glob_pattern) if not (f.name.startswith('.') or f.is_dir())]
 
 
 def load_binary_data(file_path: Path | str) -> bytes:

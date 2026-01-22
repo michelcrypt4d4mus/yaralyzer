@@ -66,7 +66,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     _assert_array_is_close(sorted(file_sizes), [1182, 45179, 78781, 243312])
 
     for file in rendered_files:
-        if file.endswith('.json'):
+        if file.name.endswith('.json'):
             json_data = json.loads(load_file(file))  # Ensure JSON is valid
             assert isinstance(json_data, list), "JSON data should be a list of matches"
             assert len(json_data) == 2, "JSON data should not be empty"

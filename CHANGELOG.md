@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix type hint for `per_encoding_stats`
 
 ### 1.0.14
 * Use `@classproperty` decorator to ensure that `YaralyzerConfig.args` exists even when requested outside of a CLI invocation

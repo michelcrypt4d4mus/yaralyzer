@@ -40,7 +40,7 @@ class RegexMatchMetrics:
     undecodable_count: int = 0
     skipped_matches_lengths: dict[int, int] = field(default_factory=lambda: defaultdict(lambda: 0))
     bytes_match_objs: list[BytesMatch] = field(default_factory=list)
-    per_encoding_stats: dict[int, 'RegexMatchMetrics'] = field(default_factory=lambda: defaultdict(lambda: RegexMatchMetrics()))
+    per_encoding_stats: dict[str, 'RegexMatchMetrics'] = field(default_factory=lambda: defaultdict(lambda: RegexMatchMetrics()))
 
     def num_matches_skipped_for_being_empty(self) -> int:
         """Number of matches skipped for being empty (0 length)."""

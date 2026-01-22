@@ -1,6 +1,6 @@
 """Main Yaralyzer class and alternate constructors."""
 from pathlib import Path
-from typing import Callable, Iterator, List, Optional, Tuple, Union
+from typing import Callable, Iterator, List, Tuple
 
 import yara
 from rich.console import Console, ConsoleOptions, RenderResult
@@ -11,14 +11,14 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
-from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data
+from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data, to_paths
 from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color, print_fatal_error_and_exit
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.rich_console import YARALYZER_THEME, console
 from yaralyzer.util.constants import YARALYZE
-from yaralyzer.util.logging import log, log_trace
+from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import yara_rule_string
 
@@ -56,25 +56,25 @@ class Yaralyzer:
 
     def __init__(
         self,
-        rules: Union[str, yara.Rules],
+        rules: str | yara.Rules,
         rules_label: str,
-        scannable: Union[bytes, str, Path],
-        scannable_label: Optional[str] = None,
+        scannable: bytes | str | Path,
+        scannable_label: str | None = None,
         highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
     ) -> None:
         """
         Initialize a `Yaralyzer` instance for scanning binary data with YARA rules.
 
         Args:
-            rules (Union[str, yara.Rules]): YARA rules to use for scanning. Can be a string or a pre-compiled
+            rules (str | yara.Rules): YARA rules to use for scanning. Can be a string or a pre-compiled
                 `yara.Rules` object (strings will be compiled to an instance of `yara.Rules`).
             rules_label (str): Label to identify the ruleset in output and logs.
-            scannable (Union[bytes, str]): The data to scan. If it's `bytes` type then that data is scanned;
+            scannable (bytes | str | Path): The data to scan. If it's `bytes` type then that data is scanned;
                 if it's a string it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the `scannable` arg data.
+            scannable_label (str | None): Label for the `scannable` arg data.
                 Required if `scannable` is `bytes`.
                 If `scannable` is a file path `scannable_label` will default to the file's basename.
-            highlight_style (str, optional): Style to use for highlighting matches in output.
+            highlight_style (str | None): Style to use for highlighting matches in output.
                 Defaults to `YaralyzerConfig.HIGHLIGHT_STYLE`.
 
         Raises:
@@ -112,9 +112,9 @@ class Yaralyzer:
     @classmethod
     def for_rules_files(
         cls,
-        yara_rules_files: Union[list[str], list[Path]],
-        scannable: Union[bytes, str, Path],
-        scannable_label: Optional[str] = None
+        yara_rules_files: list[str] | list[Path],
+        scannable: bytes | str | Path,
+        scannable_label: str | None = None
     ) -> 'Yaralyzer':
         """
         Alternate constructor to load YARA rules from files and label rules with the filenames.
@@ -123,17 +123,14 @@ class Yaralyzer:
             yara_rules_files (List[str]): List of file paths to YARA rules files.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the `scannable` data.
+            scannable_label (str | None, optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
 
         Raises:
             FileNotFoundError: If any file in `yara_rules_files` does not exist.
             TypeError: If `yara_rules_files` is not a list of Paths or strings
         """
-        if not (isinstance(yara_rules_files, list) and all(isinstance(e, (str, Path)) for e in yara_rules_files)):
-            raise TypeError(f"{yara_rules_files} is not a valid list of files")
-
-        yara_rules_paths = [Path(f) for f in yara_rules_files]
+        yara_rules_paths = to_paths(yara_rules_files)
 
         for rules_path in yara_rules_paths:
             if not rules_path.exists():
@@ -151,9 +148,9 @@ class Yaralyzer:
     @classmethod
     def for_rules_dirs(
         cls,
-        dirs: List[str | Path],
-        scannable: Union[bytes, str, Path],
-        scannable_label: Optional[str] = None
+        dirs: list[str] | list[Path] | list[str | Path],
+        scannable: bytes | str | Path,
+        scannable_label: str | None = None
     ) -> 'Yaralyzer':
         """
         Alternate constructor that will load all `.yara` files in `yara_rules_dir`.
@@ -162,13 +159,15 @@ class Yaralyzer:
             dirs (List[str]): List of directories to search for `.yara` files.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the `scannable` data.
+            scannable_label (str | None, optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
 
         Raises:
             FileNotFoundError: If `dirs` is not a list of valid directories.
         """
-        if not (isinstance(dirs, list) and all(Path(dir).is_dir() for dir in dirs)):
+        dirs = to_paths(dirs)
+
+        if not all(dir.is_dir() and dir.exists() for dir in dirs):
             raise FileNotFoundError(f"'{dirs}' is not a list of valid directories")
 
         rules_files = [f for dir in dirs for f in files_in_dir(dir)]
@@ -177,13 +176,13 @@ class Yaralyzer:
     @classmethod
     def for_patterns(
         cls,
-        patterns: List[str],
+        patterns: list[str],
         patterns_type: str,
-        scannable: Union[bytes, str, Path],
-        scannable_label: Optional[str] = None,
-        rules_label: Optional[str] = None,
-        pattern_label: Optional[str] = None,
-        regex_modifier: Optional[str] = None,
+        scannable: bytes | str | Path,
+        scannable_label: str | None = None,
+        rules_label: str | None = None,
+        pattern_label: str | None = None,
+        regex_modifier: str | None = None,
     ) -> 'Yaralyzer':
         """
         Alternate constructor taking regex pattern strings. Rules label defaults to the patterns joined by comma.
@@ -193,12 +192,12 @@ class Yaralyzer:
             patterns_type (str): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
-            scannable_label (Optional[str], optional): Label for the `scannable` data.
+            scannable_label (str | None, optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`.
                 If scannable is a file path, defaults to the file's basename.
-            rules_label (Optional[str], optional): Label for the ruleset. Defaults to the patterns joined by comma.
-            pattern_label (Optional[str], optional): Label for each pattern in the YARA rules. Defaults to "pattern".
-            regex_modifier (Optional[str], optional): Optional regex modifier (e.g. "nocase", "ascii", "wide", etc).
+            rules_label (str | None, optional): Label for the ruleset. Defaults to the patterns joined by comma.
+            pattern_label (str | None, optional): Label for each pattern in the YARA rules. Defaults to "pattern".
+            regex_modifier (str | None, optional): Optional regex modifier (e.g. "nocase", "ascii", "wide", etc).
                 Only valid if `patterns_type` is `"regex"`.
         """
         rule_strings = []

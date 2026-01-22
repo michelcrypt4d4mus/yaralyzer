@@ -42,3 +42,7 @@ def load_file(file_path: Path | str) -> str:
 def timestamp_for_filename() -> str:
     """Returns a string showing current time in a file name friendly format."""
     return datetime.now().strftime("%Y-%m-%dT%H.%M.%S")
+
+
+def to_paths(files: List[str] | list[Path] | list[str | Path]) -> list[Path]:
+    return [Path(f) for f in files]

@@ -8,7 +8,7 @@ from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import YARALYZE
 
 ENV_VARS_TO_SUSPEND = []
-BASE_ARGV = [YARALYZE, 'a.pdf', '-Y', 'rules.yara']
+BASE_ARGV = [YARALYZE, __file__, '-Y', 'rules.yara']
 
 
 @contextmanager

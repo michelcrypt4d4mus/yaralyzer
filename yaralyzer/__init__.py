@@ -69,7 +69,7 @@ def yaralyze():
     if args.export_json:
         export_json(yaralyzer, output_basepath)
 
-    if args.file_to_scan_path.endswith('.pdf'):
+    if str(args.file_to_scan_path).lower().endswith('pdf'):
         console.print(PDFALYZER_MSG_TXT)
 
     # Drop into interactive shell if requested

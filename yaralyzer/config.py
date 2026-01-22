@@ -9,38 +9,12 @@ from typing import Any, List
 
 from rich.console import Console
 
+from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER
+from yaralyzer.util.constants import YARALYZER
 
+DEFAULT_CONSOLE_WIDTH = 160
 KILOBYTE = 1024
-
-
-def config_var_name(env_var: str) -> str:
-    """
-    Get the name of `env_var` and strip off `YARALYZER_` prefix.
-
-    Example:
-        ```
-        SURROUNDING_BYTES_ENV_VAR = 'YARALYZER_SURROUNDING_BYTES'
-        config_var_name(SURROUNDING_BYTES_ENV_VAR) => 'SURROUNDING_BYTES'
-        ```
-    """
-    env_var = env_var.removeprefix("YARALYZER_")
-    return f'{env_var=}'.partition('=')[0]
-
-
-def is_env_var_set_and_not_false(var_name: str) -> bool:
-    """Return `True` if `var_name` is not empty and set to anything other than "false" (capitalization agnostic)."""
-    if var_name in environ:
-        var_value = environ[var_name]
-        return var_value is not None and len(var_value) > 0 and var_value.lower() != 'false'
-    else:
-        return False
-
-
-def is_invoked_by_pytest() -> bool:
-    """Return `True` if invoked in a `pytest` context."""
-    return is_env_var_set_and_not_false(INVOKED_BY_PYTEST)
 
 
 class YaralyzerConfig:
@@ -68,7 +42,7 @@ class YaralyzerConfig:
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
 
     if LOG_DIR and not is_invoked_by_pytest():
-        Console(color_system='256').print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
+        Console(**DEFAULT_CONSOLE_KWARGS).print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     HIGHLIGHT_STYLE = 'orange1'
 
@@ -124,7 +98,7 @@ class YaralyzerConfig:
     @classmethod
     def set_default_args(cls) -> None:
         """Set `self.args` to their defaults as if parsed from the command line."""
-        cls.set_args(cls._argument_parser.parse_args(['dummy']))
+        cls.set_args(cls._argument_parser.parse_args([__file__]))
 
     @classmethod
     def get_default_arg(cls, arg: str) -> Any:

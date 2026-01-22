@@ -29,10 +29,10 @@ YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 
 
-def epilog(_package: str) -> str:
+def epilog(package: str) -> str:
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
-    package = _package.lower()
+    package = package.lower()
     readme_url = f"{GITHUB_BASE_URL}/{package}"
 
     msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
@@ -40,7 +40,7 @@ def epilog(_package: str) -> str:
           f"A log of previous {package} invocation args will be inscribed to a file if the " \
           f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured." \
 
-    if _package == YARALYZER:
+    if package == YARALYZER.lower():
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
 
     return msg # + f"README: {color_link(readme_url)}"

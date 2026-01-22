@@ -36,9 +36,11 @@ from argparse import Namespace
 from typing import Union
 
 from rich.console import Console
+from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 
 from yaralyzer.config import YaralyzerConfig
+from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -46,7 +48,7 @@ TRACE = 'TRACE'
 TRACE_LEVEL = logging.DEBUG - 1
 
 DEFAULT_LOG_HANDLER_KWARGS = {
-    'console': Console(color_system='256', stderr=True),
+    'console': Console(stderr=True, **DEFAULT_CONSOLE_KWARGS),
     'omit_repeated_times': False,
     'rich_tracebacks': True,
 }
@@ -141,6 +143,7 @@ def set_log_level(level: Union[str, int]) -> None:
 log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
 log = configure_logger('run')
 invocation_log = configure_logger('invocation')
+highlighter = ReprHighlighter()
 
 # If we're logging to files make sure invocation_log has the right level
 if YaralyzerConfig.LOG_DIR:

@@ -1,7 +1,6 @@
 """
 Variables and methods for working with Rich text output.
 """
-from shutil import get_terminal_size
 from typing import List
 
 from rich.console import Console
@@ -10,7 +9,7 @@ from rich.style import Style
 from rich.text import Text
 from rich.theme import Theme
 
-from yaralyzer.config import is_env_var_set_and_not_false, is_invoked_by_pytest
+from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
 
 # Colors
 ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
@@ -73,26 +72,8 @@ YARALYZER_THEME_DICT = {
 }
 
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
-DEFAULT_CONSOLE_WIDTH = 160
 
-
-def console_width_possibilities():
-    """Returns a list of possible console widths, the first being the current terminal width."""
-    # Subtract 2 from terminal cols just as a precaution in case things get weird
-    return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
-
-
-# Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)
-if is_invoked_by_pytest():
-    CONSOLE_WIDTH = DEFAULT_CONSOLE_WIDTH
-elif is_env_var_set_and_not_false('YARALYZER_MAXIMIZE_WIDTH'):
-    CONSOLE_WIDTH = max(console_width_possibilities())
-else:
-    CONSOLE_WIDTH = min(console_width_possibilities())
-
-# Many bytes take 4 chars to print (e.g. '\xcc') so this is the max bytes we can safely print in a line
-CONSOLE_PRINT_BYTE_WIDTH = int(CONSOLE_WIDTH / 4.0)
-console = Console(theme=YARALYZER_THEME, color_system='256', highlight=False, width=CONSOLE_WIDTH)
+console = Console(highlight=False, theme=YARALYZER_THEME, **DEFAULT_CONSOLE_KWARGS)
 
 
 def console_print_with_fallback(_string: Text | str, style=None) -> None:

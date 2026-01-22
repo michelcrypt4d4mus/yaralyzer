@@ -171,7 +171,7 @@ class Yaralyzer:
         if not (isinstance(dirs, list) and all(Path(dir).is_dir() for dir in dirs)):
             raise FileNotFoundError(f"'{dirs}' is not a list of valid directories")
 
-        rules_files = [Path(dir).joinpath(f) for dir in dirs for f in files_in_dir(dir)]
+        rules_files = [f for dir in dirs for f in files_in_dir(dir)]
         return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod

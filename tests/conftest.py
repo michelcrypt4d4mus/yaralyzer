@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-PYTESTS_DIR = Path(__file__)
-LOG_DIR = PYTESTS_DIR.parent.parent.joinpath('log').resolve()
+PYTESTS_DIR = Path(__file__).parent
+LOG_DIR = PYTESTS_DIR.parent.joinpath('log').resolve()
 FILE_FIXTURE_PATH = PYTESTS_DIR.joinpath('file_fixtures')
 
 # Some env vars that we need or are helpful for pytest

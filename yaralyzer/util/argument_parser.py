@@ -3,8 +3,10 @@ import logging
 import re
 import sys
 from argparse import ArgumentError, ArgumentParser, Namespace
+from functools import partial
 from importlib.metadata import version
 from os import getcwd, path
+from pathlib import Path
 from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
@@ -14,7 +16,8 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
-from yaralyzer.util.constants import YARALYZER
+from yaralyzer.util.constants import YARALYZE, YARALYZER
+from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.yaralyzer import Yaralyzer
@@ -224,6 +227,7 @@ debug.add_argument('-L', '--log-level',
                     choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
 
 YaralyzerConfig.set_argument_parser(parser)
+is_yaralyzing = parser.prog == YARALYZE
 
 
 def parse_arguments(args: Optional[Namespace] = None):
@@ -244,11 +248,14 @@ def parse_arguments(args: Optional[Namespace] = None):
         sys.exit()
 
     # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool
-    used_as_library = args is not None
+    is_used_as_library = args is not None
+    handle_exception = partial(handle_argument_error, is_used_as_library=is_used_as_library)
+
+    # Parse and validate args
     args = args or parser.parse_args()
     log_argparse_result(args, 'RAW')
-    args.standalone_mode = not used_as_library
     args.invoked_at_str = timestamp_for_filename()
+    args.standalone_mode = not is_used_as_library
 
     if args.debug:
         set_log_level(logging.DEBUG)
@@ -258,14 +265,24 @@ def parse_arguments(args: Optional[Namespace] = None):
     elif args.log_level:
         set_log_level(args.log_level)
 
+    args.any_export_selected = any(arg.startswith('export') and val for arg, val in vars(args).items())
+    args.file_to_scan_path = Path(args.file_to_scan_path)
+
+    if not args.file_to_scan_path.exists():
+        handle_exception(f"'{args.file_to_scan_path}' is not a valid file.")
+
+    if args.output_dir and not args.any_export_selected:
+        log.warning('--output-dir provided but no export option was chosen')
+
+    args.output_dir = Path(args.output_dir or Path.cwd())
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 
-    if used_as_library:
+    if is_used_as_library:
         pass
     elif len(yara_rules_args) > 1:
-        raise ArgumentError(None, "Cannot mix rules files, rules dirs, and regex patterns (for now).")
+        handle_exception("Cannot mix rules files, rules dirs, and regex patterns (for now).")
     elif len(yara_rules_args) == 0:
-        raise ArgumentError(None, "You must provide either a YARA rules file or a regex pattern")
+        handle_exception("You must provide either a YARA rules file or a regex pattern")
     else:
         log_invocation()
 
@@ -282,15 +299,9 @@ def parse_arguments(args: Optional[Namespace] = None):
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
-    # File export options
-    if args.export_html or args.export_json or args.export_svg or args.export_txt:
-        args.output_dir = args.output_dir or getcwd()
-    elif args.output_dir:
-        log.warning('--output-dir provided but no export option was chosen')
-
     YaralyzerConfig.set_args(args)
 
-    if not used_as_library:
+    if not is_used_as_library:
         log_argparse_result(args, 'parsed')
         log_current_config()
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')

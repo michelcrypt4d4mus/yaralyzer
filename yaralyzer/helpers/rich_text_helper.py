@@ -10,11 +10,12 @@ from typing import List, Optional, Union
 from rich import box
 from rich.columns import Columns
 from rich.panel import Panel
+from rich.padding import Padding
 from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
-from yaralyzer.util.logging import log
+from yaralyzer.util.logging import highlighter, log
 
 # String constants
 CENTER = 'center'
@@ -80,17 +81,30 @@ def prefix_with_style(_str: str, style: str, root_style: Optional[Union[Style, s
     return Text('', style=root_style or 'white') + Text(_str, style)
 
 
-def print_fatal_error_and_exit(error_message: str) -> None:
+def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> None:
     """
-    Print a fatal error message in a `Panel` and exit.
+    Print a fatal error message
 
     Args:
-        error_message (str): The error message to display.
+        msg (str): The error message to display.
+        e (Exception | None): The exception that caused the error, if any.
     """
-    console.line(1)
-    print_header_panel(error_message, expand=False, style='bold bright_red')
-    console.line(1)
-    exit()
+    txt = Text('').append('ERROR', style='bright_red').append(": ")
+
+    if msg:
+        msg = msg if isinstance(msg, Text) else Text(msg, style='bold')
+        txt.append(highlighter(msg))
+
+    if e:
+        txt.append(f" (caused by {type(e).__name__}: {e})", style='dim')
+
+    console.print(Padding(txt, (1, 0)))
+
+
+def print_fatal_error_and_exit(msg: str, e: Exception | None = None, exit_code: int = 1) -> None:
+    """Print an error message and exit with code 'exit_code'."""
+    print_fatal_error(msg, e)
+    exit(exit_code)
 
 
 def print_header_panel(headline: str, style: str, expand: bool = True, padding: tuple | None = None) -> None:

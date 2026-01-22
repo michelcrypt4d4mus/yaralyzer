@@ -2,6 +2,7 @@
 * Fix type hint for `per_encoding_stats`
 * `files_in_dir()` returns `Path`s, prepends `'.` to `with_extname` arg if not provided
 * Move environment and console width methods to `environment_helper.py`
+* Ensure `args.file_to_scan_path` and `args.output_dir` are valid `Path` objects
 
 ### 1.0.14
 * Use `@classproperty` decorator to ensure that `YaralyzerConfig.args` exists even when requested outside of a CLI invocation

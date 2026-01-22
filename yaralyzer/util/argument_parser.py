@@ -267,15 +267,13 @@ def parse_arguments(args: Optional[Namespace] = None):
 
     args.any_export_selected = any(arg.startswith('export') and val for arg, val in vars(args).items())
     args.file_to_scan_path = Path(args.file_to_scan_path)
+    args.output_dir = Path(args.output_dir or Path.cwd())
+    yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 
     if not args.file_to_scan_path.exists():
         handle_exception(f"'{args.file_to_scan_path}' is not a valid file.")
-
-    if args.output_dir and not args.any_export_selected:
-        log.warning('--output-dir provided but no export option was chosen')
-
-    args.output_dir = Path(args.output_dir or Path.cwd())
-    yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
+    elif not args.output_dir.is_dir():
+        handle_exception(f"'{args.output_dir}' is not a valid directory.")
 
     if is_used_as_library:
         pass

@@ -19,7 +19,7 @@ from typing import Literal, Optional
 
 import yara
 
-from yaralyzer.config import YARALYZE
+from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log
 
 PatternType = Literal['hex', 'regex']

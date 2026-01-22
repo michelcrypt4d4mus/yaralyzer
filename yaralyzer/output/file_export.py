@@ -3,7 +3,7 @@ Functions to export Yaralyzer results to various file formats.
 """
 import json
 import time
-from os import path
+from pathlib import Path
 from typing import Callable, Optional
 
 from rich.terminal_theme import TerminalTheme
@@ -68,7 +68,7 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
 
     matches_data = [
         bytes_match.to_json()
-        for bytes_match, _bytes_decoder in yaralyzer.match_iterator()
+        for bytes_match, _decoder in yaralyzer.match_iterator()
     ]
 
     with open(output_path, 'w') as f:
@@ -78,7 +78,7 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
     return output_path
 
 
-def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> str:
+def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
@@ -91,7 +91,7 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> st
     """
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
-    output_file_path = f"{output_file_basepath}.{extname}"
+    output_file_path = Path(f"{output_file_basepath}.{extname}")
 
     if method_name not in _EXPORT_KWARGS:
         raise RuntimeError(f"{method_name} is not a valid Rich.console export method!")
@@ -100,12 +100,11 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> st
     kwargs.update({'clear': False})
 
     if 'svg' in method_name:
-        kwargs.update({'title': path.basename(output_file_path)})
+        kwargs.update({'title': output_file_path.name})
 
     # Invoke it
-    log_and_print(f"Invoking Rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
+    log_and_print(f"Invoking rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
     start_time = time.perf_counter()
     export_method(output_file_path, **kwargs)
-    elapsed_time = time.perf_counter() - start_time
-    log_and_print(f"'{output_file_path}' written in {elapsed_time:02f} seconds")
+    log_and_print(f"Wrote '{output_file_path}' in {time.perf_counter() - start_time:02f} seconds")
     return output_file_path

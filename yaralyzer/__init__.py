@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 from rich.text import Text
 
 # load_dotenv() should be called as soon as possible (before parsing local classes) but not for pytest
-if not environ.get('INVOKED_BY_PYTEST', False):
+from yaralyzer.util.constants import INVOKED_BY_PYTEST
+
+if not environ.get(INVOKED_BY_PYTEST, False):
     for dotenv_file in [path.join(dir, '.yaralyzer') for dir in [getcwd(), path.expanduser('~')]]:
         if path.exists(dotenv_file):
             load_dotenv(dotenv_path=dotenv_file)
@@ -20,9 +22,8 @@ from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in The Pdfalyzer, birthplace of The Yaralyzer:"
-PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold')
-PDFALYZER_MSG_TXT.append('\n -> ', style='bright_white')
+PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in the Pdfalyzer, birthplace of the Yaralyzer:"
+PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold').append('\n -> ', style='bright_white')
 PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', style='bright_cyan underline')
 
 
@@ -33,7 +34,7 @@ def yaralyze():
     Args are parsed from the command line and environment variables. See `yaralyze --help` for details.
     """
     args = parse_arguments()
-    output_basepath = None
+    output_basepath = ''
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)

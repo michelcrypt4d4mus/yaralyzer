@@ -9,12 +9,13 @@ from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
 
-from yaralyzer.config import YARALYZER, YaralyzerConfig
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
-from yaralyzer.util.logging import TRACE, TRACE_LEVEL, log, log_argparse_result, log_current_config, log_invocation, set_log_level
+from yaralyzer.util.constants import YARALYZER
+from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 from yaralyzer.yaralyzer import Yaralyzer
 

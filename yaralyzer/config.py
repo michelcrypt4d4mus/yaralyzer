@@ -10,13 +10,9 @@ from typing import Any, List
 from rich.console import Console
 
 from yaralyzer.util.classproperty import classproperty
-
-YARALYZE = 'yaralyze'
-YARALYZER = f"{YARALYZE}r".upper()
-PYTEST_FLAG = 'INVOKED_BY_PYTEST'
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER
 
 KILOBYTE = 1024
-MEGABYTE = 1024 * KILOBYTE
 
 
 def config_var_name(env_var: str) -> str:
@@ -44,7 +40,7 @@ def is_env_var_set_and_not_false(var_name: str) -> bool:
 
 def is_invoked_by_pytest() -> bool:
     """Return `True` if invoked in a `pytest` context."""
-    return is_env_var_set_and_not_false(PYTEST_FLAG)
+    return is_env_var_set_and_not_false(INVOKED_BY_PYTEST)
 
 
 class YaralyzerConfig:

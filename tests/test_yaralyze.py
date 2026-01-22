@@ -12,10 +12,10 @@ import pytest
 
 from tests.test_yaralyzer import CLOSENESS_THRESHOLD
 from tests.yara.test_yara_rule_builder import HEX_STRING
-from yaralyzer.config import YARALYZE
 from yaralyzer.helpers.file_helper import files_in_dir, load_file
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
+from yaralyzer.util.constants import YARALYZE
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
@@ -79,8 +79,6 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
             assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"
             assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
-        # remove(file)
-
 
 def _assert_array_is_close(_list1, _list2):
     for i, item in enumerate(_list1):
@@ -98,9 +96,9 @@ def _run_with_args(file_to_scan, *args) -> str:
     return check_output([YARALYZE, file_to_scan, *args], env=environ).decode()
 
 
-def _assert_line_count_within_range(expected_line_count, text):
+def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol: float = CLOSENESS_THRESHOLD):
     lines_in_text = line_count(text)
 
-    if not isclose(expected_line_count, lines_in_text, rel_tol=CLOSENESS_THRESHOLD):
+    if not isclose(expected_line_count, lines_in_text, rel_tol=rel_tol):
         console.print(text)
         raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")

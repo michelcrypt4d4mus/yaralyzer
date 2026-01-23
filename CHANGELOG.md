@@ -1,7 +1,8 @@
 # NEXT RELEASE
 * Add `--echo-command` option to save the exact command used along with the output
-* Strip invalid chars out of exported filenames
+* Strip invalid chars out of exported HTML / SVG / etc. filenames
 * `pytest` now compares output against previously export results instead of just checking line count
+* Move `helpers/` module into `util/`
 
 ## 1.1.0
 * Add `--no-timestamps` command line option for exported filenames

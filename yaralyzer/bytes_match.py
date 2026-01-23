@@ -100,12 +100,12 @@ class BytesMatch:
         Alternate constructor to build a `BytesMatch` from a YARA string match instance.
 
         Args:
-            matched_against (bytes): The bytes searched.
-            rule_name (str): Name of the YARA rule.
-            yara_str_match (StringMatch): YARA string match object.
-            yara_str_match_instance (StringMatchInstance): Instance of the string match.
-            ordinal (int): The Nth match for this pattern.
-            highlight_style (str): Style for highlighting.
+            matched_against: The bytes searched.
+            rule_name: Name of the YARA rule.
+            yara_str_match: YARA string match object.
+            yara_str_match_instance: Instance of the string match.
+            ordinal: The Nth match for this pattern.
+            highlight_style: Style for highlighting.
 
         Returns:
             BytesMatch: The constructed BytesMatch instance.

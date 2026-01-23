@@ -3,8 +3,8 @@
 """
 from collections import defaultdict
 from copy import deepcopy
+from dataclasses import dataclass, field
 from operator import attrgetter
-from typing import List, Optional
 
 from rich.align import Align
 from rich.console import Console, ConsoleOptions, NewLine, RenderResult
@@ -26,11 +26,11 @@ from yaralyzer.util.logging import log
 
 # A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
 WAS_DECODABLE_YES_NO = [NO_DECODING_ERRORS_MSG, DECODING_ERRORS_MSG]
-
 # Multiply chardet scores by 100 (again) to make sorting the table easy
 SCORE_SCALER = 100.0
 
 
+@dataclass
 class BytesDecoder:
     """
     Handles decoding a chunk of bytes into strings using various possible encodings, ranking and displaying results.
@@ -41,58 +41,34 @@ class BytesDecoder:
 
     Attributes:
         bytes_match (BytesMatch): The `BytesMatch` instance being decoded.
+        label (str, optional): Label for this decoding attempt, defaults to `bytes_match.label`.
+
         bytes (bytes): The bytes (including surrounding context) to decode.
-        label (str): Label for this decoding attempt.
+        decoded_strings (dict[str, str]): Maps encoding to decoded string.
+        decodings (list[DecodingAttempt]): DecodingAttempt objects for each encoding tried.
+        encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
         was_match_decodable (dict): Tracks successful decodes per encoding.
         was_match_force_decoded (dict): Tracks forced decodes per encoding.
         was_match_undecodable (dict): Tracks failed decodes per encoding.
-        decoded_strings (dict): Maps encoding to decoded string.
-        undecoded_rows (list): Stores undecoded table rows.
-        decodings (list): List of DecodingAttempt objects for each encoding tried.
-        encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
     """
+    bytes_match: BytesMatch
+    label: str = ''
 
-    def __init__(self, bytes_match: 'BytesMatch', label: Optional[str] = None) -> None:
-        """
-        Initialize a `BytesDecoder` for attempting to decode a chunk of bytes using various encodings.
+    decoded_strings: dict[str, str] = field(default_factory=dict)
+    decodings: list[DecodingAttempt] = field(default_factory=list)
+    encoding_detector: EncodingDetector = field(init=False)
+    was_match_decodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
+    was_match_force_decoded: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
+    was_match_undecodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
 
-        Args:
-            bytes_match (BytesMatch): The `BytesMatch` object containing the bytes to decode and match metadata.
-            label (Optional[str], optional): Optional label for this decoding attempt. Defaults to the match label.
-        """
-        self.bytes_match = bytes_match
-        self.bytes = bytes_match.surrounding_bytes
-        self.label = label or bytes_match.label
+    @property
+    def bytes(self) -> bytes:
+        return self.bytes_match.surrounding_bytes
 
-        # Empty table/metrics/etc
-        self.was_match_decodable = _build_encodings_metric_dict()
-        self.was_match_force_decoded = _build_encodings_metric_dict()
-        self.was_match_undecodable = _build_encodings_metric_dict()
-        self.decoded_strings = {}  # dict[encoding: decoded string]
-        self.undecoded_rows = []
-        self.decodings = []
-
-        # Note we send both the match and surrounding bytes used when detecting the encoding
+    def __post_init__(self):
+        # Note we instantiate EncodingDetector both the match and surrounding bytes
         self.encoding_detector = EncodingDetector(self.bytes)
-
-    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
-        """Rich object generator (see Rich console docs)."""
-        yield NewLine(2)
-        yield Align(self._decode_attempt_subheading(), CENTER)
-
-        if not YaralyzerConfig.args.suppress_chardet:
-            yield NewLine()
-            yield Align(self.encoding_detector, CENTER)
-            yield NewLine()
-
-        # In standalone mode we always print the hex/raw bytes
-        if self.bytes_match.is_decodable():
-            yield self._build_decodings_table()
-        elif YaralyzerConfig.args.standalone_mode:
-            yield self._build_decodings_table(True)
-
-        yield NewLine()
-        yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
+        self.label = self.label or self.bytes_match.label
 
     def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
         """
@@ -133,11 +109,11 @@ class BytesDecoder:
         return self.table
 
     # TODO: rename this to something that makes more sense, maybe assessments_over_display_threshold()?
-    def _forced_displays(self) -> List[EncodingAssessment]:
+    def _forced_displays(self) -> list[EncodingAssessment]:
         """Returns assessments over the display threshold that are not yet decoded."""
         return self._undecoded_assessments(self.encoding_detector.force_display_assessments)
 
-    def _undecoded_assessments(self, assessments: List[EncodingAssessment]) -> List[EncodingAssessment]:
+    def _undecoded_assessments(self, assessments: list[EncodingAssessment]) -> list[EncodingAssessment]:
         """Filter out the already decoded assessments from a set of assessments."""
         return [a for a in assessments if not self._was_decoded(a.encoding)]
 
@@ -195,6 +171,25 @@ class BytesDecoder:
 
         was_forced = WAS_DECODABLE_YES_NO[int(decoding.was_force_decoded)]
         return DecodingTableRow.from_decoded_assessment(assessment, was_forced, display_text, sort_score)
+
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        """Rich object generator (see Rich console docs)."""
+        yield NewLine(2)
+        yield Align(self._decode_attempt_subheading(), CENTER)
+
+        if not YaralyzerConfig.args.suppress_chardet:
+            yield NewLine()
+            yield Align(self.encoding_detector, CENTER)
+            yield NewLine()
+
+        # In standalone mode we always print the hex/raw bytes
+        if self.bytes_match.is_decodable():
+            yield self._build_decodings_table()
+        elif YaralyzerConfig.args.standalone_mode:
+            yield self._build_decodings_table(True)
+
+        yield NewLine()
+        yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
 
 
 def _build_encodings_metric_dict():

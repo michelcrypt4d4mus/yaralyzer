@@ -8,7 +8,7 @@ from typing import Callable, Optional
 
 from rich.terminal_theme import TerminalTheme
 
-from yaralyzer.util.logging import log_and_print
+from yaralyzer.util.logging import log, log_and_print
 from yaralyzer.yaralyzer import Yaralyzer
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
@@ -103,7 +103,7 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> Pa
         kwargs.update({'title': output_file_path.name})
 
     # Invoke it
-    log_and_print(f"Invoking rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
+    log.info(f"Invoking rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
     start_time = time.perf_counter()
     export_method(output_file_path, **kwargs)
     log_and_print(f"Wrote '{output_file_path}' in {time.perf_counter() - start_time:02f} seconds")

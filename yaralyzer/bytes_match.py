@@ -29,8 +29,8 @@ class BytesMatch:
         match_length (int): Length of the match in bytes.
         label (str): Label for the match (e.g., regex or YARA rule name).
         ordinal (int): This was the Nth match for this pattern (used for labeling only).
-        match (Optional[re.Match]): Regex `match` object, if available.
-        highlight_style (str): Style to use for highlighting the match.
+        match (re.Match, optional): Regex `match` object, if available.
+        highlight_style (str, optional): Style to use for highlighting the match.
 
     Attributes:
         end_idx (int): End index of the match in the byte sequence.
@@ -79,7 +79,7 @@ class BytesMatch:
             matched_against (bytes): The bytes searched.
             match (re.Match): The regex `match` object.
             ordinal (int): This was the Nth match for this pattern (used for labeling only).
-            highlight_style (str): Style for highlighting.
+            highlight_style (str, optional): Style for highlighting.
 
         Returns:
             BytesMatch: The constructed `BytesMatch` instance.
@@ -105,7 +105,7 @@ class BytesMatch:
             yara_str_match (StringMatch): YARA string match object.
             yara_str_match_instance (StringMatchInstance): Instance of the string match.
             ordinal (int): The Nth match for this pattern.
-            highlight_style (str): Style for highlighting.
+            highlight_style (str, optional): Style for highlighting.
 
         Returns:
             BytesMatch: The constructed BytesMatch instance.
@@ -140,7 +140,7 @@ class BytesMatch:
         Args:
             matched_against (bytes): The bytes searched.
             yara_match (dict): YARA match result dictionary.
-            highlight_style (str): Style for highlighting.
+            highlight_style (str, optional): Style for highlighting.
 
         Yields:
             BytesMatch: For each string match in the YARA result.
@@ -196,8 +196,6 @@ class BytesMatch:
 
     def is_decodable(self) -> bool:
         """
-        Determine if the matched bytes should be decoded.
-
         Whether the bytes are decodable depends on whether `SUPPRESS_DECODES_TABLE` is set
         and whether the match length is between `MIN`/`MAX_DECODE_LENGTH`.
 

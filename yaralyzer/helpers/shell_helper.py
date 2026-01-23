@@ -31,14 +31,14 @@ def compare_export_to_file(
     assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
     wrote_to_match = WROTE_TO_FILE_REGEX.search(stderr)
     assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{stderr}"
-    written_file_path = relative_path(Path(wrote_to_match.group(1)))
-    assert written_file_path.exists(), f"'{written_file_path}' does not exist, {output_logs}"
-    fixture_path = relative_path(against_dir.joinpath(written_file_path.name))
+    new_file_path = relative_path(Path(wrote_to_match.group(1)))
+    assert new_file_path.exists(), f"'{new_file_path}' does not exist, {output_logs}"
+    fixture_path = relative_path(against_dir.joinpath(new_file_path.name))
 
     if should_rebuild_fixtures():
-        log.warning(f"\nOverwriting fixture '{fixture_path}'\n   with contents of '{written_file_path}'")
-        shutil.move(written_file_path, fixture_path)
+        log.warning(f"\nOverwriting fixture '{fixture_path}'\n   with contents of '{new_file_path}'")
+        shutil.move(new_file_path, fixture_path)
         return
 
     assert fixture_path.exists()
-    assert load_file(fixture_path) == load_file(written_file_path)
+    assert load_file(fixture_path) == load_file(new_file_path)

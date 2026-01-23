@@ -6,7 +6,6 @@ import json
 import logging
 import re
 import shutil
-from functools import partial
 from math import isclose
 from os import environ, path
 from pathlib import Path

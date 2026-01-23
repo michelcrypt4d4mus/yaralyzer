@@ -2,9 +2,10 @@
 Functions to export Yaralyzer results to various file formats.
 """
 import json
+import re
 import time
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
@@ -56,18 +57,18 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, output_basepath: str | Path | None = None) -> Path:
+def export_json(yaralyzer: Yaralyzer, export_basepath: str | Path | None = None) -> Path:
     """
     Export YARA scan results to JSON.
 
     Args:
         yaralyzer (Yaralyzer): The `Yaralyzer` object containing the results to export.
-        output_basepath (Optional[str]): Base path to write output to. Should have no file extension.
+        export_basepath (Optional[str]): Base path to write output to. Should have no file extension.
 
     Returns:
         Path: File data was exported to.
     """
-    output_path = Path(f"{output_basepath or 'yara_matches'}.json")
+    output_path = Path(f"{export_basepath or 'yara_matches'}.json")
     matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
 
     with open(output_path, 'w') as f:
@@ -77,20 +78,20 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: str | Path | None = None)
     return output_path
 
 
-def invoke_rich_export(export_method: Callable, output_file_basepath: str | Path) -> Path:
+def invoke_rich_export(export_method: Callable, export_basepath: str | Path) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
     Args:
         export_method (Callable): Usually a `Rich.console.save_whatever()` method
-        output_file_basepath (str): Path to write output to. Should have no file extension.
+        export_basepath (str): Path to write output to. Should have no file extension.
 
     Returns:
         Path: Path data was exported to.
     """
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
-    output_file_path = Path(f"{output_file_basepath}.{extname}")
+    export_file_path = Path(f"{export_basepath}.{extname}")
 
     if method_name not in _EXPORT_KWARGS:
         raise RuntimeError(f"{method_name} is not a valid Rich.console export method!")
@@ -99,12 +100,12 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str | Path
     kwargs.update({'clear': False})
 
     if 'svg' in method_name:
-        kwargs.update({'title': output_file_path.name})
+        kwargs.update({'title': export_file_path.name})
 
     # Invoke it
-    log.info(f"Invoking rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
+    log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
     start_time = time.perf_counter()
-    export_method(output_file_path, **kwargs)
+    export_method(export_file_path, **kwargs)
     write_time = time.perf_counter() - start_time
-    log_and_print(f"\nWrote '{relative_path(output_file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
-    return output_file_path
+    log_and_print(f"\nWrote '{relative_path(export_file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
+    return export_file_path

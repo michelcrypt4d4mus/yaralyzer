@@ -32,6 +32,7 @@ Python log levels for reference:
 """
 import logging
 from argparse import Namespace
+from copy import copy
 from pathlib import Path
 from sys import argv
 from typing import Union
@@ -42,7 +43,7 @@ from rich.logging import RichHandler
 from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
+from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
 from yaralyzer.helpers.file_helper import relative_path
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
@@ -54,6 +55,8 @@ DEFAULT_LOG_HANDLER_KWARGS = {
     'console': Console(stderr=True, **DEFAULT_CONSOLE_KWARGS),
     'omit_repeated_times': False,
     'rich_tracebacks': True,
+    'show_path': not is_invoked_by_pytest(),
+    'show_time': not is_invoked_by_pytest(),
 }
 
 
@@ -87,9 +90,10 @@ def configure_logger(log_label: str) -> logging.Logger:
     return logger
 
 
-def invocation_str(use_relative_paths: bool = True) -> str:
+def invocation_str(_argv: list[str] | None = None, use_relative_paths: bool = True) -> str:
     """Convert sys.argv into something readable."""
-    _argv = [arg for arg in argv if arg != '--echo-command']
+    _argv = copy(_argv or argv)
+    _argv = [arg for arg in _argv if arg != '--echo-command']
 
     if use_relative_paths:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
@@ -101,7 +105,7 @@ def invocation_txt() -> Text:
     txt = Text(f"Invoked with this command:\n\n")
     txt.append(f"{invocation_str()}\n\n", style='wheat4')
     txt.append(f"Invocation raw argv:\n\n", style='dim')
-    txt.append(f"{invocation_str(False)}\n", style='wheat4 dim')
+    txt.append(f"{invocation_str(use_relative_paths=False)}\n", style='wheat4 dim')
     return txt
 
 
@@ -123,8 +127,13 @@ def log_argparse_result(args: Namespace, label: str) -> None:
         log_msg += row
 
     log_msg += "\n"
-    invocation_log.info(log_msg)
-    log.info(log_msg)
+    invocation_log.debug(log_msg)
+    log.debug(log_msg)
+
+
+def log_bigly(msg: str, big_msg: object, level: int = logging.WARNING) -> None:
+    log_console.line()
+    log.log(level, f"{msg}\n\n {big_msg}\n")
 
 
 def log_current_config() -> None:

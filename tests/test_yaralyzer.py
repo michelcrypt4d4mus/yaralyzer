@@ -8,23 +8,38 @@ from typing import Tuple
 
 import pytest
 
-from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
+from .conftest import YARA_FIXTURES_DIR
+from .yara.test_yara_rule_builder import HEX_STRING
+
 CLOSENESS_THRESHOLD = 0.05
 EXPECTED_LINES = 1060
+MAXDECODE_SFX = '__maxdecode256'
 
 
-def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path):
-    expected_basename = f"{il_tulipano_path.name}_scanned_with_{tulips_yara_path.name}__maxdecode256"
-    assert a_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename)
+def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips_yara_pattern):
+    expected_basename = f"{il_tulipano_path.name}_scanned_with_"
 
+    def assert_filename(yaralyzer: Yaralyzer, filename: str) -> None:
+        assert yaralyzer.export_basepath() == Path.cwd().joinpath(filename + MAXDECODE_SFX)
 
-def test_filename_string(a_yaralyzer):
-    assert a_yaralyzer._filename_string() == 'il_tulipano_nero.txt_scanned_with_tulips.yara'
+    # Rules files
+    expected_rulefile_basename = f"{expected_basename}{tulips_yara_path.name}"
+    assert_filename(a_yaralyzer, expected_rulefile_basename)
+    diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
+    assert_filename(diralyzer, expected_rulefile_basename + ',pdf_rule.yara')
+    # Regex
+    regexalyzer = Yaralyzer.for_patterns([r"illmatic\s*by\s*nas"], 'regex', il_tulipano_path)
+    assert_filename(regexalyzer, expected_basename + 'illmaticsbysnas')
+    regexalyzer = Yaralyzer.for_patterns([tulips_yara_pattern], 'regex', il_tulipano_path)
+    assert_filename(regexalyzer, expected_basename + 'tulip.1,2500tulip')
+    # Hex
+    hexalyzer = Yaralyzer.for_patterns([HEX_STRING], 'hex', il_tulipano_path)
+    assert_filename(hexalyzer, expected_basename + 'e0_9a_3f_51_dd_25_ce_4c')
 
 
 def test_hex_rules(binary_file_path, tulips_yara_path):
@@ -40,9 +55,9 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
         Yaralyzer.for_rules_files(['nonexistent.file.yara'], il_tulipano_path)
 
 
-def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_regex):
+def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_pattern):
     result = _check_output_linecount(
-        Yaralyzer.for_patterns([tulips_yara_regex], REGEX, il_tulipano_path),
+        Yaralyzer.for_patterns([tulips_yara_pattern], REGEX, il_tulipano_path),
         EXPECTED_LINES)
 
     assert result[0], result[1]

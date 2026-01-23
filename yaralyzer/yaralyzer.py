@@ -1,4 +1,5 @@
 """Main Yaralyzer class and alternate constructors."""
+import re
 from pathlib import Path
 from typing import Callable, Iterator, List, Tuple
 
@@ -23,6 +24,7 @@ from yaralyzer.yara.yara_match import YaraMatch
 from yaralyzer.yara.yara_rule_builder import PatternType, YaraModifierType, yara_rule_string
 
 YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't exist)"
+INVALID_FOR_FILENAME_REGEX = re.compile(r"[^\w,.=+-;]+")
 
 
 # TODO: might be worth introducing a Scannable namedtuple or similar
@@ -171,6 +173,7 @@ class Yaralyzer:
             raise FileNotFoundError(f"'{dirs}' is not a list of valid directories")
 
         rules_files = [f for dir in dirs for f in files_in_dir(dir)]
+        log.info(f"Found {len(rules_files)} in {len(dirs)} dirs: {rules_files}")
         return cls.for_rules_files(rules_files, scannable, scannable_label)
 
     @classmethod
@@ -220,10 +223,11 @@ class Yaralyzer:
     def export_basepath(self) -> Path:
         """Get the basepath (directory + filename without extension) for exported files."""
         args = YaralyzerConfig.args
-        args.output_basename  = f"{args.file_prefix}{self._filename_string()}"  # noqa: E221
-        args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
-        args.output_basename += args.file_suffix
-        file_basename = args.output_basename
+        filename_str = INVALID_FOR_FILENAME_REGEX.sub('', str(self).replace(', ', ',').replace(' ', '_'))
+        args.export_basename  = f"{args.file_prefix}{filename_str}"  # noqa: E221
+        args.export_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
+        args.export_basename += args.file_suffix
+        file_basename = args.export_basename
 
         if not args.no_timestamps:
             file_basename += f"__at_{args.invoked_at_str}"
@@ -292,10 +296,6 @@ class Yaralyzer:
         """Inverted colors for the panel at the top of the match section of the output."""
         styles = [reverse_color(YARALYZER_THEME.styles[f"yara.{s}"]) for s in ('scanned', 'rules')]
         return self.__text__(*styles)
-
-    def _filename_string(self) -> str:
-        """The string to use when exporting this yaralyzer to SVG/HTML/etc."""
-        return str(self).replace('>', '').replace('<', '').replace(' ', '_')
 
     def __text__(self, byte_style: Style | str = 'yara.scanned', rule_style: Style | str = 'yara.rules') -> Text:
         """Text representation of this YARA scan (__text__() was taken)."""

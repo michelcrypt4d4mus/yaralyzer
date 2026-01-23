@@ -36,7 +36,7 @@ def yaralyze():
     and environment variables. See `yaralyze --help` for details.
     """
     args = parse_arguments()
-    output_basepath = ''
+    export_basepath = ''
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
@@ -54,8 +54,8 @@ def yaralyze():
         raise RuntimeError("No pattern or YARA file to scan against.")
 
     if args.output_dir:
-        output_basepath = yaralyzer.export_basepath()
-        console.print(f"Rendering yaralyzer output to '{output_basepath.relative_to(Path.cwd())}'...", style='yellow')
+        export_basepath = yaralyzer.export_basepath()
+        console.print(f"Rendering yaralyzer output to '{export_basepath.relative_to(Path.cwd())}'...", style='yellow')
         console.record = True
 
     if args.echo_command:
@@ -67,13 +67,13 @@ def yaralyze():
         print_fatal_error_and_exit(yara_error_msg(e))
 
     if args.export_txt:
-        invoke_rich_export(console.save_text, output_basepath)
+        invoke_rich_export(console.save_text, export_basepath)
     if args.export_html:
-        invoke_rich_export(console.save_html, output_basepath)
+        invoke_rich_export(console.save_html, export_basepath)
     if args.export_svg:
-        invoke_rich_export(console.save_svg, output_basepath)
+        invoke_rich_export(console.save_svg, export_basepath)
     if args.export_json:
-        export_json(yaralyzer, output_basepath)
+        export_json(yaralyzer, export_basepath)
 
     if str(args.file_to_scan_path).lower().endswith('pdf'):
         console.print(PDFALYZER_MSG_TXT)

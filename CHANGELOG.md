@@ -1,5 +1,6 @@
 # NEXT RELEASE
-* `--echo-command` option to save the exact command used along with the output
+* Add `--echo-command` option to save the exact command used along with the output
+* Strip invalid chars out of exported filenames
 
 ## 1.1.0
 * Add `--no-timestamps` command line option for exported filenames

@@ -3,20 +3,32 @@ Tests for invoking yaralyze script from shell (NOT for Yaralyzer() class directl
 are over in test_yaralyzer.py)
 """
 import json
+import logging
+import re
+import shutil
 from functools import partial
 from math import isclose
 from os import environ, path
 from pathlib import Path
-from subprocess import CalledProcessError, check_output
+from subprocess import CalledProcessError, CompletedProcess, check_output, run
 
 import pytest
 
-from tests.test_yaralyzer import CLOSENESS_THRESHOLD
-from tests.yara.test_yara_rule_builder import HEX_STRING
-from yaralyzer.helpers.file_helper import files_in_dir, load_file
+from yaralyzer.helpers.file_helper import files_in_dir, load_file, relative_path
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.constants import YARALYZE
+from yaralyzer.util.logging import invocation_str, log, log_bigly
+
+from .conftest import RENDERED_FIXTURES_DIR, SHOULD_REBUILD_FIXTURES, TMP_DIR
+from .test_yaralyzer import CLOSENESS_THRESHOLD
+from .yara.test_yara_rule_builder import HEX_STRING
+
+ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
+DEFAULT_CLI_ARGS = ['--no-timestamps', '--output-dir', TMP_DIR]
+EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
+LOG_SEPARATOR = '-' * 35
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
@@ -42,21 +54,17 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
         _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
 
 
-def test_yaralyze_with_files(il_tulipano_path, tulips_yara_path):
-    """
-    Check output of:
-        yaralyze -Y tests/file_fixtures/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
-        yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
-    """
-    test_line_count = partial(_assert_output_line_count_is_close, 1048, il_tulipano_path)
-    test_line_count('-Y', tulips_yara_path)
-    test_line_count('-dir', path.dirname(tulips_yara_path))
+def test_yaralyze_with_rule_files(il_tulipano_path, tulips_yara_path):
+    # yaralyze -Y tests/file_fixtures/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
+    _compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
+    # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
+    _compare_to_fixture(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
 
-def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_regex):
-    _assert_output_line_count_is_close(1044, il_tulipano_path, '-re', tulips_yara_regex)
-    _assert_output_line_count_is_close(90, binary_file_path, '-re', '3Hl0')
-    _assert_output_line_count_is_close(96, binary_file_path, '-hex', HEX_STRING)
+def test_yaralyze_with_patterns_fixtures(il_tulipano_path, binary_file_path, tulips_yara_pattern):
+    _compare_to_fixture(il_tulipano_path, '-re', tulips_yara_pattern)
+    _compare_to_fixture(binary_file_path, '-re', '3Hl0')
+    _compare_to_fixture(binary_file_path, '-hex', HEX_STRING)
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
@@ -87,15 +95,12 @@ def _assert_array_is_close(_list1, _list2):
             assert False, f"File size of {item} too far from {_list2[i]}"
 
 
-def _assert_output_line_count_is_close(expected_line_count: int, file_to_scan: str, *args) -> None:
-    output_line_count = line_count(_run_with_args(file_to_scan, *args))
-    assert isclose(expected_line_count, output_line_count, rel_tol=CLOSENESS_THRESHOLD)
-
-
 def _run_with_args(file_to_scan: str | Path, *args) -> str:
     """check_output() technically returns bytes so we decode before returning STDOUT output"""
     try:
-        output = check_output([YARALYZE, file_to_scan, *args], env=environ).decode()
+        cmd_list = _build_shell_cmd(file_to_scan, *args)
+        log_bigly('_run_with_args() running cmd:', _shell_cmd_str(cmd_list), logging.INFO)
+        output = check_output(cmd_list, env=environ).decode()
         # print(output)
         return output
     except CalledProcessError as e:
@@ -112,4 +117,50 @@ def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol
 
 
 def _compare_to_fixture(file_to_scan: str | Path, *args):
-    pass
+    """
+    Compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data.
+    'fixture_name' arg should be used in cases where tests with different filename outputs
+    can be compared against the same fixture file.
+    """
+    cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
+    result = run(cmd_list, capture_output=True, env=environ)
+    result_stderr = ANSI_COLOR_CODE_REGEX.sub('', result.stderr.decode())
+    output_logs = _cmd_log_msg(cmd_list, result)
+    #log.debug(output_logs)
+    assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
+    wrote_to_match = WROTE_TO_FILE_REGEX.search(result_stderr)
+    assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{result_stderr}"
+    written_file_path = relative_path(Path(wrote_to_match.group(1)))
+    assert written_file_path.exists(), f"{written_file_path} does not exist, {output_logs}"
+    fixture_path = relative_path(RENDERED_FIXTURES_DIR.joinpath(written_file_path.name))
+
+    if SHOULD_REBUILD_FIXTURES:
+        log.warning(f"\nOverwriting fixture at '{fixture_path}'\n       with contents of '{written_file_path}'")
+        shutil.move(written_file_path, fixture_path)
+        return
+
+    assert fixture_path.exists()
+    assert load_file(fixture_path) == load_file(written_file_path)
+
+
+def _build_shell_cmd(file_path: str | Path, *args) -> list[str]:
+    return [YARALYZE, str(file_path), *[str(arg) for arg in args]]
+
+
+def _cmd_log_msg(full_cmd: list[str], result: CompletedProcess) -> str:
+    """Long string with all info about a command execution."""
+    msg = f"ran shell command:\n\n{_shell_cmd_str(full_cmd)}"
+    #import pdb;pdb.set_trace()
+
+    for i, stream in enumerate([result.stdout, result.stderr]):
+        label = 'stdout' if i == 0 else 'stderr'
+        decoded_stream = ANSI_COLOR_CODE_REGEX.sub('', stream.decode()).strip()
+        msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
+
+    return msg + "\n"
+
+
+def _shell_cmd_str(args: list[str], raw: bool = False) -> str:
+    """For logging. Relativize paths and remove repetitive args."""
+    args = [str(a) for a in args if raw or a not in DEFAULT_CLI_ARGS]
+    return ' '.join(args) if raw else invocation_str(args)

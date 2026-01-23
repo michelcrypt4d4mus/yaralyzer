@@ -210,7 +210,7 @@ export.add_argument('-sfx', '--file-suffix',
                     metavar='SUFFIX',
                     help='optional string to use as the suffix for exported files of any kind')
 
-tuning.add_argument('--no-timestamps', action='store_true',
+export.add_argument('--no-timestamps', action='store_true',
                     help="do not append file creation timestamps to exported filenames")
 
 
@@ -244,7 +244,7 @@ def parse_arguments(args: Optional[Namespace] = None):
             Defaults to `None`.
 
     Raises:
-        ArgumentError: If args are invalid.
+        InvalidArgumentError: If args are invalid.
     """
     if '--version' in sys.argv:
         print(f"yaralyzer {version('yaralyzer')}")
@@ -272,17 +272,10 @@ def parse_arguments(args: Optional[Namespace] = None):
         log.warning('--output-dir provided but no export option was chosen')
 
     args.file_to_scan_path = Path(args.file_to_scan_path)
-    args.output_dir = Path(args.output_dir or Path.cwd())
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 
     if not args.file_to_scan_path.exists():
         handle_exception(f"'{args.file_to_scan_path}' is not a valid file.")
-    elif not args.output_dir.is_dir():
-        handle_exception(f"'{args.output_dir}' is not a valid directory.")
-
-    # File export options
-    args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
-    args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
 
     if is_used_as_library:
         pass
@@ -293,11 +286,8 @@ def parse_arguments(args: Optional[Namespace] = None):
     else:
         log_invocation()
 
-    if args.maximize_width:
-        rich_console.console.width = max(env_helper.console_width_possibilities())
-
     if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
-        raise ArgumentError(None, 'Pattern can only include alphanumeric chars and underscore')
+        handle_exception('Pattern can only include alphanumeric chars and underscore')
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:
@@ -307,6 +297,17 @@ def parse_arguments(args: Optional[Namespace] = None):
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
     YaralyzerConfig.set_args(args)
+
+    # Wait until after set_args() to set these defaults in case there's a YARALYZER_[WHATEVER] env var
+    args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
+    args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
+    args.output_dir = Path(args.output_dir or Path.cwd()).resolve()
+
+    if not args.output_dir.is_dir():
+        handle_exception(f"'{args.output_dir}' is not a valid directory.")
+
+    if args.maximize_width:
+        rich_console.console.width = max(env_helper.console_width_possibilities())
 
     if not is_used_as_library:
         log_argparse_result(args, 'parsed')

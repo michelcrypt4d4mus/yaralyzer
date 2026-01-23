@@ -5,6 +5,7 @@ import logging
 from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
+from sys import stderr
 from typing import Any, List
 
 from rich.console import Console
@@ -19,6 +20,7 @@ KILOBYTE = 1024
 # These options cannot be read from an environment variable
 ONLY_CLI_ARGS = [
     'debug',
+    'file_to_scan_path',
     'help',
     'hex_patterns',
     'interact',
@@ -84,7 +86,7 @@ class YaralyzerConfig:
             env_var = f"{YARALYZER}_{option.upper()}"
             env_value = environ.get(env_var)
             default_value = cls.get_default_arg(option)
-            # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}")  # noqa: E501
+            # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}", file=stderr)  # noqa: E501
 
             # TODO: as is you can't override env vars with CLI args
             if isinstance(arg_value, bool):
@@ -93,8 +95,6 @@ class YaralyzerConfig:
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
                     setattr(_args, option, int(env_value) or arg_value)  # TODO: float args not handled
-            elif isinstance(arg_value, str) and not (env_value or default_value):
-                pass  # Don't overwrite empty string with None
             else:
                 setattr(_args, option, arg_value or env_value)
 

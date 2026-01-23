@@ -87,7 +87,7 @@ def console_print_with_fallback(_string: Text | str, style=None) -> None:
 
 def console_width() -> int:
     """Current width set in `console` object."""
-    return console._width or 40
+    return console._width or 80  # TODO: wtf?
 
 
 def theme_colors_with_prefix(prefix: str) -> List[Text]:

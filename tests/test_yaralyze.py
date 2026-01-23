@@ -21,7 +21,7 @@ from yaralyzer.util.constants import YARALYZE
 # Asking for help screen is a good canary test... proves code compiles, at least.
 def test_help_option():
     help_text = _run_with_args('-h')
-    assert 'maximize-width' in help_text
+    assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs'])
     _assert_line_count_within_range(131, help_text)
 
 

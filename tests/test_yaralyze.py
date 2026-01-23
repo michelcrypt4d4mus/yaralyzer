@@ -14,12 +14,13 @@ from subprocess import CalledProcessError, check_output, run
 import pytest
 
 from yaralyzer.helpers.file_helper import files_in_dir, load_file, relative_path
+from yaralyzer.helpers.shell_helper import compare_export_to_file
 from yaralyzer.helpers.string_helper import line_count, strip_ansi_colors
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log, log_bigly, shell_command_log_str
 
-from .conftest import RENDERED_FIXTURES_DIR, SHOULD_REBUILD_FIXTURES, TMP_DIR
+from .conftest import RENDERED_FIXTURES_DIR, TMP_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
@@ -119,24 +120,7 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
     can be compared against the same fixture file.
     """
     cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
-    result = run(cmd_list, capture_output=True, env=environ)
-    stderr = strip_ansi_colors(result.stderr.decode())
-    output_logs = shell_command_log_str(cmd_list, result, ignore_args=DEFAULT_CLI_ARGS)
-    log.error(output_logs)
-    assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
-    wrote_to_match = WROTE_TO_FILE_REGEX.search(stderr)
-    assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{stderr}"
-    written_file_path = relative_path(Path(wrote_to_match.group(1)))
-    assert written_file_path.exists(), f"'{written_file_path}' does not exist, {output_logs}"
-    fixture_path = relative_path(RENDERED_FIXTURES_DIR.joinpath(written_file_path.name))
-
-    if SHOULD_REBUILD_FIXTURES:
-        log.warning(f"\nOverwriting fixture at '{fixture_path}'\n      with contents of '{written_file_path}'")
-        shutil.move(written_file_path, fixture_path)
-        return
-
-    assert fixture_path.exists()
-    assert load_file(fixture_path) == load_file(written_file_path)
+    compare_export_to_file(cmd_list, RENDERED_FIXTURES_DIR, ignorable_args=DEFAULT_CLI_ARGS)
 
 
 def _build_shell_cmd(file_path: str | Path, *args) -> list[str]:

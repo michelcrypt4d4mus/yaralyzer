@@ -7,6 +7,8 @@ from shutil import get_terminal_size
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
 
 DEFAULT_CONSOLE_WIDTH = 160
+PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
+SHOULD_REBUILD_FIXTURES = False
 
 
 def config_var_name(env_var: str) -> str:
@@ -41,6 +43,10 @@ def is_env_var_set_and_not_false(var_name: str) -> bool:
 def is_invoked_by_pytest() -> bool:
     """Return `True` if invoked in a `pytest` context."""
     return is_env_var_set_and_not_false(INVOKED_BY_PYTEST)
+
+
+def should_rebuild_fixtures() -> bool:
+    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
 
 
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)

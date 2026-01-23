@@ -19,8 +19,6 @@ from yaralyzer.yaralyzer import Yaralyzer                                 # noqa
 FIXTURES_DIR = PYTESTS_DIR.joinpath('file_fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
-PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
-SHOULD_REBUILD_FIXTURES = is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
 
 
 # Full paths to file fixtures

@@ -1,6 +1,7 @@
 # NEXT RELEASE
 * Add `--echo-command` option to save the exact command used along with the output
 * Strip invalid chars out of exported filenames
+* `pytest` now compares output against previously export results instead of just checking line count
 
 ## 1.1.0
 * Add `--no-timestamps` command line option for exported filenames

@@ -314,16 +314,3 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
 
     return args
-
-
-def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer) -> Path:
-    """Get the basepath (directory + filename without extension) for exported files."""
-    args.output_basename  = f"{args.file_prefix}{yaralyzer._filename_string()}"  # noqa: E221
-    args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
-    args.output_basename += args.file_suffix
-    file_basename = args.output_basename
-
-    if not args.no_timestamps:
-        file_basename += f"__at_{args.invoked_at_str}"
-
-    return args.output_dir.joinpath(file_basename)

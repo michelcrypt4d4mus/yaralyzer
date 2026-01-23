@@ -18,7 +18,7 @@ if not environ.get(INVOKED_BY_PYTEST, False):
 from yaralyzer.helpers.rich_text_helper import print_fatal_error_and_exit
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.output.rich_console import console
-from yaralyzer.util.argument_parser import get_export_basepath, parse_arguments
+from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -52,7 +52,7 @@ def yaralyze():
         raise RuntimeError("No pattern or YARA file to scan against.")
 
     if args.output_dir:
-        output_basepath = get_export_basepath(args, yaralyzer)
+        output_basepath = yaralyzer.export_basepath()
         console.print(f"Rendering yaralyzer output to '{output_basepath.relative_to(Path.cwd())}'...", style='yellow')
         output_basepath = str(output_basepath)
         console.record = True

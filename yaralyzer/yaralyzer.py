@@ -20,7 +20,7 @@ from yaralyzer.output.rich_console import YARALYZER_THEME, console
 from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
-from yaralyzer.yara.yara_rule_builder import yara_rule_string
+from yaralyzer.yara.yara_rule_builder import PatternType, YaraModifierType, yara_rule_string
 
 YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't exist)"
 
@@ -177,19 +177,19 @@ class Yaralyzer:
     def for_patterns(
         cls,
         patterns: list[str],
-        patterns_type: str,
+        patterns_type: PatternType,
         scannable: bytes | str | Path,
         scannable_label: str | None = None,
         rules_label: str | None = None,
         pattern_label: str | None = None,
-        regex_modifier: str | None = None,
+        regex_modifier: YaraModifierType | None = None,
     ) -> 'Yaralyzer':
         """
         Alternate constructor taking regex pattern strings. Rules label defaults to the patterns joined by comma.
 
         Args:
             patterns (List[str]): List of regex or hex patterns to build rules from.
-            patterns_type (str): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
+            patterns_type (PatternType): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
             scannable_label (str | None, optional): Label for the `scannable` data.
@@ -216,6 +216,19 @@ class Yaralyzer:
         rules_string = newline_join(rule_strings)
         rules_label = comma_join(patterns)
         return cls(rules_string, rules_label, scannable, scannable_label)
+
+    def export_basepath(self) -> Path:
+        """Get the basepath (directory + filename without extension) for exported files."""
+        args = YaralyzerConfig.args
+        args.output_basename  = f"{args.file_prefix}{self._filename_string()}"  # noqa: E221
+        args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
+        args.output_basename += args.file_suffix
+        file_basename = args.output_basename
+
+        if not args.no_timestamps:
+            file_basename += f"__at_{args.invoked_at_str}"
+
+        return args.output_dir.joinpath(file_basename)
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them."""

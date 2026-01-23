@@ -1,7 +1,6 @@
 """
 Utility methods used by pytest both here and in Pdfalyzer.
 """
-import json
 import logging
 import re
 import shutil
@@ -14,7 +13,6 @@ import pytest
 from yaralyzer.helpers.env_helper import should_rebuild_fixtures
 from yaralyzer.helpers.file_helper import load_file, relative_path
 from yaralyzer.helpers.string_helper import strip_ansi_colors
-from yaralyzer.output.rich_console import console
 from yaralyzer.util.logging import log, log_bigly, shell_command_log_str
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")

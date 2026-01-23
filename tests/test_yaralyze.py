@@ -18,7 +18,7 @@ from yaralyzer.helpers.file_helper import files_in_dir, load_file, relative_path
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.constants import YARALYZE
-from yaralyzer.util.logging import invocation_str, log, log_bigly
+from yaralyzer.util.logging import invocation_str, log, log_bigly, shell_command_log_str
 
 from .conftest import RENDERED_FIXTURES_DIR, SHOULD_REBUILD_FIXTURES, TMP_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
@@ -99,7 +99,6 @@ def _run_with_args(file_to_scan: str | Path, *args) -> str:
     """check_output() technically returns bytes so we decode before returning STDOUT output"""
     try:
         cmd_list = _build_shell_cmd(file_to_scan, *args)
-        log_bigly('_run_with_args() running cmd:', _shell_cmd_str(cmd_list), logging.INFO)
         output = check_output(cmd_list, env=environ).decode()
         # print(output)
         return output
@@ -125,8 +124,8 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
     cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
     result = run(cmd_list, capture_output=True, env=environ)
     result_stderr = ANSI_COLOR_CODE_REGEX.sub('', result.stderr.decode())
-    output_logs = _cmd_log_msg(cmd_list, result)
-    #log.debug(output_logs)
+    output_logs = shell_command_log_str(cmd_list, result, DEFAULT_CLI_ARGS)
+    log.error(output_logs)
     assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
     wrote_to_match = WROTE_TO_FILE_REGEX.search(result_stderr)
     assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{result_stderr}"
@@ -135,7 +134,7 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
     fixture_path = relative_path(RENDERED_FIXTURES_DIR.joinpath(written_file_path.name))
 
     if SHOULD_REBUILD_FIXTURES:
-        log.warning(f"\nOverwriting fixture at '{fixture_path}'\n       with contents of '{written_file_path}'")
+        log.warning(f"\nOverwriting fixture at '{fixture_path}'\n      with contents of '{written_file_path}'")
         shutil.move(written_file_path, fixture_path)
         return
 
@@ -145,22 +144,3 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
 
 def _build_shell_cmd(file_path: str | Path, *args) -> list[str]:
     return [YARALYZE, str(file_path), *[str(arg) for arg in args]]
-
-
-def _cmd_log_msg(full_cmd: list[str], result: CompletedProcess) -> str:
-    """Long string with all info about a command execution."""
-    msg = f"ran shell command:\n\n{_shell_cmd_str(full_cmd)}"
-    #import pdb;pdb.set_trace()
-
-    for i, stream in enumerate([result.stdout, result.stderr]):
-        label = 'stdout' if i == 0 else 'stderr'
-        decoded_stream = ANSI_COLOR_CODE_REGEX.sub('', stream.decode()).strip()
-        msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
-
-    return msg + "\n"
-
-
-def _shell_cmd_str(args: list[str], raw: bool = False) -> str:
-    """For logging. Relativize paths and remove repetitive args."""
-    args = [str(a) for a in args if raw or a not in DEFAULT_CLI_ARGS]
-    return ' '.join(args) if raw else invocation_str(args)

@@ -4,7 +4,7 @@ Configuration management for Yaralyzer.
 from os import environ
 from shutil import get_terminal_size
 
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
 
 DEFAULT_CONSOLE_WIDTH = 160
 
@@ -18,7 +18,7 @@ def config_var_name(env_var: str) -> str:
         config_var_name('YARALYZER_SURROUNDING_BYTES') => 'SURROUNDING_BYTES'
         ```
     """
-    env_var = env_var.removeprefix(f"{YARALYZER}_")
+    env_var = env_var.removeprefix(f"{YARALYZER_UPPER}_")
     return f'{env_var=}'.partition('=')[0]
 
 

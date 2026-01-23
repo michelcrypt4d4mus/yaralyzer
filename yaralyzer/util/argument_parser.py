@@ -16,7 +16,7 @@ from yaralyzer.helpers import env_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
-from yaralyzer.util.constants import YARALYZE, YARALYZER
+from yaralyzer.util.constants import YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
@@ -40,7 +40,7 @@ def epilog(package: str) -> str:
           f"A log of previous {package} invocation args will be inscribed to a file if the " \
           f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured." \
 
-    if package == YARALYZER.lower():
+    if package == YARALYZER_UPPER.lower():
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
 
     return msg # + f"README: {color_link(readme_url)}"
@@ -48,7 +48,7 @@ def epilog(package: str) -> str:
 
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
-parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER))
+parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER_UPPER))
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 

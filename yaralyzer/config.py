@@ -12,7 +12,7 @@ from rich.console import Console
 
 from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import YARALYZER
+from yaralyzer.util.constants import YARALYZER_UPPER
 
 DEFAULT_CONSOLE_WIDTH = 160
 KILOBYTE = 1024
@@ -52,7 +52,7 @@ class YaralyzerConfig:
     # logging module requires absolute paths
     LOG_DIR_ENV_VAR = 'YARALYZER_LOG_DIR'
     LOG_DIR = Path(environ.get(LOG_DIR_ENV_VAR)).resolve() if environ.get(LOG_DIR_ENV_VAR) else None
-    LOG_LEVEL_ENV_VAR = f"{YARALYZER}_LOG_LEVEL"
+    LOG_LEVEL_ENV_VAR = f"{YARALYZER_UPPER}_LOG_LEVEL"
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
 
     if LOG_DIR and not is_invoked_by_pytest():
@@ -83,7 +83,7 @@ class YaralyzerConfig:
                 continue
 
             arg_value = vars(_args)[option]
-            env_var = f"{YARALYZER}_{option.upper()}"
+            env_var = f"{YARALYZER_UPPER}_{option.upper()}"
             env_value = environ.get(env_var)
             default_value = cls.get_default_arg(option)
             # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}", file=stderr)  # noqa: E501

@@ -17,13 +17,6 @@ from rich.text import Text
 from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
 from yaralyzer.util.logging import highlighter, log
 
-# String constants
-CENTER = 'center'
-FOLD = 'fold'
-LEFT = 'left'
-MIDDLE = 'middle'
-RIGHT = 'right'
-
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))
 METER_INTERVAL = (100 / float(len(METER_COLORS))) + 0.1

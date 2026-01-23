@@ -25,7 +25,7 @@ from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.util.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
-from yaralyzer.util.helpers.rich_helper import CENTER, FOLD, MIDDLE, RIGHT, na_txt
+from yaralyzer.util.helpers.rich_helper import na_txt
 
 HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
@@ -36,10 +36,10 @@ def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
     table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
 
     def add_col(title, **kwargs):
-        kwargs['justify'] = kwargs.get('justify', CENTER)
-        table.add_column(title, overflow=FOLD, vertical=MIDDLE, **kwargs)
+        kwargs['justify'] = kwargs.get('justify', 'center')
+        table.add_column(title, overflow='fold', vertical='middle', **kwargs)
 
-    add_col('Encoding', justify=RIGHT, width=12)
+    add_col('Encoding', justify='right', width=12)
     add_col('Detect Odds', width=len('Detect'))
     add_col('Used\nForce?', width=len('Force?'))
     add_col('Decoded Output', justify='left')

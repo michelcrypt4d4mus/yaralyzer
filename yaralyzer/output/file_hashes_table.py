@@ -8,7 +8,7 @@ from typing import Optional, Union
 from rich.console import JustifyMethod
 from rich.table import Column, Table
 
-from yaralyzer.util.helpers.rich_helper import LEFT, size_text
+from yaralyzer.util.helpers.rich_helper import size_text
 from yaralyzer.output.rich_console import GREY
 
 BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
@@ -17,7 +17,7 @@ BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])
 def bytes_hashes_table(
     bytes_or_bytes_info: Union[bytes, BytesInfo],
     title: Optional[str] = None,
-    title_justify: JustifyMethod = LEFT
+    title_justify: JustifyMethod = 'left'
 ) -> Table:
     """
     Build a Rich `Table` displaying the size, MD5, SHA1, and SHA256 hashes of a byte sequence.

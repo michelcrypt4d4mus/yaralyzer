@@ -19,7 +19,7 @@ from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.util.helpers.dict_helper import get_dict_key_by_value
-from yaralyzer.util.helpers.rich_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
+from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
 from yaralyzer.output.decoding_table_row import DecodingTableRow
 from yaralyzer.util.logging import log
@@ -174,11 +174,11 @@ class BytesDecoder:
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
         """Rich object generator (see Rich console docs)."""
         yield NewLine(2)
-        yield Align(self._decode_attempt_subheading(), CENTER)
+        yield Align(self._decode_attempt_subheading(), 'center')
 
         if not YaralyzerConfig.args.suppress_chardet:
             yield NewLine()
-            yield Align(self.encoding_detector, CENTER)
+            yield Align(self.encoding_detector, 'center')
             yield NewLine()
 
         # In standalone mode we always print the hex/raw bytes
@@ -188,7 +188,7 @@ class BytesDecoder:
             yield self._build_decodings_table(True)
 
         yield NewLine()
-        yield Align(self.bytes_match.bytes_hashes_table(), CENTER, style='dim')
+        yield Align(self.bytes_match.bytes_hashes_table(), 'center', style='dim')
 
 
 def _build_encodings_metric_dict():

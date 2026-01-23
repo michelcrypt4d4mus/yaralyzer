@@ -29,7 +29,6 @@ from rich.text import Text
 from yara import StringMatch
 
 from yaralyzer.util.helpers.bytes_helper import clean_byte_string
-from yaralyzer.util.helpers.rich_helper import CENTER
 from yaralyzer.util.helpers.string_helper import INDENT_SPACES
 from yaralyzer.output.rich_console import console_width, theme_colors_with_prefix
 from yaralyzer.util.logging import log
@@ -52,7 +51,7 @@ YARA_STRING_STYLES: Dict[re.Pattern, str] = {
 
 RAW_YARA_THEME_COLORS = [color[len('yara') + 1:] for color in theme_colors_with_prefix('yara')]
 RAW_YARA_THEME_TXT = Text('\nColor Code: ') + Text(' ').join(RAW_YARA_THEME_COLORS)
-RAW_YARA_THEME_TXT.justify = CENTER
+RAW_YARA_THEME_TXT.justify = 'center'
 
 
 class YaraMatch:

@@ -14,7 +14,7 @@ from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANG
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.output import rich_console
+from yaralyzer.output import console
 from yaralyzer.util.constants import YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
@@ -310,7 +310,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         handle_invalid_args(f"'{args.output_dir}' is not a valid directory.")
 
     if args.maximize_width:
-        rich_console.console.width = max(env_helper.console_width_possibilities())
+        console.console.width = max(env_helper.console_width_possibilities())
 
     if not is_used_as_library:
         log_argparse_result(args, 'parsed')

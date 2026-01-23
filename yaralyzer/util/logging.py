@@ -31,16 +31,19 @@ Python log levels for reference:
 ```
 """
 import logging
-import sys
 from argparse import Namespace
+from pathlib import Path
+from sys import argv
 from typing import Union
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
+from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
+from yaralyzer.helpers.file_helper import relative_path
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -84,6 +87,24 @@ def configure_logger(log_label: str) -> logging.Logger:
     return logger
 
 
+def invocation_str(use_relative_paths: bool = True) -> str:
+    """Convert sys.argv into something readable."""
+    _argv = [arg for arg in argv if arg != '--echo-command']
+
+    if use_relative_paths:
+        _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
+
+    return "   " + ' '.join(_argv)
+
+
+def invocation_txt() -> Text:
+    txt = Text(f"Invoked with this command:\n\n")
+    txt.append(f"{invocation_str()}\n\n", style='wheat4')
+    txt.append(f"Invocation raw argv:\n\n", style='dim')
+    txt.append(f"{invocation_str(False)}\n", style='wheat4 dim')
+    return txt
+
+
 def log_and_print(msg: str, log_level: str = 'INFO', style: str = '') -> None:
     """Both print (to console) and log (to file) a string."""
     log.log(logging.getLevelName(log_level), msg)
@@ -123,7 +144,7 @@ def log_current_config() -> None:
 
 def log_invocation() -> None:
     """Log the command used to launch the `yaralyzer` to the invocation log."""
-    msg = f"THE INVOCATION: '{' '.join(sys.argv)}'"
+    msg = f"THE INVOCATION: '{' '.join(argv)}'"
     log.info(msg)
     invocation_log.info(msg)
 

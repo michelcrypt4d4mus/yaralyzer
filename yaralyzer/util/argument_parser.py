@@ -218,15 +218,18 @@ debug = parser.add_argument_group(
     'DEBUG',
     'Debugging/interactive options.')
 
-debug.add_argument('-I', '--interact', action='store_true',
-                    help='drop into interactive python REPL when parsing is complete')
-
 debug.add_argument('-D', '--debug', action='store_true',
                     help='show verbose debug log output')
 
 debug.add_argument('-L', '--log-level',
                     help='set the log level',
                     choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
+
+debug.add_argument('-I', '--interact', action='store_true',
+                    help='drop into interactive python REPL when parsing is complete')
+
+debug.add_argument('--echo-command', action='store_true',
+                   help="print the exact command line used first (useful if you're revisiting old exports)")
 
 YaralyzerConfig.set_argument_parser(parser)
 is_yaralyzing = parser.prog == YARALYZE

@@ -2,12 +2,13 @@ import code
 import yara as python_yara
 from os import environ, getcwd, path
 from pathlib import Path
+from sys import argv
 
 from dotenv import load_dotenv
 from rich.text import Text
 
 # load_dotenv() should be called as soon as possible (before parsing local classes) but not for pytest
-from yaralyzer.util.constants import INVOKED_BY_PYTEST
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER
 
 if not environ.get(INVOKED_BY_PYTEST, False):
     for dotenv_file in [path.join(dir, '.yaralyzer') for dir in [getcwd(), path.expanduser('~')]]:
@@ -19,6 +20,7 @@ from yaralyzer.helpers.rich_text_helper import print_fatal_error_and_exit
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.argument_parser import parse_arguments
+from yaralyzer.util.logging import invocation_txt
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -55,6 +57,9 @@ def yaralyze():
         output_basepath = yaralyzer.export_basepath()
         console.print(f"Rendering yaralyzer output to '{output_basepath.relative_to(Path.cwd())}'...", style='yellow')
         console.record = True
+
+    if args.echo_command:
+        console.print(invocation_txt())
 
     try:
         yaralyzer.yaralyze()

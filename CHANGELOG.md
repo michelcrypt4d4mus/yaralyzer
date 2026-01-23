@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* `--echo-command` option to save the exact command used along with the output
 
 ## 1.1.0
 * Add `--no-timestamps` command line option for exported filenames

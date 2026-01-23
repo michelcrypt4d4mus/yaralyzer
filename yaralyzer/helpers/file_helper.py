@@ -38,12 +38,12 @@ def load_file(file_path: Path | str) -> str:
         return f.read()
 
 
-def relative_path(path: Path) -> Path:
+def relative_path(path: Path | str) -> Path:
     """Get path relative to current working directory."""
     try:
-        return path.relative_to(Path.cwd())
+        return Path(path).relative_to(Path.cwd())
     except ValueError:
-        return path
+        return Path(path)
 
 
 def timestamp_for_filename() -> str:

@@ -56,7 +56,7 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, output_basepath: str | None = None) -> Path:
+def export_json(yaralyzer: Yaralyzer, output_basepath: str | Path | None = None) -> Path:
     """
     Export YARA scan results to JSON.
 

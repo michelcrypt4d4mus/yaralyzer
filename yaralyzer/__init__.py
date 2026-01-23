@@ -30,9 +30,8 @@ PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', sty
 
 def yaralyze():
     """
-    Entry point for yaralyzer when invoked as a script.
-
-    Args are parsed from the command line and environment variables. See `yaralyze --help` for details.
+    Entry point for Yaralyzer when invoked as a script. Args are parsed from the command line
+    and environment variables. See `yaralyze --help` for details.
     """
     args = parse_arguments()
     output_basepath = ''
@@ -47,14 +46,14 @@ def yaralyze():
             HEX if args.hex_patterns else REGEX,
             args.file_to_scan_path,
             pattern_label=args.patterns_label,
-            regex_modifier=args.regex_modifier)
+            regex_modifier=args.regex_modifier
+        )
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")
 
     if args.output_dir:
         output_basepath = yaralyzer.export_basepath()
         console.print(f"Rendering yaralyzer output to '{output_basepath.relative_to(Path.cwd())}'...", style='yellow')
-        output_basepath = str(output_basepath)
         console.record = True
 
     try:

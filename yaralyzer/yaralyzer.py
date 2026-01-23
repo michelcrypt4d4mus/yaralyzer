@@ -16,7 +16,7 @@ from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color, print_fata
 from yaralyzer.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
-from yaralyzer.output.rich_console import YARALYZER_THEME, console
+from yaralyzer.output.rich_console import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME, console
 from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log
 from yaralyzer.yara.yara_match import YaraMatch
@@ -60,7 +60,7 @@ class Yaralyzer:
         rules_label: str,
         scannable: bytes | str | Path,
         scannable_label: str | None = None,
-        highlight_style: str = YaralyzerConfig.HIGHLIGHT_STYLE
+        highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
     ) -> None:
         """
         Initialize a `Yaralyzer` instance for scanning binary data with YARA rules.
@@ -72,9 +72,9 @@ class Yaralyzer:
             scannable (bytes | str | Path): The data to scan. If it's `bytes` type then that data is scanned;
                 if it's a string it is treated as a file path to load bytes from.
             scannable_label (str | None, optional): Label for the `scannable` arg data.
-                Required if `scannable` is `bytes`.
-                If `scannable` is a file path `scannable_label` will default to the file's basename.
-            highlight_style (str | None): Style to use for highlighting matches in output.
+                Required if `scannable` is `bytes`. If `scannable` is a Path `scannable_label` will
+                default to the file's basename.
+            highlight_style (str, optional): Style to use for highlighting matches in output.
                 Defaults to `YaralyzerConfig.HIGHLIGHT_STYLE`.
 
         Raises:

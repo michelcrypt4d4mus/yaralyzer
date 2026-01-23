@@ -2,10 +2,9 @@
 import logging
 import re
 import sys
-from argparse import ArgumentError, ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
-from os import path
 from pathlib import Path
 from typing import Optional
 
@@ -20,7 +19,6 @@ from yaralyzer.util.constants import YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
-from yaralyzer.yaralyzer import Yaralyzer
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
 GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'

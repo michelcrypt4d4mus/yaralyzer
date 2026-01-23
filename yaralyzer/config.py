@@ -5,21 +5,16 @@ import logging
 from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
-from sys import stderr
 from typing import Any, List
 
 from rich.console import Console
 
 from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import YARALYZER_UPPER
-
-DEFAULT_CONSOLE_WIDTH = 160
-KILOBYTE = 1024
+from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
 
 # These options cannot be read from an environment variable
 ONLY_CLI_ARGS = [
-    'debug',
     'file_to_scan_path',
     'help',
     'hex_patterns',
@@ -37,15 +32,12 @@ class YaralyzerConfig:
     # Passed through to yara.set_config()
     DEFAULT_MAX_MATCH_LENGTH = 100 * KILOBYTE
     DEFAULT_YARA_STACK_SIZE = 2 * 65536
-
     # Skip decoding binary matches under/over these lengths
     DEFAULT_MIN_DECODE_LENGTH = 1
     DEFAULT_MAX_DECODE_LENGTH = 256
-
     # chardet.detect() related
     DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE = 2
     DEFAULT_MIN_CHARDET_BYTES = 9
-
     # Number of bytes to show before/after byte previews and decodes. Configured by command line or env var
     DEFAULT_SURROUNDING_BYTES = 64
 
@@ -56,9 +48,8 @@ class YaralyzerConfig:
     LOG_LEVEL = logging.getLevelName(environ.get(LOG_LEVEL_ENV_VAR, 'WARN'))
 
     if LOG_DIR and not is_invoked_by_pytest():
-        Console(**DEFAULT_CONSOLE_KWARGS).print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
-
-    HIGHLIGHT_STYLE = 'orange1'
+        console = Console(stderr=True, **DEFAULT_CONSOLE_KWARGS)
+        console.print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     @classproperty
     def args(cls) -> Namespace:
@@ -75,7 +66,17 @@ class YaralyzerConfig:
 
     @classmethod
     def set_args(cls, _args: Namespace) -> None:
-        """Set the `args` class instance variable and update args with any environment variable overrides."""
+        """
+        Set the `args` class instance variable and update args with any environment variable overrides.
+        For each arg the environment will be checked for a variable with the same name, uppercased and
+        prefixed by "YARALYZER_".
+
+        Example:
+            For the argument --output-dir, the environment will be checked for YARALYZER_OUTPUT_DIR.
+
+        Args:
+            _args (Namespace): Object returned by ArgumentParser.parse_ar()
+        """
         cls._args = _args
 
         for option in cls._argparse_keys:
@@ -94,7 +95,7 @@ class YaralyzerConfig:
             elif isinstance(arg_value, (int, float)):
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
-                    setattr(_args, option, int(env_value) or arg_value)  # TODO: float args not handled
+                    setattr(_args, option, type(arg_value)(env_value) or arg_value)
             else:
                 setattr(_args, option, arg_value or env_value)
 

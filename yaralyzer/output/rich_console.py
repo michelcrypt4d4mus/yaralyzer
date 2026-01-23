@@ -19,6 +19,7 @@ BYTES_BRIGHTEST = 'color(220)'
 BYTES_BRIGHTER = 'orange1'
 BYTES_HIGHLIGHT = 'color(136)'
 DANGER_HEADER = 'color(88) on white'  # Red
+DEFAULT_HIGHLIGHT_STYLE = 'orange1'
 DARK_GREY = 'color(236)'
 GREY = 'color(241)'
 GREY_ADDRESS = 'color(238)'

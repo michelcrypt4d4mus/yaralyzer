@@ -84,10 +84,10 @@ def configure_logger(log_label: str) -> logging.Logger:
     return logger
 
 
-def log_and_print(msg: str, log_level: str = 'INFO') -> None:
+def log_and_print(msg: str, log_level: str = 'INFO', style: str = '') -> None:
     """Both print (to console) and log (to file) a string."""
     log.log(logging.getLevelName(log_level), msg)
-    print(msg)
+    log_console.print(msg, style=style)
 
 
 def log_argparse_result(args: Namespace, label: str) -> None:

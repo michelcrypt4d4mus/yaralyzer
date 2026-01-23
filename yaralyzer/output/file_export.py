@@ -8,8 +8,11 @@ from typing import Callable, Optional
 
 from rich.terminal_theme import TerminalTheme
 
+from yaralyzer.helpers.file_helper import relative_path
 from yaralyzer.util.logging import log, log_and_print
 from yaralyzer.yaralyzer import Yaralyzer
+
+WRITE_STYLE = 'grey46'
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -53,7 +56,7 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
+def export_json(yaralyzer: Yaralyzer, output_basepath: str | None = None) -> Path:
     """
     Export YARA scan results to JSON.
 
@@ -62,23 +65,19 @@ def export_json(yaralyzer: Yaralyzer, output_basepath: Optional[str]) -> str:
         output_basepath (Optional[str]): Base path to write output to. Should have no file extension.
 
     Returns:
-        str: Path data was exported to.
+        Path: File data was exported to.
     """
-    output_path = f"{output_basepath or 'yara_matches'}.json"
-
-    matches_data = [
-        bytes_match.to_json()
-        for bytes_match, _decoder in yaralyzer.match_iterator()
-    ]
+    output_path = Path(f"{output_basepath or 'yara_matches'}.json")
+    matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
 
     with open(output_path, 'w') as f:
         json.dump(matches_data, f, indent=4)
 
-    log_and_print(f"YARA matches exported to JSON file: '{output_path}'")
+    log_and_print(f"YARA matches exported to JSON file: '{relative_path(output_path)}'", style=WRITE_STYLE)
     return output_path
 
 
-def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> Path:
+def invoke_rich_export(export_method: Callable, output_file_basepath: str | Path) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
@@ -87,7 +86,7 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> Pa
         output_file_basepath (str): Path to write output to. Should have no file extension.
 
     Returns:
-        str: Path data was exported to.
+        Path: Path data was exported to.
     """
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
@@ -106,5 +105,6 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str) -> Pa
     log.info(f"Invoking rich.console.{method_name}('{output_file_path}') with kwargs: '{kwargs}'...")
     start_time = time.perf_counter()
     export_method(output_file_path, **kwargs)
-    log_and_print(f"Wrote '{output_file_path}' in {time.perf_counter() - start_time:02f} seconds")
+    write_time = time.perf_counter() - start_time
+    log_and_print(f"\nWrote '{relative_path(output_file_path)}' in {write_time:.2f} seconds", style=WRITE_STYLE)
     return output_file_path

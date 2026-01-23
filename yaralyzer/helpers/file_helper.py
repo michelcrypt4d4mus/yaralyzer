@@ -38,6 +38,14 @@ def load_file(file_path: Path | str) -> str:
         return f.read()
 
 
+def relative_path(path: Path) -> Path:
+    """Get path relative to current working directory."""
+    try:
+        return path.relative_to(Path.cwd())
+    except ValueError:
+        return path
+
+
 def timestamp_for_filename() -> str:
     """Returns a string showing current time in a file name friendly format."""
     return datetime.now().strftime("%Y-%m-%dT%H.%M.%S")

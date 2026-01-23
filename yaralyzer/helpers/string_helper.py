@@ -1,9 +1,11 @@
 """
 Helper methods to work with strings.
 """
+import re
 from functools import partial
 from typing import Any, Callable, List
 
+ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
 
@@ -28,6 +30,11 @@ def str_join(_list: List[Any], separator: str, func: Callable = str) -> str:
     """
     func = func or str
     return separator.join([func(item) for item in _list])
+
+
+def strip_ansi_colors(ansi_str: str) -> str:
+    """Remove ANSI color codes from a string."""
+    return ANSI_COLOR_CODE_REGEX.sub('', ansi_str).strip()
 
 
 comma_join = partial(str_join, separator=', ')

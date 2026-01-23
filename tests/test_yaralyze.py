@@ -10,25 +10,23 @@ from functools import partial
 from math import isclose
 from os import environ, path
 from pathlib import Path
-from subprocess import CalledProcessError, CompletedProcess, check_output, run
+from subprocess import CalledProcessError, check_output, run
 
 import pytest
 
 from yaralyzer.helpers.file_helper import files_in_dir, load_file, relative_path
-from yaralyzer.helpers.string_helper import line_count
+from yaralyzer.helpers.string_helper import line_count, strip_ansi_colors
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.constants import YARALYZE
-from yaralyzer.util.logging import invocation_str, log, log_bigly, shell_command_log_str
+from yaralyzer.util.logging import log, log_bigly, shell_command_log_str
 
 from .conftest import RENDERED_FIXTURES_DIR, SHOULD_REBUILD_FIXTURES, TMP_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
-ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 DEFAULT_CLI_ARGS = ['--no-timestamps', '--output-dir', TMP_DIR]
 EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
-LOG_SEPARATOR = '-' * 35
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
@@ -123,14 +121,14 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
     """
     cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
     result = run(cmd_list, capture_output=True, env=environ)
-    result_stderr = ANSI_COLOR_CODE_REGEX.sub('', result.stderr.decode())
-    output_logs = shell_command_log_str(cmd_list, result, DEFAULT_CLI_ARGS)
+    stderr = strip_ansi_colors(result.stderr.decode())
+    output_logs = shell_command_log_str(cmd_list, result, ignore_args=DEFAULT_CLI_ARGS)
     log.error(output_logs)
     assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
-    wrote_to_match = WROTE_TO_FILE_REGEX.search(result_stderr)
-    assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{result_stderr}"
+    wrote_to_match = WROTE_TO_FILE_REGEX.search(stderr)
+    assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{stderr}"
     written_file_path = relative_path(Path(wrote_to_match.group(1)))
-    assert written_file_path.exists(), f"{written_file_path} does not exist, {output_logs}"
+    assert written_file_path.exists(), f"'{written_file_path}' does not exist, {output_logs}"
     fixture_path = relative_path(RENDERED_FIXTURES_DIR.joinpath(written_file_path.name))
 
     if SHOULD_REBUILD_FIXTURES:

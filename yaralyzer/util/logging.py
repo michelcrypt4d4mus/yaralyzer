@@ -47,8 +47,8 @@ from rich.text import Text
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
 from yaralyzer.helpers.file_helper import relative_path
+from yaralyzer.helpers.string_helper import strip_ansi_colors
 
-ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
@@ -180,7 +180,7 @@ def shell_command_log_str(cmd: list[str], result: CompletedProcess, ignore_args:
 
     for i, stream in enumerate([result.stdout, result.stderr]):
         label = 'stdout' if i == 0 else 'stderr'
-        decoded_stream = ANSI_COLOR_CODE_REGEX.sub('', stream.decode()).strip()
+        decoded_stream = strip_ansi_colors(stream.decode())
         msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
 
     return msg + "\n"

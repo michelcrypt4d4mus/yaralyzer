@@ -29,7 +29,7 @@ def compare_export_to_file(
     result = run(cmd, capture_output=True, env=environ)
     stderr = strip_ansi_colors(result.stderr.decode())
     output_logs = shell_command_log_str(cmd, result, ignore_args=ignorable_args)
-    log.error(output_logs)
+    log.debug(output_logs)
     assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
     wrote_to_match = WROTE_TO_FILE_REGEX.search(stderr)
     assert wrote_to_match, f"Could not find 'wrote to file' msg in stderr:\n\n{stderr}"

@@ -3,19 +3,18 @@ Helper methods to work with files.
 """
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 
-def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> List[Path]:
+def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path]:
     """
     Returns paths for all non dot files in `dir` (optionally filtered to only those ending in 'with_extname').
 
     Args:
-        dir (str): Directory to list files from.
-        with_extname (Optional[str], optional): If set, only return files with this extension. Defaults to None.
+        dir (Path | str): Directory to list files from.
+        with_extname (str | None): If set, only return files with this extension. Defaults to None.
 
     Returns:
-        List[str]: List of file paths.
+        list[Path]: List of file paths.
     """
     dir = Path(_dir)
     with_extname = f".{with_extname}" if (with_extname and not with_extname.startswith('.')) else ''
@@ -44,5 +43,5 @@ def timestamp_for_filename() -> str:
     return datetime.now().strftime("%Y-%m-%dT%H.%M.%S")
 
 
-def to_paths(files: List[str] | list[Path] | list[str | Path]) -> list[Path]:
+def to_paths(files: list[str] | list[Path] | list[str | Path]) -> list[Path]:
     return [Path(f) for f in files]

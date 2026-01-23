@@ -71,7 +71,7 @@ class Yaralyzer:
             rules_label (str): Label to identify the ruleset in output and logs.
             scannable (bytes | str | Path): The data to scan. If it's `bytes` type then that data is scanned;
                 if it's a string it is treated as a file path to load bytes from.
-            scannable_label (str | None): Label for the `scannable` arg data.
+            scannable_label (str | None, optional): Label for the `scannable` arg data.
                 Required if `scannable` is `bytes`.
                 If `scannable` is a file path `scannable_label` will default to the file's basename.
             highlight_style (str | None): Style to use for highlighting matches in output.

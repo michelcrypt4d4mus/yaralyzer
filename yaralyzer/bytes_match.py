@@ -12,7 +12,7 @@ from yara import StringMatch, StringMatchInstance
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.helpers.rich_helper import prefix_with_style
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
-from yaralyzer.output.rich_console import ALERT_STYLE, DEFAULT_HIGHLIGHT_STYLE, GREY_ADDRESS
+from yaralyzer.output.console import ALERT_STYLE, DEFAULT_HIGHLIGHT_STYLE, GREY_ADDRESS
 
 
 @dataclass

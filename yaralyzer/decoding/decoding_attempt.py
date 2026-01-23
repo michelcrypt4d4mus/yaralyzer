@@ -12,7 +12,7 @@ from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEM
      UTF_8, encoding_width, is_wide_utf)
 from yaralyzer.util.helpers.bytes_helper import clean_byte_string, truncate_for_encoding
 from yaralyzer.util.helpers.rich_helper import prefix_with_style, unprintable_byte_to_text
-from yaralyzer.output.rich_console import ALERT_STYLE, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS
+from yaralyzer.output.console import ALERT_STYLE, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS
 from yaralyzer.util.logging import log
 
 

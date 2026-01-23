@@ -14,7 +14,7 @@ from rich.padding import Padding
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.rich_console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
+from yaralyzer.output.console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
 from yaralyzer.util.logging import highlighter, log
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)

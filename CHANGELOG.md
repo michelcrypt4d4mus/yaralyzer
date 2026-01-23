@@ -1,6 +1,6 @@
 # NEXT RELEASE
 
-# 1.1.0
+## 1.1.0
 * Add `--no-timestamps` command line option for exported filenames
 * Fix type hint for `per_encoding_stats`
 * `files_in_dir()` returns `Path`s, prepends `'.` to `with_extname` arg if not provided

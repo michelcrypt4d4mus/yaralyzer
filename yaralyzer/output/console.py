@@ -1,5 +1,5 @@
 """
-Variables and methods for working with Rich text output.
+Holds the rich.Console instance that controls the stdout printing and file export.
 """
 from typing import List
 

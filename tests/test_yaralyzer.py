@@ -8,7 +8,7 @@ from typing import Tuple
 
 import pytest
 
-from yaralyzer.helpers.string_helper import line_count
+from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer

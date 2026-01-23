@@ -13,7 +13,7 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE, encoding_width
-from yaralyzer.helpers.rich_text_helper import newline_join
+from yaralyzer.util.helpers.rich_text_helper import newline_join
 from yaralyzer.output.rich_console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST,
      BYTES_HIGHLIGHT, GREY, console, console_width)
 from yaralyzer.util.logging import log

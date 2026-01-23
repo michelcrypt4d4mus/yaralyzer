@@ -28,9 +28,9 @@ from rich.panel import Panel
 from rich.text import Text
 from yara import StringMatch
 
-from yaralyzer.helpers.bytes_helper import clean_byte_string
-from yaralyzer.helpers.rich_text_helper import CENTER
-from yaralyzer.helpers.string_helper import INDENT_SPACES
+from yaralyzer.util.helpers.bytes_helper import clean_byte_string
+from yaralyzer.util.helpers.rich_text_helper import CENTER
+from yaralyzer.util.helpers.string_helper import INDENT_SPACES
 from yaralyzer.output.rich_console import console_width, theme_colors_with_prefix
 from yaralyzer.util.logging import log
 

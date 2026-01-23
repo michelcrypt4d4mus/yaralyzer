@@ -9,7 +9,7 @@ from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
-from yaralyzer.helpers.file_helper import relative_path
+from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.logging import log, log_and_print
 from yaralyzer.yaralyzer import Yaralyzer
 

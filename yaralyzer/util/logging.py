@@ -45,9 +45,9 @@ from rich.logging import RichHandler
 from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
-from yaralyzer.helpers.file_helper import relative_path
-from yaralyzer.helpers.string_helper import strip_ansi_colors
+from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
+from yaralyzer.util.helpers.file_helper import relative_path
+from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'

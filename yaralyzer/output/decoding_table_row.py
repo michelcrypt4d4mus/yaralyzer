@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from rich.text import Text
 
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
-from yaralyzer.helpers.rich_text_helper import na_txt
+from yaralyzer.util.helpers.rich_text_helper import na_txt
 
 DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='no_attempt')
 

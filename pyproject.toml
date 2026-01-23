@@ -90,7 +90,7 @@ requests = "^2.32.5"
 #############
 [tool.poetry.scripts]
 yaralyze = 'yaralyzer:yaralyze'
-yaralyzer_show_color_theme = 'yaralyzer.helpers.rich_text_helper:yaralyzer_show_color_theme'
+yaralyzer_show_color_theme = 'yaralyzer.util.helpers.rich_text_helper:yaralyzer_show_color_theme'
 
 
 ###############

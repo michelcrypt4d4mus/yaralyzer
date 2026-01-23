@@ -1,4 +1,4 @@
-from yaralyzer.helpers.rich_text_helper import print_fatal_error_and_exit
+from yaralyzer.util.helpers.rich_text_helper import print_fatal_error_and_exit
 
 
 class InvalidArgumentError(ValueError):

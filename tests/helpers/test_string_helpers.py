@@ -1,6 +1,6 @@
 from os.path import basename
 
-from yaralyzer.helpers.string_helper import comma_join, hex_to_string
+from yaralyzer.util.helpers.string_helper import comma_join, hex_to_string
 
 HEX_STRING = '0D 0A 25 25 45 4F 46 0D 0A'
 HEX_STRING_DECODED = '\r\n%%EOF\r\n'

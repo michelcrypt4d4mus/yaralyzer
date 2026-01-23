@@ -12,9 +12,9 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
-from yaralyzer.helpers.file_helper import files_in_dir, load_binary_data, to_paths
-from yaralyzer.helpers.rich_text_helper import dim_if, reverse_color, print_fatal_error_and_exit
-from yaralyzer.helpers.string_helper import comma_join, newline_join
+from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, to_paths
+from yaralyzer.util.helpers.rich_text_helper import dim_if, reverse_color, print_fatal_error_and_exit
+from yaralyzer.util.helpers.string_helper import comma_join, newline_join
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.rich_console import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME, console

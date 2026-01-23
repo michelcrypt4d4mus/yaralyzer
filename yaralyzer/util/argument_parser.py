@@ -11,9 +11,9 @@ from typing import Optional
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
-from yaralyzer.helpers import env_helper
-from yaralyzer.helpers.file_helper import timestamp_for_filename
-from yaralyzer.helpers.string_helper import comma_join
+from yaralyzer.util.helpers import env_helper
+from yaralyzer.util.helpers.file_helper import timestamp_for_filename
+from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
 from yaralyzer.util.constants import YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error

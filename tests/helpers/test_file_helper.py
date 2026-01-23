@@ -1,6 +1,6 @@
 from os.path import dirname, join
 
-from yaralyzer.helpers.file_helper import files_in_dir
+from yaralyzer.util.helpers.file_helper import files_in_dir
 
 
 def test_files_in_dir():

@@ -13,9 +13,9 @@ from subprocess import CalledProcessError, check_output, run
 
 import pytest
 
-from yaralyzer.helpers.file_helper import files_in_dir, load_file, relative_path
-from yaralyzer.helpers.shell_helper import compare_export_to_file
-from yaralyzer.helpers.string_helper import line_count, strip_ansi_colors
+from yaralyzer.util.helpers.file_helper import files_in_dir, load_file, relative_path
+from yaralyzer.util.helpers.shell_helper import compare_export_to_file
+from yaralyzer.util.helpers.string_helper import line_count, strip_ansi_colors
 from yaralyzer.output.rich_console import console
 from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log, log_bigly, shell_command_log_str

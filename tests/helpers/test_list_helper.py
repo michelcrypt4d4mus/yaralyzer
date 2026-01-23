@@ -1,4 +1,4 @@
-from yaralyzer.helpers.list_helper import flatten
+from yaralyzer.util.helpers.list_helper import flatten
 
 
 def test_flatten():

@@ -10,8 +10,8 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch  # Formerly caused circular import issues
 from yaralyzer.encoding_detection.character_encodings import (ENCODINGS_TO_ATTEMPT, SINGLE_BYTE_ENCODINGS,
      UTF_8, encoding_width, is_wide_utf)
-from yaralyzer.helpers.bytes_helper import clean_byte_string, truncate_for_encoding
-from yaralyzer.helpers.rich_text_helper import prefix_with_style, unprintable_byte_to_text
+from yaralyzer.util.helpers.bytes_helper import clean_byte_string, truncate_for_encoding
+from yaralyzer.util.helpers.rich_text_helper import prefix_with_style, unprintable_byte_to_text
 from yaralyzer.output.rich_console import ALERT_STYLE, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_NO_DIM, GREY_ADDRESS
 from yaralyzer.util.logging import log
 

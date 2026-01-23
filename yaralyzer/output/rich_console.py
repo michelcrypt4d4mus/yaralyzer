@@ -9,7 +9,7 @@ from rich.style import Style
 from rich.text import Text
 from rich.theme import Theme
 
-from yaralyzer.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
+from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
 
 # Colors
 ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes

@@ -14,7 +14,7 @@ YARALYZER_PKG="yaralyzer"
 lazydocs --output-path docs/api \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
-         --ignored-modules="dict_helper,list_helper,helpers.dict_helper,helpers.list_helper,yaralyzer.helpers.dict_helper,yaralyzer.helpers.list_helper" \
+         --ignored-modules="dict_helper,list_helper,helpers.dict_helper,helpers.list_helper,yaralyzer.util.helpers.dict_helper,yaralyzer.util.helpers.list_helper" \
          "$YARALYZER_PKG" \
          "$YARALYZER_PKG/decoding" \
          "$YARALYZER_PKG/encoding_detection" \

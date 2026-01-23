@@ -18,8 +18,8 @@ from yaralyzer.decoding.decoding_attempt import DecodingAttempt
 from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
-from yaralyzer.helpers.dict_helper import get_dict_key_by_value
-from yaralyzer.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
+from yaralyzer.util.helpers.dict_helper import get_dict_key_by_value
+from yaralyzer.util.helpers.rich_text_helper import CENTER, DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
 from yaralyzer.output.decoding_table_row import DecodingTableRow
 from yaralyzer.util.logging import log

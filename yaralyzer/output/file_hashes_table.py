@@ -8,7 +8,7 @@ from typing import Optional, Union
 from rich.console import JustifyMethod
 from rich.table import Column, Table
 
-from yaralyzer.helpers.rich_text_helper import LEFT, size_text
+from yaralyzer.util.helpers.rich_text_helper import LEFT, size_text
 from yaralyzer.output.rich_console import GREY
 
 BytesInfo = namedtuple('BytesInfo', ['size', 'md5', 'sha1', 'sha256'])

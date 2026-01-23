@@ -12,7 +12,7 @@ from yaralyzer.helpers.file_helper import relative_path
 from yaralyzer.util.logging import log, log_and_print
 from yaralyzer.yaralyzer import Yaralyzer
 
-WRITE_STYLE = 'grey46'
+WRITE_STYLE = 'grey46 italic'
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -106,5 +106,5 @@ def invoke_rich_export(export_method: Callable, output_file_basepath: str | Path
     start_time = time.perf_counter()
     export_method(output_file_path, **kwargs)
     write_time = time.perf_counter() - start_time
-    log_and_print(f"\nWrote '{relative_path(output_file_path)}' in {write_time:.2f} seconds", style=WRITE_STYLE)
+    log_and_print(f"\nWrote '{relative_path(output_file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
     return output_file_path

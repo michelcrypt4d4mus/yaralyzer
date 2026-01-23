@@ -202,14 +202,12 @@ export.add_argument('-out', '--output-dir',
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',
                     help='optional string to use as the prefix for exported files of any kind',
-                    default='',
-                    type=str)
+                    default='')
 
 export.add_argument('-sfx', '--file-suffix',
                     metavar='SUFFIX',
                     help='optional string to use as the suffix for exported files of any kind',
-                    default='',
-                    type=str)
+                    default='')
 
 export.add_argument('--no-timestamps', action='store_true',
                     help="do not append file creation timestamps to exported filenames")
@@ -241,8 +239,8 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     the constructor will instantiate a `Yaralyzer` object directly.
 
     Args:
-        args (Optional[Namespace], optional): If provided, use these args instead of parsing from command line.
-            Defaults to `None`.
+        args (Namespace, optional): If provided, use these args instead of parsing from command line.
+        argv (list[str], optional): Use these args instead of sys.argv.
 
     Raises:
         InvalidArgumentError: If args are invalid.
@@ -253,7 +251,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
 
     # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool
     is_used_as_library = args is not None
-    handle_exception = partial(handle_argument_error, is_used_as_library=is_used_as_library)
+    handle_invalid_args = partial(handle_argument_error, is_used_as_library=is_used_as_library)
 
     # Parse and validate args
     args = args or parser.parse_args(argv)
@@ -276,19 +274,19 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
 
     if not args.file_to_scan_path.exists():
-        handle_exception(f"'{args.file_to_scan_path}' is not a valid file.")
+        handle_invalid_args(f"'{args.file_to_scan_path}' is not a valid file.")
 
     if is_used_as_library:
         pass
     elif len(yara_rules_args) > 1:
-        handle_exception("Cannot mix rules files, rules dirs, and regex patterns (for now).")
+        handle_invalid_args("Cannot mix rules files, rules dirs, and regex patterns (for now).")
     elif len(yara_rules_args) == 0:
-        handle_exception("You must provide either a YARA rules file or a regex pattern")
+        handle_invalid_args("You must provide either a YARA rules file or a regex pattern")
     else:
         log_invocation()
 
     if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
-        handle_exception('Pattern can only include alphanumeric chars and underscore')
+        handle_invalid_args('Pattern can only include alphanumeric chars and underscore')
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:
@@ -306,7 +304,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     args.output_dir = Path(args.output_dir or Path.cwd()).resolve()
 
     if not args.output_dir.is_dir():
-        handle_exception(f"'{args.output_dir}' is not a valid directory.")
+        handle_invalid_args(f"'{args.output_dir}' is not a valid directory.")
 
     if args.maximize_width:
         rich_console.console.width = max(env_helper.console_width_possibilities())

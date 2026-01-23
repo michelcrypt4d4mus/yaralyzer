@@ -42,7 +42,6 @@ class BytesDecoder:
     Attributes:
         bytes_match (BytesMatch): The `BytesMatch` instance being decoded.
         label (str, optional): Label for this decoding attempt, defaults to `bytes_match.label`.
-
         bytes (bytes): The bytes (including surrounding context) to decode.
         decoded_strings (dict[str, str]): Maps encoding to decoded string.
         decodings (list[DecodingAttempt]): DecodingAttempt objects for each encoding tried.
@@ -53,7 +52,7 @@ class BytesDecoder:
     """
     bytes_match: BytesMatch
     label: str = ''
-
+    # Non-arguments
     decoded_strings: dict[str, str] = field(default_factory=dict)
     decodings: list[DecodingAttempt] = field(default_factory=list)
     encoding_detector: EncodingDetector = field(init=False)

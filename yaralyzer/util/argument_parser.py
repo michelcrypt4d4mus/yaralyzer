@@ -201,11 +201,15 @@ export.add_argument('-out', '--output-dir',
 
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',
-                    help='optional string to use as the prefix for exported files of any kind')
+                    help='optional string to use as the prefix for exported files of any kind',
+                    default='',
+                    type=str)
 
 export.add_argument('-sfx', '--file-suffix',
                     metavar='SUFFIX',
-                    help='optional string to use as the suffix for exported files of any kind')
+                    help='optional string to use as the suffix for exported files of any kind',
+                    default='',
+                    type=str)
 
 export.add_argument('--no-timestamps', action='store_true',
                     help="do not append file creation timestamps to exported filenames")
@@ -230,7 +234,7 @@ YaralyzerConfig.set_argument_parser(parser)
 is_yaralyzing = parser.prog == YARALYZE
 
 
-def parse_arguments(args: Optional[Namespace] = None):
+def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None):
     """
     Parse command line args. Most arguments can also be communicated to the app by setting env vars.
     If `args` are passed neither rules nor a regex need be provided as it is assumed
@@ -252,7 +256,7 @@ def parse_arguments(args: Optional[Namespace] = None):
     handle_exception = partial(handle_argument_error, is_used_as_library=is_used_as_library)
 
     # Parse and validate args
-    args = args or parser.parse_args()
+    args = args or parser.parse_args(argv)
     log_argparse_result(args, 'RAW')
     args.invoked_at_str = timestamp_for_filename()
     args.standalone_mode = not is_used_as_library
@@ -296,6 +300,7 @@ def parse_arguments(args: Optional[Namespace] = None):
     YaralyzerConfig.set_args(args)
 
     # Wait until after set_args() to set these defaults in case there's a YARALYZER_[WHATEVER] env var
+    # that we need to override.
     args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
     args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
     args.output_dir = Path(args.output_dir or Path.cwd()).resolve()
@@ -312,3 +317,6 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
 
     return args
+
+
+YaralyzerConfig.parse_arguments = parse_arguments

@@ -5,7 +5,7 @@ import logging
 from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Callable, List
 
 from rich.console import Console
 
@@ -23,6 +23,13 @@ ONLY_CLI_ARGS = [
     'regex_patterns',
     'regex_modifier',
     'version'
+]
+
+# For when we need to build a default config outside of CLI usage. TODO: kinda hacky
+DEFAULT_ARGV = [
+    __file__,
+    '--regex-pattern', 'foobar',
+    '--no-timestamps',
 ]
 
 
@@ -51,10 +58,13 @@ class YaralyzerConfig:
         console = Console(stderr=True, **DEFAULT_CONSOLE_KWARGS)
         console.print(f"Writing logs to '{LOG_DIR}' instead of stderr/stdout...", style='dim')
 
+    # TODO: Set in argument_parser.py, hacky workaround to make our parse_arguments() available here
+    parse_arguments: Callable[[Namespace | None, list[str] | None], Namespace] = lambda args, argv: Namespace()
+
     @classproperty
     def args(cls) -> Namespace:
         if '_args' not in dir(cls):
-            cls.set_default_args()
+            cls._set_default_args()
 
         return cls._args
 
@@ -86,7 +96,7 @@ class YaralyzerConfig:
             arg_value = vars(_args)[option]
             env_var = f"{YARALYZER_UPPER}_{option.upper()}"
             env_value = environ.get(env_var)
-            default_value = cls.get_default_arg(option)
+            default_value = cls._get_default_arg(option)
             # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}", file=stderr)  # noqa: E501
 
             # TODO: as is you can't override env vars with CLI args
@@ -96,16 +106,19 @@ class YaralyzerConfig:
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
                     setattr(_args, option, type(arg_value)(env_value) or arg_value)
+            elif arg_value == '':
+                setattr(_args, option, env_value if env_value else arg_value)
             else:
                 setattr(_args, option, arg_value or env_value)
 
     @classmethod
-    def set_default_args(cls) -> None:
-        """Set `self.args` to their defaults as if parsed from the command line."""
-        cls.set_args(cls._argument_parser.parse_args([__file__]))
-
-    @classmethod
-    def get_default_arg(cls, arg: str) -> Any:
+    def _get_default_arg(cls, arg: str) -> Any:
         """Return the default value for `arg` as defined by a `DEFAULT_` style class variable."""
         default_var = f"DEFAULT_{arg.upper()}"
         return vars(cls).get(default_var)
+
+    @classmethod
+    def _set_default_args(cls) -> None:
+        """Set `self.args` to their defaults as if parsed from the command line."""
+        cls.set_args(cls.parse_arguments(None, DEFAULT_ARGV))
+        cls.args.output_dir = Path(cls.args.output_dir or Path.cwd()).resolve()

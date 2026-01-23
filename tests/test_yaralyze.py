@@ -6,6 +6,7 @@ import json
 from functools import partial
 from math import isclose
 from os import environ, path
+from pathlib import Path
 from subprocess import CalledProcessError, check_output
 
 import pytest
@@ -91,7 +92,7 @@ def _assert_output_line_count_is_close(expected_line_count: int, file_to_scan: s
     assert isclose(expected_line_count, output_line_count, rel_tol=CLOSENESS_THRESHOLD)
 
 
-def _run_with_args(file_to_scan, *args) -> str:
+def _run_with_args(file_to_scan: str | Path, *args) -> str:
     """check_output() technically returns bytes so we decode before returning STDOUT output"""
     try:
         output = check_output([YARALYZE, file_to_scan, *args], env=environ).decode()
@@ -108,3 +109,7 @@ def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol
     if not isclose(expected_line_count, lines_in_text, rel_tol=rel_tol):
         console.print(text)
         raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")
+
+
+def _compare_to_fixture(file_to_scan: str | Path, *args):
+    pass

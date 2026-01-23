@@ -4,8 +4,10 @@ from pathlib import Path
 import pytest
 
 PYTESTS_DIR = Path(__file__).parent
-LOG_DIR = PYTESTS_DIR.parent.joinpath('log').resolve()
-FILE_FIXTURE_PATH = PYTESTS_DIR.joinpath('file_fixtures')
+PROJECT_DIR = PYTESTS_DIR.parent
+LOG_DIR = PROJECT_DIR.joinpath('log').resolve()
+FIXTURES_DIR = PYTESTS_DIR.joinpath('file_fixtures')
+RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
 
 # Some env vars that we need or are helpful for pytest
 environ['INVOKED_BY_PYTEST'] = 'True'
@@ -18,17 +20,17 @@ from yaralyzer.yaralyzer import Yaralyzer                                 # noqa
 # Full paths to file fixtures
 @pytest.fixture(scope='session')
 def il_tulipano_path() -> Path:
-    return FILE_FIXTURE_PATH.joinpath('il_tulipano_nero.txt')
+    return FIXTURES_DIR.joinpath('il_tulipano_nero.txt')
 
 
 @pytest.fixture(scope='session')
 def tulips_yara_path() -> Path:
-    return FILE_FIXTURE_PATH.joinpath('yara_rules', 'tulips.yara')
+    return FIXTURES_DIR.joinpath('yara_rules', 'tulips.yara')
 
 
 @pytest.fixture(scope='session')
 def binary_file_path() -> Path:
-    return FILE_FIXTURE_PATH.joinpath('random_bytes.bin')
+    return FIXTURES_DIR.joinpath('random_bytes.bin')
 
 
 @pytest.fixture(scope='session')

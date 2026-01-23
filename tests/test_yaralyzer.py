@@ -3,10 +3,12 @@ Tests for the Yaralyzer class itself.
 """
 from math import isclose
 from os.path import dirname
+from pathlib import Path
 from typing import Tuple
 
 import pytest
 
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.helpers.string_helper import line_count
 from yaralyzer.output.rich_console import console
 from yaralyzer.yara.yara_rule_builder import REGEX
@@ -16,8 +18,18 @@ CLOSENESS_THRESHOLD = 0.05
 EXPECTED_LINES = 1060
 
 
+def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path):
+    expected_basename = f"{il_tulipano_path.name}_scanned_with_{tulips_yara_path.name}__maxdecode256"
+    assert a_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename)
+
+
 def test_filename_string(a_yaralyzer):
     assert a_yaralyzer._filename_string() == 'il_tulipano_nero.txt_scanned_with_tulips.yara'
+
+
+def test_hex_rules(binary_file_path, tulips_yara_path):
+    result = _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 102)
+    assert result[0], result[1]
 
 
 def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
@@ -42,11 +54,6 @@ def test_yaralyzer_for_rules_dir(il_tulipano_path, tulips_yara_path):
 
     with pytest.raises(FileNotFoundError):
         Yaralyzer.for_rules_dirs(['nonexistent/dir/'], il_tulipano_path)
-
-
-def test_hex_rules(binary_file_path, tulips_yara_path):
-    result = _check_output_linecount(Yaralyzer.for_rules_files([tulips_yara_path], binary_file_path), 102)
-    assert result[0], result[1]
 
 
 def _check_output_linecount(yaralzyer: Yaralyzer, expected_line_count: int = EXPECTED_LINES) -> Tuple[bool, str]:

@@ -13,9 +13,9 @@ from rich.text import Text
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE, encoding_width
-from yaralyzer.util.helpers.rich_helper import newline_join
 from yaralyzer.output.console import (BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST,
      BYTES_HIGHLIGHT, GREY, console, console_width)
+from yaralyzer.util.helpers.rich_helper import newline_join
 from yaralyzer.util.logging import log
 
 HEX_CHARS_PER_GROUP = 8

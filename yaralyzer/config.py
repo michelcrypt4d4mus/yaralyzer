@@ -9,9 +9,9 @@ from typing import Any, Callable, List
 
 from rich.console import Console
 
-from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
+from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_env_var_set_and_not_false, is_invoked_by_pytest
 
 # These options cannot be read from an environment variable
 ONLY_CLI_ARGS = [

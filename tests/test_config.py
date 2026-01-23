@@ -1,7 +1,7 @@
 from os import environ
 
-from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.constants import INVOKED_BY_PYTEST
+from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false, is_invoked_by_pytest
 
 ENV_VAR_NAME = 'THE_WORLD_IS_YOURS'
 

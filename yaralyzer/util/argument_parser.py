@@ -6,17 +6,16 @@ from argparse import ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
-from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.file_helper import timestamp_for_filename
-from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.output import console
 from yaralyzer.util.constants import YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
+from yaralyzer.util.helpers import env_helper
+from yaralyzer.util.helpers.file_helper import timestamp_for_filename
+from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
@@ -249,7 +248,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         InvalidArgumentError: If args are invalid.
     """
     if '--version' in sys.argv:
-        print(f"yaralyzer {version('yaralyzer')}")
+        print(f"{YARALYZER} {version(YARALYZER)}")
         sys.exit()
 
     # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool

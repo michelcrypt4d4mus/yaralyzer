@@ -5,14 +5,14 @@ import sys
 from argparse import ArgumentError, ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
-from os import getcwd, path
+from os import path
 from pathlib import Path
 from typing import Optional
 
 from rich_argparse_plus import RichHelpFormatterPlus
-
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
+from yaralyzer.helpers import env_helper
 from yaralyzer.helpers.file_helper import timestamp_for_filename
 from yaralyzer.helpers.string_helper import comma_join
 from yaralyzer.output import rich_console
@@ -265,7 +265,9 @@ def parse_arguments(args: Optional[Namespace] = None):
     elif args.log_level:
         set_log_level(args.log_level)
 
-    args.any_export_selected = any(arg.startswith('export') and val for arg, val in vars(args).items())
+    if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):
+        log.warning('--output-dir provided but no export option was chosen')
+
     args.file_to_scan_path = Path(args.file_to_scan_path)
     args.output_dir = Path(args.output_dir or Path.cwd())
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
@@ -274,6 +276,10 @@ def parse_arguments(args: Optional[Namespace] = None):
         handle_exception(f"'{args.file_to_scan_path}' is not a valid file.")
     elif not args.output_dir.is_dir():
         handle_exception(f"'{args.output_dir}' is not a valid directory.")
+
+    # File export options
+    args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
+    args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
 
     if is_used_as_library:
         pass
@@ -285,7 +291,7 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_invocation()
 
     if args.maximize_width:
-        rich_console.console.width = max(rich_console.console_width_possibilities())
+        rich_console.console.width = max(env_helper.console_width_possibilities())
 
     if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
         raise ArgumentError(None, 'Pattern can only include alphanumeric chars and underscore')
@@ -304,13 +310,13 @@ def parse_arguments(args: Optional[Namespace] = None):
         log_current_config()
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
 
+    # print(f"yaralyzer parse_args() complete")
     return args
 
 
-def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer):
+def get_export_basepath(args: Namespace, yaralyzer: Yaralyzer) -> str:
     """Get the basepath (directory + filename without extension) for exported files."""
-    file_prefix = (args.file_prefix + '_') if args.file_prefix else ''
-    args.output_basename  = f"{file_prefix}{yaralyzer._filename_string()}"  # noqa: E221
+    args.output_basename  = f"{args.file_prefix}{yaralyzer._filename_string()}"  # noqa: E221
     args.output_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
-    args.output_basename += ('_' + args.file_suffix) if args.file_suffix else ''
+    args.output_basename += args.file_suffix
     return path.join(args.output_dir, args.output_basename + f"__at_{args.invoked_at_str}")

@@ -93,7 +93,13 @@ def _assert_output_line_count_is_close(expected_line_count: int, file_to_scan: s
 
 def _run_with_args(file_to_scan, *args) -> str:
     """check_output() technically returns bytes so we decode before returning STDOUT output"""
-    return check_output([YARALYZE, file_to_scan, *args], env=environ).decode()
+    try:
+        output = check_output([YARALYZE, file_to_scan, *args], env=environ).decode()
+        # print(output)
+        return output
+    except CalledProcessError as e:
+        cmd = ' '.join([str(e) for e in e.cmd])
+        raise CalledProcessError(e.returncode, cmd, e.output, e.stderr)
 
 
 def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol: float = CLOSENESS_THRESHOLD):

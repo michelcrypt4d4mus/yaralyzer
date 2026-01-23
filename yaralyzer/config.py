@@ -16,6 +16,18 @@ from yaralyzer.util.constants import YARALYZER
 DEFAULT_CONSOLE_WIDTH = 160
 KILOBYTE = 1024
 
+# These options cannot be read from an environment variable
+ONLY_CLI_ARGS = [
+    'debug',
+    'help',
+    'hex_patterns',
+    'interact',
+    'patterns_label',
+    'regex_patterns',
+    'regex_modifier',
+    'version'
+]
+
 
 class YaralyzerConfig:
     """Handles parsing of command line args and environment variables for Yaralyzer."""
@@ -46,17 +58,6 @@ class YaralyzerConfig:
 
     HIGHLIGHT_STYLE = 'orange1'
 
-    _ONLY_CLI_ARGS = [
-        'debug',
-        'help',
-        'hex_patterns',
-        'interact',
-        'patterns_label',
-        'regex_patterns',
-        'regex_modifier',
-        'version'
-    ]
-
     @classproperty
     def args(cls) -> Namespace:
         if '_args' not in dir(cls):
@@ -76,7 +77,7 @@ class YaralyzerConfig:
         cls._args = _args
 
         for option in cls._argparse_keys:
-            if option.startswith('export') or option in cls._ONLY_CLI_ARGS:
+            if option.startswith('export') or option in ONLY_CLI_ARGS:
                 continue
 
             arg_value = vars(_args)[option]
@@ -92,6 +93,8 @@ class YaralyzerConfig:
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
                     setattr(_args, option, int(env_value) or arg_value)  # TODO: float args not handled
+            elif isinstance(arg_value, str) and not (env_value or default_value):
+                pass  # Don't overwrite empty string with None
             else:
                 setattr(_args, option, arg_value or env_value)
 

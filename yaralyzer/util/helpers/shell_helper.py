@@ -49,4 +49,6 @@ def compare_export_to_file(
         return
 
     assert fixture_path.exists()
-    assert load_file(fixture_path) == load_file(new_file_path)
+    fixture_data = load_file(fixture_path)
+    new_data = load_file(new_file_path)
+    assert new_data == fixture_data

@@ -47,8 +47,9 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
-parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
+parser.add_argument('--version', action='store_true', help='show version number and exit')
+parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
 source = parser.add_argument_group(
     'YARA RULES',
@@ -93,9 +94,6 @@ tuning = parser.add_argument_group(
     "Tune various aspects of the analyses and visualizations to your needs. As an example setting " +
         "a low --max-decode-length (or suppressing brute force binary decode attempts altogether) can " +
         "dramatically improve run times and only occasionally leads to a fatal lack of insight.")
-
-tuning.add_argument('--maximize-width', action='store_true',
-                    help="maximize the display width to fill the terminal")
 
 tuning.add_argument('--surrounding-bytes',
                     help="number of bytes to display/decode before and after YARA match start positions",

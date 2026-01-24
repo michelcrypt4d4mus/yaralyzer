@@ -23,7 +23,15 @@ def compare_export_to_file(
         against_dir: Path,
         ignorable_args: list[str] | None = None,
     ) -> None:
-    """Compare the output of running a shell command to an existing file in 'against dir'."""
+    """
+    Compare the output of running a shell command to an existing file in `against_dir`.
+    The command should write to the same filename, just in a different dir.
+
+    Args:
+        cmd (list[str]): The command to run, broken up into individual strings.
+        against_dir (Path): Dir where the file to compare against exists already.
+        ignorable_args (list[str], optional): Don't log these args if they exist in `cmd`.
+    """
     result = run(cmd, capture_output=True, env=environ)
     stderr = strip_ansi_colors(result.stderr.decode())
     output_logs = shell_command_log_str(cmd, result, ignore_args=ignorable_args)

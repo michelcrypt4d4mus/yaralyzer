@@ -42,7 +42,7 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
     if package == YARALYZER:
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
 
-    return msg # + f"README: {color_link(readme_url)}"
+    return msg
 
 
 # Positional args, version, help, etc
@@ -54,6 +54,7 @@ parser.add_argument('--maximize-width', action='store_true', help="maximize disp
 
 parser.add_argument(ENV_VARS_OPTION, action='store_true',
                     help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
+
 
 rules = parser.add_argument_group(
     'YARA RULES',

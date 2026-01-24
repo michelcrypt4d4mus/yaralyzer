@@ -63,7 +63,7 @@ Run `yaralyze -h` to see the command line options (screenshot below).
 For info on exporting SVG images, HTML, etc., see [Example Output](#example-output).
 
 ### Configuration
-If you place a file called `.yaralyzer` in your home directory or the current working directory then environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked. This provides a mechanism for permanently configuring various command line options so you can avoid typing them over and over. See the example file [`.yaralyzer.example`](.yaralyzer.example) to see which options can be configured this way.
+If you place a file called `.yaralyzer` in your home directory or the current working directory then environment variables specified in that `.yaralyzer` file will be added to the environment each time yaralyzer is invoked. This provides a mechanism for permanently configuring various command line options so you can avoid typing them over and over. See the comments in the example file [`.yaralyzer.example`](.yaralyzer.example) for more info.
 
 Only one `.yaralyzer` file will be loaded and the working directory's `.yaralyzer` takes precedence over the home directory's `.yaralyzer`.
 
@@ -95,7 +95,9 @@ If you get a `yara.Error` with a numerical error code you can check what that co
 # Example Output
 The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich) as well as a (somewhat limited) plain text JSON format. SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or `cairosvg`. In our experience they both work though we've seen some glitchiness with `cairosvg`.
 
-**PyPi Users:** If you are reading this document [on PyPi](https://pypi.org/project/yaralyzer/) be aware that it renders a lot better [over on GitHub](https://github.com/michelcrypt4d4mus/yaralyzer). Pretty pictures, footnotes that work, etc.
+If you want to export .png images directly from Yaralyzer you'll need to do one of these things:
+1. Install [Inkscape](https://inkscape.org/) (Hombrew users can install it with `brew install --cask inkscape`)
+2. Ask for the `img` extra when installing Yaralyzer: `pipx install yaralyzer[img]`
 
 #### Raw YARA match result:
 

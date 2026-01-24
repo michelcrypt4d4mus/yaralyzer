@@ -5,15 +5,14 @@ import json
 import re
 import time
 from pathlib import Path
+from subprocess import CalledProcessError, check_output
 from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.logging import log, log_and_print
+from yaralyzer.util.logging import WRITE_STYLE, log, log_and_print, log_file_write
 from yaralyzer.yaralyzer import Yaralyzer
-
-WRITE_STYLE = 'grey46 italic'
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -104,8 +103,24 @@ def invoke_rich_export(export_method: Callable, export_basepath: str | Path) -> 
 
     # Invoke it
     log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
-    start_time = time.perf_counter()
+    started_at = time.perf_counter()
     export_method(export_file_path, **kwargs)
-    write_time = time.perf_counter() - start_time
-    log_and_print(f"\nWrote '{relative_path(export_file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
+    log_file_write(export_file_path, started_at)
     return export_file_path
+
+
+def render_png(svg_path: Path) -> None:
+    png_path = svg_path.stem + '.png'
+
+    try:
+        # Inkscape is better at converting svg to png
+        inkscape_cmd_args = ['inkscape', f'--export-filename={png_path}', svg_path]
+        log.warning(f"Running inkscape cmd: {' '.join(inkscape_cmd_args)}")
+        check_output(inkscape_cmd_args)
+    except (CalledProcessError, FileNotFoundError) as e:
+        log.error(f"Failed to convert svg to png with inkscape, falling back to cairosvg: {e}")
+        import cairosvg
+        cairosvg.svg2png(url=svg_path, write_to=str(png_path))
+
+    log_file_write(png_path)
+    # svg_path.unlink()

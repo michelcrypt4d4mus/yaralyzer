@@ -73,6 +73,12 @@ rich-argparse-plus = "^0.3.1"
 yara-python = "^4.5.4"
 #plyara = "^2.1.1"  # TODO: use plyara for YARA rule parsing and validation
 
+# Extras
+cairosvg = "^2.8.2"
+
+[tool.poetry.extras]
+img = ["cairosvg"]
+
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
 lazydocs = "^0.4.8"

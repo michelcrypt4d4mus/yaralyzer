@@ -17,8 +17,6 @@ Final output should be a `rich.table` of decoding attempts that are sorted like 
 
         4. Failed decodings
 """
-from collections import namedtuple
-
 from rich import box
 from rich.table import Table
 from rich.text import Text

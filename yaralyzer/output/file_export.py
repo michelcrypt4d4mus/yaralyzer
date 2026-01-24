@@ -12,7 +12,7 @@ from typing import Callable
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.constants import INKSCAPE_URL
-from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_and_print, log_file_write
+from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_console, log_and_print, log_file_write
 from yaralyzer.util.helpers.env_helper import INKSCAPE, get_inkscape_version, is_cairosvg_installed
 from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.helpers.shell_helper import safe_args
@@ -131,9 +131,9 @@ def render_png(svg_path: Path) -> Path | None:
     png_path = svg_path.parent.joinpath(svg_path.stem + '.png')
 
     if inkscape_version:
-        log.warning(f"Rendering .png image with installed {INKSCAPE} {inkscape_version}...")
+        log_console.print(f"Rendering .png image with installed {INKSCAPE} {inkscape_version}...", highlight=False)
         inkscape_cmd_args = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
-        log.warning(f"Running inkscape cmd: {invocation_str(inkscape_cmd_args)}")
+        log.debug(f"Running inkscape cmd: {invocation_str(inkscape_cmd_args)}")
 
         try:
             check_output(inkscape_cmd_args)
@@ -143,7 +143,7 @@ def render_png(svg_path: Path) -> Path | None:
             error_msg = f"Failed to render png with {INKSCAPE}! ({e})"
 
             if not is_cairosvg_installed():
-                log.error(error_msg)
+                log.error(error_msg + f"\n\ncairosvg not available to fallback to.")
                 return
             else:
                 log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")

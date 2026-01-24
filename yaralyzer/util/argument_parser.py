@@ -12,7 +12,8 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.constants import ENV_VARS_OPTION, INKSCAPE_URL, NO_TIMESTAMPS_OPTION, SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER
+from yaralyzer.util.constants import (ENV_VARS_OPTION, INKSCAPE_URL, NO_TIMESTAMPS_OPTION,
+     SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER, YARALYZER_API_DOCS_URL)
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
@@ -21,18 +22,17 @@ from yaralyzer.util.logging import log, log_argparse_result, log_current_config,
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
-GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
-YARALYZER_API_DOCS_URL = 'https://michelcrypt4d4mus.github.io/yaralyzer'
-YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
+YARA_PATTERN_LABEL_ARG_REGEX = re.compile(r"^\w+$")
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
-PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\nMaybe try pip install yaralyzer[img] or {INKSCAPE_URL}"
+
+PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
+                       f"Maybe try pip install yaralyzer[img] or {INKSCAPE_URL}"
 
 
 def epilog(config: Type[YaralyzerConfig]) -> str:
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()
-    readme_url = f"{GITHUB_BASE_URL}/{package}"
 
     msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
           f"file. See the documentation for details.\n" \
@@ -312,8 +312,8 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     else:
         log_invocation()
 
-    if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
-        handle_invalid_args('Pattern can only include alphanumeric chars and underscore')
+    if args.patterns_label and not YARA_PATTERN_LABEL_ARG_REGEX.match(args.patterns_label):
+        handle_invalid_args('Pattern label can only include alphanumeric chars and underscore')
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:

@@ -19,9 +19,14 @@ NO_TIMESTAMPS_OPTION = '--no-timestamps'
 SUPPRESS_OUTPUT_OPTION = '--suppress-output'
 
 # URLs
-GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 INKSCAPE_URL = 'https://inkscape.org/'
 
+# Repos
+GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 
 repo_url = lambda app_name: f"{GITHUB_BASE_URL}/{app_name.lower()}"
 example_dotenv_file_url = lambda app_name: f"{repo_url(app_name)}/blob/master/.{app_name.lower()}.example"
+
+PDFALYZER_REPO_URL = repo_url('pdfalyzer')
+YARALYZER_REPO_URL = repo_url(YARALYZER)
+YARALYZER_API_DOCS_URL = f"https://michelcrypt4d4mus.github.io/{YARALYZER}"

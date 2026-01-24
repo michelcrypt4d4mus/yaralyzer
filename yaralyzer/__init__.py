@@ -18,6 +18,7 @@ if not environ.get(INVOKED_BY_PYTEST, False):
 from yaralyzer.output.console import console
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.util.argument_parser import parse_arguments
+from yaralyzer.util.constants import PDFALYZER_REPO_URL
 from yaralyzer.util.helpers.rich_helper import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.logging import invocation_txt, log, log_console
@@ -27,7 +28,7 @@ from yaralyzer.yaralyzer import Yaralyzer
 
 PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in Pdfalyzer, birthplace of the Yaralyzer:"
 PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold').append('\n -> ', style='bright_white')
-PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', style='bright_cyan underline')
+PDFALYZER_MSG_TXT.append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
 
 
 def yaralyze():

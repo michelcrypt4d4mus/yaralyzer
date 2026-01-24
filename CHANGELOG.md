@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+# 1.2.0
 * Most command line options can be set permanently via env vars or in a `.yaralyzer` file
 * Add `--env-vars` option to display exactly which command line options can be set by which variables
 * Add `--echo-command` option to save the exact command used along with the output

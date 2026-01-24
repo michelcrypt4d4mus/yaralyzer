@@ -1,6 +1,7 @@
 """
 Helps with `chardet` library.
 """
+from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from chardet.resultdict import ResultDict
@@ -13,12 +14,13 @@ CONFIDENCE = 'confidence'
 LANGUAGE = 'language'
 
 
+@dataclass
 class EncodingAssessment:
     """
     Class to smooth some of the rough edges around the `dict`s returned by `chardet.detect_all()`.
 
     Attributes:
-        assessment (dict): The dict returned by `chardet.detect_all()`.
+        assessment (ResultDict): The dict returned by `chardet.detect_all()`.
         encoding (str): The encoding detected, in lowercase.
         confidence (float): Confidence score from 0.0 to 100.0.
         confidence_text (Text): Rich `Text` object representing the confidence with styling.
@@ -26,20 +28,26 @@ class EncodingAssessment:
         encoding_label (Text): Rich `Text` object for displaying the encoding with optional language info.
     """
 
-    def __init__(self, assessment: ResultDict) -> None:
-        """
-        Args:
-            assessment (dict): The `dict` returned by `chardet.detect_all()`.
-        """
-        self.assessment = assessment
-        self.encoding = assessment[ENCODING].lower()
+    assessment: ResultDict
+    confidence_text: Text = field(init=False)
+    encoding_label: Text = field(init=False)
 
-        # Shift confidence from 0-1.0 scale to 0-100.0 scale
-        self.confidence = 100.0 * (self._get_dict_empty_value_as_None(CONFIDENCE) or 0.0)
+    @property
+    def encoding(self) -> str:
+        return self.assessment[ENCODING].lower()
+
+    @property
+    def confidence(self) -> float:
+        """Shift confidence from 0-1.0 scale to 0-100.0 scale"""
+        return 100.0 * (self._get_dict_empty_value_as_None(CONFIDENCE) or 0.0)
+
+    @property
+    def language(self) -> str | None:
+        return self._get_dict_empty_value_as_None(LANGUAGE)
+
+    def __post_init__(self) -> None:
         self.confidence_text = prefix_with_style(f"{round(self.confidence, 1)}%", style=meter_style(self.confidence))
-
         # Add detected language info and label if any language was detected
-        self.language = self._get_dict_empty_value_as_None(LANGUAGE)
         self.set_encoding_label(self.language.title() if self.language else None)
 
     @classmethod
@@ -50,16 +58,16 @@ class EncodingAssessment:
         Args:
             encoding (str): The encoding to use for the dummy assessment.
         """
-        assessment = cls({ENCODING: encoding, CONFIDENCE: 0.0})
+        assessment = cls(ResultDict(encoding=encoding, confidence=0.0, language=None))
         assessment.confidence_text = Text('none', 'no_attempt')
         return assessment
 
-    def set_encoding_label(self, alt_text: Optional[str]) -> None:
+    def set_encoding_label(self, alt_text: str | None) -> None:
         """
         Alt text is displayed below the encoding in slightly dimmer font.
 
         Args:
-            alt_text (Optional[str]): Text to display along with the encoding (often the inferred language)
+            alt_text (str | None): Text to display along with the encoding (often the inferred language)
         """
         self.encoding_label = Text(self.encoding, 'encoding.header')
 

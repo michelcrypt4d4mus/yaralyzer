@@ -75,24 +75,31 @@ def print_env_var_explanation(env_var: str, action: str | Action) -> None:
     """Print a line explaiing which command line option corresponds to this env_var."""
     txt = Text('  ').append(f"{env_var:40}", style=RichHelpFormatterPlus.styles["argparse.args"])
     option = action.option_strings[-1] if isinstance(action, Action) else action
+    option_type_style = ''
     comment = ''
 
     if is_path_var(env_var):
         option_type = 'Path'
+        option_type_style = 'magenta'
     elif isinstance(action, _StoreTrueAction):
         option_type = 'bool'
+        option_type_style = 'bright_red'
     elif 'type' in vars(action) and (_option_type := getattr(action, 'type')) is not None:
         option_type = _option_type.__name__
+
+        if option_type == 'int':
+            option_type_style = 'cyan'
+        elif option_type == 'float':
+            option_type_style = 'blue'
     else:
         option_type = 'string'
 
     if isinstance(action, _AppendAction):
         comment = ' (comma separated for multiple)'
 
-    option_type = f"({option_type})"
+    # option_type = f"{option_type}"
     # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
-    #import pdb;pdb.set_trace()
-    txt.append(f' {option_type:8} ')
+    txt.append(f' {option_type:8} ', style=option_type_style + ' dim')
     txt.append(' sets ').append(option, style='honeydew2')
     txt.append(comment, style='dim')
     stderr_console.print(txt)

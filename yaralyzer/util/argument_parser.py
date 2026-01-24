@@ -30,6 +30,7 @@ PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have n
 
 
 def epilog(config: Type[YaralyzerConfig]) -> str:
+    """Returns a string with some rich text tags for color."""
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()

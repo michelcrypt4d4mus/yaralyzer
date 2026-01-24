@@ -1,8 +1,3 @@
-# https://shay-palachy.medium.com/temp-environment-variables-for-pytest-7253230bd777
-import sys
-from contextlib import contextmanager
-from os import environ
-
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import YARALYZE
@@ -25,7 +20,6 @@ def test_env_var_int():
         with temporary_argv(BASE_ARGV):
             parse_arguments()
             assert YaralyzerConfig.args.surrounding_bytes == 202
-
 
 def test_cli_overrides_env():
     with temporary_env({'YARALYZER_SURROUNDING_BYTES': '202'}):

@@ -8,13 +8,12 @@ from os import environ
 from pathlib import Path
 from subprocess import run
 
-import pytest
-
-from yaralyzer.util.helpers.env_helper import should_rebuild_fixtures
+from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 from yaralyzer.util.logging import log, log_bigly, shell_command_log_str
 
+PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 
 
@@ -52,3 +51,8 @@ def compare_export_to_file(
     fixture_data = load_file(fixture_path)
     new_data = load_file(new_file_path)
     assert new_data == fixture_data
+
+
+def should_rebuild_fixtures() -> bool:
+    """True if pytest should overwrite fixture data with new output instead of comparing."""
+    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)

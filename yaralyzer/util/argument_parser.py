@@ -2,7 +2,7 @@
 import logging
 import re
 import sys
-from argparse import _AppendAction, ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
@@ -12,7 +12,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.constants import TRACE, YARALYZE, YARALYZER
+from yaralyzer.util.constants import ENV_VARS_OPTION, NO_TIMESTAMPS_OPTION, SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
@@ -51,47 +51,46 @@ parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
-parser.add_argument(
-    '--env-vars', action='store_true',
-    help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
+parser.add_argument(ENV_VARS_OPTION, action='store_true',
+                    help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
 
-
-source = parser.add_argument_group(
+rules = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-source.add_argument('-Y', '--yara-file',
+rules.add_argument('-Y', '--yara-file',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     metavar='FILE',
                     dest='yara_rules_files')
 
-source.add_argument('-dir', '--rule-dir',
+rules.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs')
 
-source.add_argument('-re', '--regex-pattern',
+rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
                     dest='regex_patterns')
 
-source.add_argument('-hex', '--hex-pattern',
+rules.add_argument('-hex', '--hex-pattern',
                     help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='HEX_STRING',
                     dest='hex_patterns')
 
-source.add_argument('-rpl', '--patterns-label',
+rules.add_argument('-rpl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
                     metavar='STRING')
 
-source.add_argument('-mod', '--regex-modifier',
+rules.add_argument('-mod', '--regex-modifier',
                     help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
                     metavar='MODIFIER',
                     choices=YARA_REGEX_MODIFIERS)
+
 
 # Fine tuning
 tuning = parser.add_argument_group(
@@ -159,13 +158,13 @@ tuning.add_argument('--force-decode-threshold',
                     choices=CONFIDENCE_SCORE_RANGE)
 
 tuning.add_argument('--max-match-length',
-                    help="max bytes YARA will return for a match",
+                    help="max bytes YARA will return for a match (value is passed to YARA)",
                     default=YaralyzerConfig.DEFAULT_MAX_MATCH_LENGTH,
                     metavar='N',
                     type=int)
 
 tuning.add_argument('--yara-stack-size',
-                    help="YARA matching engine internal stack size",
+                    help="YARA matching engine internal stack size (value is passed to YARA)",
                     default=YaralyzerConfig.DEFAULT_YARA_STACK_SIZE,
                     metavar='N',
                     type=int)
@@ -176,28 +175,24 @@ export = parser.add_argument_group(
     'FILE EXPORT',
     "Multiselect. Choosing nothing is choosing nothing. Sends what you see on the screen to various file " +
         "formats in parallel. Writes files to the current directory if --output-dir is not provided. " +
-        "Filenames are expansions of the scanned filename though you can use --file-prefix to make your " +
-        "filenames more unique and beautiful to their beholder.")
+        "Filenames are expansions of the scanned filename though you can use --file-prefix and " +
+        "--file-suffix to make your rendered files more unique and beautiful to their beholder.")
 
-export.add_argument('-svg', '--export-svg',
-                    action='store_const',
-                    const='svg',
-                    help='export analysis to SVG images')
-
-export.add_argument('-txt', '--export-txt',
-                    action='store_const',
-                    const='txt',
-                    help='export analysis to ANSI colored text files')
-
-export.add_argument('-html', '--export-html',
-                    action='store_const',
+export.add_argument('-html', '--export-html', action='store_const',
                     const='html',
                     help='export analysis to styled html files')
 
-export.add_argument('-json', '--export-json',
-                    action='store_const',
+export.add_argument('-svg', '--export-svg', action='store_const',
+                    const='svg',
+                    help='export analysis to SVG images')
+
+export.add_argument('-txt', '--export-txt', action='store_const',
+                    const='txt',
+                    help='export analysis to ANSI colored text files')
+
+export.add_argument('-json', '--export-json', action='store_const',
                     const='json',
-                    help='export analysis to JSON files')
+                    help='export analysis to JSON files (experimental)')
 
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
@@ -213,8 +208,14 @@ export.add_argument('-sfx', '--file-suffix',
                     help='optional string to use as the suffix for exported files of any kind',
                     default='')
 
-export.add_argument('--no-timestamps', action='store_true',
+export.add_argument('--echo-command', action='store_true',
+                   help="prepend the exact command line used to the output (useful for revisiting old exports)")
+
+export.add_argument(NO_TIMESTAMPS_OPTION, action='store_true',
                     help="do not append file creation timestamps to exported filenames")
+
+export.add_argument(SUPPRESS_OUTPUT_OPTION, action='store_true',
+                    help="no output to terminal (useful when you're exporting HTML etc.)")
 
 
 # Debugging
@@ -232,8 +233,6 @@ debug.add_argument('-L', '--log-level',
 debug.add_argument('-I', '--interact', action='store_true',
                     help='drop into interactive python REPL when parsing is complete')
 
-debug.add_argument('--echo-command', action='store_true',
-                   help="print the exact command line used first (useful if you're revisiting old exports)")
 
 YaralyzerConfig.set_argument_parser(parser)
 is_yaralyzing = parser.prog == YARALYZE

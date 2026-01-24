@@ -31,6 +31,7 @@ Python log levels for reference:
 ```
 """
 import logging
+import time
 from argparse import Namespace
 from copy import copy
 from pathlib import Path
@@ -45,13 +46,14 @@ from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
 from yaralyzer.util.constants import TRACE_LEVEL
-from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
-from yaralyzer.util.helpers.file_helper import relative_path
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
+from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
+WRITE_STYLE = 'grey46 italic'
 
 # TODO: unify themes
 LOG_THEME = Theme({
@@ -61,7 +63,7 @@ LOG_THEME = Theme({
 })
 
 DEFAULT_LOG_HANDLER_KWARGS = {
-    'console': Console(stderr=True, theme=LOG_THEME, **DEFAULT_CONSOLE_KWARGS),
+    'console': Console(stderr=True, theme=LOG_THEME, **default_console_kwargs()),
     'omit_repeated_times': False,
     'rich_tracebacks': True,
     'show_path': not is_invoked_by_pytest(),
@@ -158,6 +160,11 @@ def log_current_config() -> None:
         msg += f"   {k: >35}  {config_dict[k]}\n"
 
     log.info(msg)
+
+
+def log_file_write(file_path: str | Path, started_at: float) -> None:
+    write_time = time.perf_counter() - started_at
+    log_and_print(f"\nWrote '{relative_path(file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
 
 
 def log_invocation() -> None:

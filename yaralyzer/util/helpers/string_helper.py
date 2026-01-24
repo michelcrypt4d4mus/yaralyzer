@@ -28,6 +28,23 @@ def line_count(_string: str) -> int:
     return len(_string.split("\n"))
 
 
+def props_string(obj: object, keys: list[str] | None = None, joiner: str = ', ') -> str:
+    prefix = joiner if '\n' in joiner else ''
+    return prefix + joiner.join(props_strings(obj, keys))
+
+
+def props_strings(obj: object, keys: list[str] | None = None) -> list[str]:
+    """Get props of 'obj' in the format ["prop1=5", "prop2='string'"] etc."""
+    props = []
+
+    for k in (keys or [k for k in vars(obj).keys()]):
+        value = getattr(obj, k)
+        value = f"'{value}'" if isinstance(value, str) else value
+        props.append(f"{k}={value}")
+
+    return props
+
+
 def str_join(_list: List[Any], separator: str, func: Callable = str) -> str:
     """
     Return a comma separated list of strings. If func is provided the output of calling

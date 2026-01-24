@@ -5,6 +5,7 @@ import re
 import sys
 from argparse import _AppendAction, _StoreTrueAction, Action
 from contextlib import contextmanager
+from copy import deepcopy
 from os import environ
 from shutil import get_terminal_size
 from typing import Any, Generator
@@ -18,8 +19,6 @@ from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example
 
 DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r".*_(DIR|FILE|PATH)S?", re.I)
-PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
-SHOULD_REBUILD_FIXTURES = False
 
 
 def config_var_name(env_var: str) -> str:
@@ -105,12 +104,9 @@ def print_env_var_explanation(env_var: str, action: str | Action) -> None:
     stderr_console.print(txt)
 
 
-def should_rebuild_fixtures() -> bool:
-    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
-
-
 @contextmanager
 def temporary_argv(new_argv: list[str]) -> Generator[Any, Any, Any]:
+    """Temporarily replace sys.argv with something else."""
     old_argv = list(sys.argv)
     sys.argv = list(new_argv)
 
@@ -124,6 +120,7 @@ def temporary_argv(new_argv: list[str]) -> Generator[Any, Any, Any]:
 def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
     """
     Temporarily add variables to the environemnt.
+    See: https://shay-palachy.medium.com/temp-environment-variables-for-pytest-7253230bd777
 
     Example:
         with temporary_env({'new_var': 'new_value}):
@@ -151,6 +148,11 @@ DEFAULT_CONSOLE_KWARGS = {
     'color_system': '256',
     'width': CONSOLE_WIDTH,
 }
+
+
+def default_console_kwargs() -> dict[str, str | int]:
+    """Returns a fresh copy of DEFAULT_CONSOLE_KWARGS."""
+    return deepcopy(DEFAULT_CONSOLE_KWARGS)
 
 
 # For use when you need to write output before the main rich.console has managed to get set up.

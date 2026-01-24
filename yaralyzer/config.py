@@ -12,7 +12,7 @@ from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
+from yaralyzer.util.constants import KILOBYTE, NO_TIMESTAMPS_OPTION, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.env_helper import (env_var_cfg_msg, is_env_var_set_and_not_false, is_invoked_by_pytest,
      is_path_var, print_env_var_explanation, stderr_console)
@@ -36,7 +36,7 @@ ONLY_CLI_ARGS = [
 DEFAULT_ARGV = [
     __file__,
     '--regex-pattern', 'foobar',
-    '--no-timestamps',
+    NO_TIMESTAMPS_OPTION,
 ]
 
 

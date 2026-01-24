@@ -4,6 +4,31 @@ Helper methods to work with files.
 from datetime import datetime
 from pathlib import Path
 
+from yaralyzer.util.constants import KILOBYTE, MEGABYTE
+
+file_size = lambda file_path: Path(file_path).stat().st_size
+
+
+def file_size_str(file_path, digits: int | None = None):
+    return file_size_to_str(file_size(file_path), digits)
+
+
+def file_size_to_str(size: int, digits: int | None = None) -> str:
+    _digits = 2
+
+    if size > MEGABYTE:
+        size_num = float(size) / MEGABYTE
+        size_str = 'MB'
+    elif size > KILOBYTE:
+        size_num = float(size) / KILOBYTE
+        size_str = 'kb'
+        _digits = 1
+    else:
+        return f"{size} b"
+
+    digits = _digits if digits is None else digits
+    return f"{size_num:,.{digits}f} {size_str}"
+
 
 def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path]:
     """

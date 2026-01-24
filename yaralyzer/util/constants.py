@@ -7,11 +7,18 @@ YARALYZER_UPPER = YARALYZER.upper()
 INVOKED_BY_PYTEST = 'INVOKED_BY_PYTEST'
 
 KILOBYTE = 1024
+MEGABYTE = KILOBYTE * KILOBYTE
 
 # Logging constants
 TRACE = 'TRACE'
 TRACE_LEVEL = logging.DEBUG - 1
 
+# Command line options
+ENV_VARS_OPTION = '--env-vars'
+NO_TIMESTAMPS_OPTION = '--no-timestamps'
+SUPPRESS_OUTPUT_OPTION = '--suppress-output'
+
+# URLs
 GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 
 

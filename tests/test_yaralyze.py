@@ -13,7 +13,7 @@ from subprocess import CalledProcessError, check_output
 import pytest
 
 from yaralyzer.output.console import console
-from yaralyzer.util.constants import YARALYZE
+from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_file
 from yaralyzer.util.helpers.shell_helper import compare_export_to_file
 from yaralyzer.util.helpers.string_helper import line_count
@@ -24,7 +24,7 @@ from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
-DEFAULT_CLI_ARGS = ['--no-timestamps', '--output-dir', TMP_DIR]
+DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', TMP_DIR]
 EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 
 

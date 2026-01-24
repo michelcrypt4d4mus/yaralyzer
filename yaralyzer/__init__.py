@@ -2,7 +2,6 @@ import code
 import yara as python_yara
 from os import environ, getcwd, path
 from pathlib import Path
-from sys import argv
 
 from dotenv import load_dotenv
 from rich.text import Text
@@ -56,7 +55,7 @@ def yaralyze():
 
     if args.output_dir:
         export_basepath = yaralyzer.export_basepath()
-        log.debug(f"Rendering yaralyzer output to '{export_basepath.relative_to(Path.cwd())}'...", style='yellow')
+        log.debug(f"export_basepath is '{export_basepath.relative_to(Path.cwd())}'...")
         console.record = True
 
     if args.echo_command:

@@ -1,10 +1,10 @@
 # NEXT RELEASE
 
 # 1.2.0
-* Most command line options can be set permanently via env vars or in a `.yaralyzer` file
+* Multi-select command line options (e.g. `--yara-file`, `--rule-dir`) can be set permanently via env vars using comma separated strings
 * Add `--env-vars` option to display exactly which command line options can be set by which variables
-* Add `--echo-command` option to save the exact command used along with the output
-* Strip invalid chars out of exported HTML / SVG / etc. filenames
+* Add `--echo-command` option to print the exact command used along with the output
+* Strip invalid chars out of exported HTML / SVG / JSON / etc. filenames
 * `pytest` now compares output against previously export results instead of just checking line count
 * Move `helpers/` module into `util/`
 

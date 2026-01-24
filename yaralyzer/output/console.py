@@ -1,6 +1,8 @@
 """
 Holds the rich.Console instance that controls the stdout printing and file export.
 """
+from os import devnull
+from sys import argv
 from typing import List
 
 from rich.console import Console
@@ -9,7 +11,8 @@ from rich.style import Style
 from rich.text import Text
 from rich.theme import Theme
 
-from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS
+from yaralyzer.util.constants import SUPPRESS_OUTPUT_OPTION
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, stderr_console
 
 # Colors
 ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
@@ -77,7 +80,14 @@ YARALYZER_THEME_DICT = {
 
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 
-console = Console(highlight=False, theme=YARALYZER_THEME, **DEFAULT_CONSOLE_KWARGS)
+console_kwargs = default_console_kwargs()
+
+if SUPPRESS_OUTPUT_OPTION in argv:
+    stderr_console.print(f"Suppressing terminal output because {SUPPRESS_OUTPUT_OPTION} is enabled...")
+    console_kwargs.update({'file': open(devnull, "wt")})
+
+# This is the global stdout manager
+console = Console(highlight=False, theme=YARALYZER_THEME, **console_kwargs)
 
 
 def console_print_with_fallback(_string: Text | str, style=None) -> None:

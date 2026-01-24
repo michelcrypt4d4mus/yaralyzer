@@ -97,7 +97,6 @@ def print_env_var_explanation(env_var: str, action: str | Action) -> None:
     if isinstance(action, _AppendAction):
         comment = ' (comma separated for multiple)'
 
-    # option_type = f"{option_type}"
     # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
     txt.append(f' {option_type:8} ', style=option_type_style + ' dim')
     txt.append(' sets ').append(option, style='honeydew2')

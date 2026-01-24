@@ -65,34 +65,33 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, export_basepath: str | Path | None = None) -> Path:
+def export_json(yaralyzer: Yaralyzer, export_basepath: Path | None = None) -> Path:
     """
     Export YARA scan results to JSON.
 
     Args:
         yaralyzer (Yaralyzer): The `Yaralyzer` object containing the results to export.
-        export_basepath (Optional[str]): Base path to write output to. Should have no file extension.
+        export_basepath (Path | None, Optional): Base path to write output to. Should have no file extension.
 
     Returns:
         Path: File data was exported to.
     """
-    output_path = Path(f"{export_basepath or 'yara_matches'}.json")
+    json_export_path = Path(f"{export_basepath or 'yara_matches'}.json")
     matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
 
-    with open(output_path, 'w') as f:
+    with open(json_export_path, 'w') as f:
         json.dump(matches_data, f, indent=4)
 
-    log_and_print(f"YARA matches exported to JSON file: '{relative_path(output_path)}'", style=WRITE_STYLE)
-    return output_path
+    log_and_print(f"YARA matches exported to JSON file: '{relative_path(json_export_path)}'", style=WRITE_STYLE)
+    return json_export_path
 
 
-def invoke_rich_export(export_method: Callable, export_basepath: str | Path, args: Namespace) -> Path:
+def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
     Args:
         export_method (Callable): Usually a `Rich.console.save_whatever()` method.
-        export_basepath (str): Path to write output to. Should have no file extension.
         args (Namespace, optional): Arguments parsed by ArgumeentParser.
 
     Returns:
@@ -100,7 +99,7 @@ def invoke_rich_export(export_method: Callable, export_basepath: str | Path, arg
     """
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
-    export_file_path = Path(f"{export_basepath}.{extname}")
+    export_file_path = Path(f"{args._export_basepath}.{extname}")
     export_png = False
 
     if method_name not in _EXPORT_KWARGS:

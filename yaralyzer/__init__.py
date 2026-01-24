@@ -19,6 +19,7 @@ from yaralyzer.output.console import console
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.helpers.rich_helper import print_fatal_error_and_exit
+from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.logging import invocation_txt, log, log_console
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
@@ -35,7 +36,6 @@ def yaralyze():
     and environment variables. See `yaralyze --help` for details.
     """
     args = parse_arguments()
-    export_basepath = ''
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)
@@ -52,9 +52,10 @@ def yaralyze():
     else:
         raise RuntimeError("No pattern or YARA file to scan against.")
 
-    if args.output_dir:
-        export_basepath = yaralyzer.export_basepath()
-        log.debug(f"export_basepath is '{export_basepath.relative_to(Path.cwd())}'...")
+    args._export_basepath = yaralyzer.export_basepath()
+    log.debug(f"export_basepath is '{relative_path(args._export_basepath)}'...")
+
+    if args._any_export_selected:
         console.record = True
 
     if args.echo_command:
@@ -66,13 +67,13 @@ def yaralyze():
         print_fatal_error_and_exit(yara_error_msg(e))
 
     if args.export_txt:
-        invoke_rich_export(console.save_text, export_basepath, args)
+        invoke_rich_export(console.save_text, args)
     if args.export_html:
-        invoke_rich_export(console.save_html, export_basepath, args)
+        invoke_rich_export(console.save_html, args)
     if args.export_svg:
-        invoke_rich_export(console.save_svg, export_basepath, args)
+        invoke_rich_export(console.save_svg, args)
     if args.export_json:
-        export_json(yaralyzer, export_basepath)
+        export_json(yaralyzer, args._export_basepath)
 
     if str(args.file_to_scan_path).lower().endswith('pdf'):
         log_console.print(PDFALYZER_MSG_TXT)

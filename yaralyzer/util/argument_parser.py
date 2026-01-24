@@ -284,6 +284,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
+    args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
     args._svg_requested = bool(args.export_svg)
 
     if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):

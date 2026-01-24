@@ -25,7 +25,7 @@ from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in the Pdfalyzer, birthplace of the Yaralyzer:"
+PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in Pdfalyzer, birthplace of the Yaralyzer:"
 PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold').append('\n -> ', style='bright_white')
 PDFALYZER_MSG_TXT.append('https://github.com/michelcrypt4d4mus/pdfalyzer\n', style='bright_cyan underline')
 

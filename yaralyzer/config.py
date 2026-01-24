@@ -43,7 +43,7 @@ DEFAULT_ARGV = [
 class YaralyzerConfig:
     """Handles parsing of command line args and environment variables for Yaralyzer."""
 
-    # """Env vars that configure yaralyzer command line options (or anything else) should be prefixed with this."""
+    """Env vars that configure yaralyzer command line options (or anything else) should be prefixed with this."""
     ENV_VAR_PREFIX = YARALYZER_UPPER
 
     # """Passed through to yara.set_config()."""
@@ -80,7 +80,7 @@ class YaralyzerConfig:
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:
-        """Overriden in pdfalyzer to distinguish between yaralyzer only options."""
+        """'output_dir' becomes YARALYZER_OUTPUT_DIR. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
 
     @classmethod
@@ -125,7 +125,7 @@ class YaralyzerConfig:
             For the argument --output-dir, the environment will be checked for YARALYZER_OUTPUT_DIR.
 
         Args:
-            _args (Namespace): Object returned by ArgumentParser.parse_ar()
+            _args (Namespace): Object returned by ArgumentParser.parse_args()
         """
         cls._args = _args
 

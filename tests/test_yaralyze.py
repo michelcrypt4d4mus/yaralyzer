@@ -8,14 +8,14 @@ import re
 from math import isclose
 from os import environ, path
 from pathlib import Path
-from subprocess import CalledProcessError, check_output
+from subprocess import CalledProcessError, check_output, run
 
 import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
 from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file
-from yaralyzer.util.helpers.shell_helper import compare_export_to_file, safe_args
+from yaralyzer.util.helpers.shell_helper import extract_written_file_path, run_cmd_and_compare_exported_file_to_existing, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
 
@@ -87,12 +87,14 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
             assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
-def test_png_export(binary_file_path, tulips_yara_path, tmp_dir):
-    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-png', *DEFAULT_CLI_ARGS)
-    export_basepath = 'random_bytes.bin_scanned_with_tulips.yara__maxdecode256'
+def test_png_export(il_tulipano_path, tmp_dir):
+    result = run(safe_args([YARALYZE, il_tulipano_path, '-re', 'pregiatissimi', '-png', *DEFAULT_CLI_ARGS]), capture_output=True, text=True)
+    png_path = extract_written_file_path(result.stderr)
+    log.error(f"Found png_path: '{png_path}', size {file_size(png_path)}")
+    export_basepath = 'il_tulipano_nero.txt_scanned_with_pregiatissimi__maxdecode256'
     png_path = tmp_dir.joinpath(f'{export_basepath}.png')
     assert png_path.exists()
-    assert file_size(png_path) > 350_000
+    assert file_size(png_path) > 500_000
     assert not tmp_dir.joinpath(f"{export_basepath}.svg").exists()
 
 
@@ -129,7 +131,7 @@ def _compare_to_fixture(file_to_scan: str | Path, *args):
     can be compared against the same fixture file.
     """
     cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
-    compare_export_to_file(cmd_list, RENDERED_FIXTURES_DIR, ignorable_args=DEFAULT_CLI_ARGS)
+    run_cmd_and_compare_exported_file_to_existing(cmd_list, RENDERED_FIXTURES_DIR, ignorable_args=DEFAULT_CLI_ARGS)
 
 
 def _build_shell_cmd(file_path: str | Path, *args) -> list[str]:

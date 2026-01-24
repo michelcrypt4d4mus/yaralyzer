@@ -55,11 +55,12 @@ def yaralyze():
 
     if args.output_dir:
         export_basepath = yaralyzer.export_basepath()
-        console.print(f"Rendering yaralyzer output to '{export_basepath.relative_to(Path.cwd())}'...", style='yellow')
+        #console.print(f"Rendering yaralyzer output to '{export_basepath.relative_to(Path.cwd())}'...", style='yellow')
         console.record = True
 
     if args.echo_command:
         console.print(invocation_txt())
+        exit()
 
     try:
         yaralyzer.yaralyze()

@@ -70,6 +70,9 @@ YARALYZER_THEME_DICT = {
     'yara.rules':  Style(color='color(135)', underline=True, bold=True),
     # error log events
     'error': 'bright_red',
+    # override defaults
+    'repr.path': 'orchid2',
+    'repr.filename': 'orchid2',
 }
 
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)

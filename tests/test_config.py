@@ -1,27 +1,20 @@
 from os import environ
+from pathlib import Path
 
-from yaralyzer.util.constants import INVOKED_BY_PYTEST
-from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false, is_invoked_by_pytest
+from yaralyzer.config import YaralyzerConfig
+from yaralyzer.util.constants import YARALYZER_UPPER
+from yaralyzer.util.helpers.env_helper import temporary_env
 
-ENV_VAR_NAME = 'THE_WORLD_IS_YOURS'
 
+def test_get_env_value(tmp_dir):
+    with temporary_env({f"{YARALYZER_UPPER}_OUTPUT_DIR": str(tmp_dir)}):
+        assert YaralyzerConfig.get_env_value('OUTPUT_DIR', Path) == tmp_dir
+        assert YaralyzerConfig.get_env_value('OUTPUT_DIR') == tmp_dir
+        assert YaralyzerConfig.get_env_value('output_dir') == tmp_dir
 
-def test_is_env_var_set_and_not_false():
-    # Not set
-    assert is_env_var_set_and_not_false(ENV_VAR_NAME) is False
+    with temporary_env({f"{YARALYZER_UPPER}_INT": '5', f"{YARALYZER_UPPER}_FLOAT": '5.5'}):
+        assert YaralyzerConfig.get_env_value('INT') == 5
+        assert YaralyzerConfig.get_env_value('int', int) == 5
 
-    # Should be set by conftest
-    assert is_env_var_set_and_not_false(INVOKED_BY_PYTEST) is True
-    assert is_invoked_by_pytest() is True
-
-    # Set to empty string
-    environ[ENV_VAR_NAME] = ''
-    assert is_env_var_set_and_not_false(ENV_VAR_NAME) is False
-
-    # Set to FALSE
-    environ[ENV_VAR_NAME] = 'FALSE'
-    assert is_env_var_set_and_not_false(ENV_VAR_NAME) is False
-
-    # Set to anything else
-    environ[ENV_VAR_NAME] = 'FLASER'
-    assert is_env_var_set_and_not_false(ENV_VAR_NAME) is True
+        assert YaralyzerConfig.get_env_value('FLOAT') == 5.5
+        assert YaralyzerConfig.get_env_value('float', float) == 5.5

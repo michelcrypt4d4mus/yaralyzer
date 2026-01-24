@@ -1,6 +1,13 @@
+import logging
+
+
 YARALYZE = 'yaralyze'
 YARALYZER = f"{YARALYZE}r"
 YARALYZER_UPPER = YARALYZER.upper()
 INVOKED_BY_PYTEST = 'INVOKED_BY_PYTEST'
 
 KILOBYTE = 1024
+
+# Logging constants
+TRACE = 'TRACE'
+TRACE_LEVEL = logging.DEBUG - 1

@@ -6,17 +6,18 @@ from argparse import ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
+from typing import Type
 
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.constants import YARALYZE, YARALYZER
+from yaralyzer.util.constants import TRACE, YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import TRACE, log, log_argparse_result, log_current_config, log_invocation, set_log_level
+from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -26,15 +27,16 @@ YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 
 
-def epilog(package: str) -> str:
+def epilog(config: Type[YaralyzerConfig]) -> str:
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
+    package = config.ENV_VAR_PREFIX.lower()
     readme_url = f"{GITHUB_BASE_URL}/{package}"
 
     msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
           f"file. See the documentation for details.\n" \
           f"A log of previous {package} invocation args will be inscribed to a file if the " \
-          f"{color_var(YaralyzerConfig.LOG_DIR_ENV_VAR)} environment variable is configured." \
+          f"{color_var(config.log_dir_env_var)} environment variable is configured." \
 
     if package == YARALYZER:
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
@@ -44,7 +46,7 @@ def epilog(package: str) -> str:
 
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
-parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YARALYZER))
+parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 
@@ -237,8 +239,10 @@ is_yaralyzing = parser.prog == YARALYZE
 def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None):
     """
     Parse command line args. Most arguments can also be communicated to the app by setting env vars.
-    If `args` are passed neither rules nor a regex need be provided as it is assumed
-    the constructor will instantiate a `Yaralyzer` object directly.
+    If `args` is provided it should have come from `parser.parse_args()` by an `ArgumentParser`
+    that inherits from Yaralyzer's. Also if 'args' is provided neither rules nor a regex
+    nor a regex need be provided as it is assumed the constructor will instantiate a
+    `Yaralyzer` object directly.
 
     Args:
         args (Namespace, optional): If provided, use these args instead of parsing from command line.
@@ -257,7 +261,6 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
 
     # Parse and validate args
     args = args or parser.parse_args(argv)
-    log_argparse_result(args, 'RAW')
     args.invoked_at_str = timestamp_for_filename()
     args.standalone_mode = not is_used_as_library
 
@@ -268,6 +271,8 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
             log.warning("Ignoring --log-level option as debug mode means log level is DEBUG")
     elif args.log_level:
         set_log_level(args.log_level)
+
+    log_argparse_result(args, 'RAW')
 
     if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):
         log.warning('--output-dir provided but no export option was chosen')

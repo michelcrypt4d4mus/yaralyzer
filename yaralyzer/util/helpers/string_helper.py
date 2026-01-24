@@ -8,19 +8,24 @@ from typing import Any, Callable, List
 ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
+NUMBER_REGEX = re.compile(r"^[\d.]+$")
 
 
 def escape_yara_pattern(pattern: str) -> str:
     return pattern.replace('/', '\\/')
 
 
-def line_count(_string: str) -> int:
-    return len(_string.split("\n"))
-
-
 def hex_to_string(_string: str) -> str:
     r"""String '0D 0A 25 25 45 4F 46 0D 0A' becomes '\r\n%%EOF\r\n'"""
     return bytearray.fromhex(_string.replace(' ', '')).decode()
+
+
+def is_number(s: str) -> bool:
+    return bool(NUMBER_REGEX.match(s))
+
+
+def line_count(_string: str) -> int:
+    return len(_string.split("\n"))
 
 
 def str_join(_list: List[Any], separator: str, func: Callable = str) -> str:

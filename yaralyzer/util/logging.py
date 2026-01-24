@@ -31,20 +31,20 @@ Python log levels for reference:
 ```
 """
 import logging
-import re
 from argparse import Namespace
 from copy import copy
 from pathlib import Path
 from sys import argv
 from subprocess import CompletedProcess
-from typing import Union
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 from rich.text import Text
+from rich.theme import Theme
 
-from yaralyzer.config import YaralyzerConfig
+from yaralyzer.config import YaralyzerConfig, log_level_for
+from yaralyzer.util.constants import TRACE_LEVEL
 from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
@@ -52,11 +52,16 @@ from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
-TRACE = 'TRACE'
-TRACE_LEVEL = logging.DEBUG - 1
+
+# TODO: unify themes
+LOG_THEME = Theme({
+    'repr.path': 'dark_orange3',
+    'repr.filename': 'dark_orange3',
+    'repr.none': 'grey23 italic',
+})
 
 DEFAULT_LOG_HANDLER_KWARGS = {
-    'console': Console(stderr=True, **DEFAULT_CONSOLE_KWARGS),
+    'console': Console(stderr=True, theme=LOG_THEME, **DEFAULT_CONSOLE_KWARGS),
     'omit_repeated_times': False,
     'rich_tracebacks': True,
     'show_path': not is_invoked_by_pytest(),
@@ -167,10 +172,10 @@ def log_trace(*args) -> None:
     log.log(TRACE_LEVEL, *args)
 
 
-def set_log_level(level: Union[str, int]) -> None:
+def set_log_level(level: str | int) -> None:
     """Set the log level at any time."""
     for handler in log.handlers + [log]:
-        handler.setLevel(TRACE_LEVEL if level == TRACE else level)
+        handler.setLevel(log_level_for(level))
 
 
 def shell_command_log_str(cmd: list[str], result: CompletedProcess, ignore_args: list[str] | None = None) -> str:

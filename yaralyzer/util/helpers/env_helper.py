@@ -1,8 +1,12 @@
 """
 Configuration management for Yaralyzer.
 """
+from contextlib import contextmanager
 from os import environ
 from shutil import get_terminal_size
+from typing import Any, Generator
+
+from rich.console import Console
 
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
 
@@ -45,8 +49,34 @@ def is_invoked_by_pytest() -> bool:
     return is_env_var_set_and_not_false(INVOKED_BY_PYTEST)
 
 
+def is_path_var(env_var_name: str) -> bool:
+    """Returns True if `env_var_name` ends with _DIR or _PATH."""
+    return env_var_name.endswith('_DIR') or env_var_name.endswith('_PATH')
+
+
 def should_rebuild_fixtures() -> bool:
     return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
+
+
+def stderr_console() -> Console:
+    """For use when you need to write output before the main rich.console has managed to get set up."""
+    return Console(stderr=True, **DEFAULT_CONSOLE_KWARGS)
+
+
+@contextmanager
+def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
+    """
+    Temporarily add variables to the environemnt.
+
+    Example:
+        with temporary_env({'new_var': 'new_value}):
+            do_stuff()
+    """
+    old_environ = dict(environ)
+    environ.update(env_vars)
+    yield
+    environ.clear()
+    environ.update(old_environ)
 
 
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)

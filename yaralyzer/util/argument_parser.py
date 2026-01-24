@@ -266,7 +266,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
 
     # Parse and validate args
     args = args or parser.parse_args(argv)
-    args.invoked_at_str = timestamp_for_filename()
+    args._invoked_at_str = timestamp_for_filename()
     args.standalone_mode = not is_used_as_library
 
     if args.debug:

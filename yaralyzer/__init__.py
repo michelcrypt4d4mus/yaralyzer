@@ -53,9 +53,9 @@ def yaralyze():
         raise RuntimeError("No pattern or YARA file to scan against.")
 
     args._export_basepath = yaralyzer.export_basepath()
-    log.debug(f"export_basepath is '{relative_path(args._export_basepath)}'...")
 
     if args._any_export_selected:
+        log.debug(f"export_basepath is '{relative_path(args._export_basepath)}'...")
         console.record = True
 
     if args.echo_command:

@@ -74,7 +74,7 @@ yara-python = "^4.5.4"
 #plyara = "^2.1.1"  # TODO: use plyara for YARA rule parsing and validation
 
 # Extras
-cairosvg = "^2.8.2"
+cairosvg = {version = "^2.8.2", optional = true}
 
 [tool.poetry.extras]
 img = ["cairosvg"]

@@ -83,7 +83,7 @@ YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 console_kwargs = default_console_kwargs()
 
 if SUPPRESS_OUTPUT_OPTION in argv:
-    stderr_console.print(f"Suppressing terminal output because {SUPPRESS_OUTPUT_OPTION} is enabled...")
+    stderr_console.print(f"Suppressing terminal output because {SUPPRESS_OUTPUT_OPTION} is enabled...", style='dim')
     console_kwargs.update({'file': open(devnull, "wt")})
 
 # This is the global stdout manager

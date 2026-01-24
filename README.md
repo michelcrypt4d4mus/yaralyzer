@@ -93,11 +93,12 @@ If you get a `yara.Error` with a numerical error code you can check what that co
 
 
 # Example Output
-The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich) as well as a (somewhat limited) plain text JSON format. SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or `cairosvg`. In our experience they both work though we've seen some glitchiness with `cairosvg`.
+The Yaralyzer can export visualizations to HTML, ANSI colored text, and SVG vector images using the file export functionality that comes with [Rich](https://github.com/Textualize/rich) as well as a (somewhat limited) plain text JSON format. SVGs can be turned into `png` format images with a tool like [Inkscape](https://inkscape.org/) or [CairoSVG](https://pypi.org/project/CairoSVG/). In our experience they both work though we've seen some glitchiness in the rendered output (along with straight up crashes) using CairoSVG on the SVGs rendered by Yaralyzer.
 
 If you want to export .png images directly from Yaralyzer you'll need to do one of these things:
-1. Install [Inkscape](https://inkscape.org/) (Hombrew users can install it with `brew install --cask inkscape`)
-2. Ask for the `img` extra when installing Yaralyzer: `pipx install yaralyzer[img]`
+
+1. Install [Inkscape](https://inkscape.org/) (homebrew users can install it with `brew install --cask inkscape`)
+2. Ask for the `img` extra when installing Yaralyzer which will install [`cairosvg`](https://pypi.org/project/CairoSVG/): `pipx install yaralyzer[img]`
 
 #### Raw YARA match result:
 

@@ -18,7 +18,8 @@ from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.yaralyzer import Yaralyzer
 
-CAIROSVG_WARNING_MSG = f"PNG images rendered by cairosvg may contain issues, especially with tables.\n" \
+CAIROSVG_WARNING_MSG = f"PNG images rendered by CairoSVG may contain issues, especially with tables. " \
+                       f"CairoSVG crashes are also not unheard of.\n" \
                        f"Consider installing {INKSCAPE.title()} if you plan to export a lot of images.\n" \
                        f"{INKSCAPE_URL}"
 

@@ -25,7 +25,7 @@ GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 YARALYZER_API_DOCS_URL = 'https://michelcrypt4d4mus.github.io/yaralyzer'
 YARA_PATTERN_LABEL_REGEX = re.compile('^\\w+$')
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
-PNG_EXPORT_ERROR_MSG = f"PNG export requires cairosvg or inkscape (you have neither).\nMaybe try pip install yaralyzer[img] or {INKSCAPE_URL}"
+PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\nMaybe try pip install yaralyzer[img] or {INKSCAPE_URL}"
 
 
 def epilog(config: Type[YaralyzerConfig]) -> str:

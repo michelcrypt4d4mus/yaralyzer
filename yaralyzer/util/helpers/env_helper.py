@@ -1,7 +1,8 @@
 """
 Configuration management for Yaralyzer.
 """
-from argparse import _AppendAction, Action
+import re
+from argparse import _AppendAction, _StoreTrueAction, Action
 from contextlib import contextmanager
 from os import environ
 from shutil import get_terminal_size
@@ -15,6 +16,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
 
 DEFAULT_CONSOLE_WIDTH = 160
+PATH_ENV_VAR_REGEX = re.compile(r".*_(DIR|FILE|PATH)S?", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 SHOULD_REBUILD_FIXTURES = False
 
@@ -47,7 +49,7 @@ def env_var_cfg_msg(app_name: str) -> Padding:
     txt.append(f"file in your home or current directory and putting these vars in it.\n"
                f"For more on how that works see the example env file here:\n\n   ")
     txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
-    return Padding(txt, (1, 1))
+    return Padding(txt, (1, 1, 0, 1))
 
 
 def is_env_var_set_and_not_false(var_name: str) -> bool:
@@ -66,15 +68,33 @@ def is_invoked_by_pytest() -> bool:
 
 def is_path_var(env_var_name: str) -> bool:
     """Returns True if `env_var_name` ends with _DIR or _PATH."""
-    return env_var_name.endswith('_DIR') or env_var_name.endswith('_PATH')
+    return bool(PATH_ENV_VAR_REGEX.match(env_var_name))
 
 
 def print_env_var_explanation(env_var: str, action: str | Action) -> None:
     """Print a line explaiing which command line option corresponds to this env_var."""
     txt = Text('  ').append(f"{env_var:40}", style=RichHelpFormatterPlus.styles["argparse.args"])
     option = action.option_strings[-1] if isinstance(action, Action) else action
+    comment = ''
+
+    if is_path_var(env_var):
+        option_type = 'Path'
+    elif isinstance(action, _StoreTrueAction):
+        option_type = 'bool'
+    elif 'type' in vars(action) and (_option_type := getattr(action, 'type')) is not None:
+        option_type = _option_type.__name__
+    else:
+        option_type = 'string'
+
+    if isinstance(action, _AppendAction):
+        comment = ' (comma separated for multiple)'
+
+    option_type = f"({option_type})"
+    # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
+    #import pdb;pdb.set_trace()
+    txt.append(f' {option_type:8} ')
     txt.append(' sets ').append(option, style='honeydew2')
-    txt.append(' (comma separated for multiple)' if isinstance(action, _AppendAction) else '', style='dim')
+    txt.append(comment, style='dim')
     stderr_console.print(txt)
 
 
@@ -93,9 +113,12 @@ def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
     """
     old_environ = dict(environ)
     environ.update(env_vars)
-    yield
-    environ.clear()
-    environ.update(old_environ)
+
+    try:
+        yield
+    finally:
+        environ.clear()
+        environ.update(old_environ)
 
 
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)

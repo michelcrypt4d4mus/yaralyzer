@@ -12,7 +12,7 @@ TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
-from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
+# from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 

@@ -330,4 +330,4 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     return args
 
 
-YaralyzerConfig.parse_arguments = parse_arguments
+YaralyzerConfig._parse_arguments = parse_arguments

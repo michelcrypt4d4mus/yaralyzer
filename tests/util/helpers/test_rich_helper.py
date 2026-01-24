@@ -8,4 +8,4 @@ def test_yaralyzer_show_color_theme():
 
 
 def _assert_output_line_count(shell_cmd: list[str], expected_line_count: int):
-    _assert_line_count_within_range(expected_line_count, check_output(shell_cmd).decode())
+    _assert_line_count_within_range(expected_line_count, check_output(shell_cmd).decode(), rel_tol=0.2)

@@ -13,6 +13,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
+from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.env_helper import (env_var_cfg_msg, is_env_var_set_and_not_false, is_invoked_by_pytest,
      is_path_var, print_env_var_explanation, stderr_console)
 from yaralyzer.util.helpers.string_helper import is_number
@@ -62,7 +63,9 @@ class YaralyzerConfig:
     LOG_LEVEL: int = logging.WARNING
 
     # TODO: Is set in argument_parser.py. Hacky workaround to make our parse_arguments() available here
-    parse_arguments: Callable[[Namespace | None, list[str] | None], Namespace] = lambda args, argv: Namespace()
+    _parse_arguments: Callable[[Namespace | None, list[str] | None], Namespace] = lambda args, argv: Namespace()
+    _append_option_vars: list[str] = []
+    _argparse_keys: list[str] = []
 
     @classproperty
     def args(cls) -> Namespace:
@@ -89,17 +92,19 @@ class YaralyzerConfig:
         # Override type for a few important situations
         if not env_value:
             return None
-        elif is_path_var(env_var):
-            env_value = Path(env_value)
-
-            if not env_value.exists():
-                raise EnvironmentError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
-        elif is_number(env_value):
-            env_value = float(env_value) if '.' in env_value else int(env_value)
         elif var.lower() in cls._append_option_vars:
             env_value = env_value.split(',')
+        elif is_number(env_value):
+            env_value = float(env_value) if '.' in env_value else int(env_value)
         else:
             env_value = var_type(env_value)
+
+        if is_path_var(var):
+            env_value = [Path(p) for p in env_value] if isinstance(env_value, list) else Path(env_value)
+
+            for file_path in listify(env_value):
+                if not file_path.exists():
+                    raise EnvironmentError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
 
         # print(f"Got value for var='{var}', env_var='{env_var}', value={env_value}")
         return env_value
@@ -196,7 +201,7 @@ class YaralyzerConfig:
     @classmethod
     def _set_default_args(cls) -> None:
         """Set `self.args` to their defaults as if parsed from the command line."""
-        cls.set_args(cls.parse_arguments(None, DEFAULT_ARGV))
+        cls.set_args(cls._parse_arguments(None, DEFAULT_ARGV))
         cls.args.output_dir = Path(cls.args.output_dir or Path.cwd()).resolve()
 
 

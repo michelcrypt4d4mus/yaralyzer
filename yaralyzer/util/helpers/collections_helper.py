@@ -22,3 +22,15 @@ def flatten(a: list) -> list:
 def get_dict_key_by_value(_dict: dict, value):
     """Inverse of the usual dict operation."""
     return list(_dict.keys())[list(_dict.values()).index(value)]
+
+
+def listify(listlike) -> list:
+    """Create a list of 'listlike'. Returns empty list if 'listlike' is None or empty string."""
+    if isinstance(listlike, list):
+        return listlike
+    elif listlike is None:
+        return [None]
+    elif listlike:
+        return [listlike]
+    else:
+        return []

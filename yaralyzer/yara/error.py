@@ -83,6 +83,7 @@ YARA_ERROR_CODES = {
 
 
 def yara_error_msg(exception: yara.Error) -> str:
+    """Turn a mysterious YARA error code number into a human readable string."""
     internal_error_match = INTERNAL_ERROR_REGEX.search(str(exception))
 
     if internal_error_match:

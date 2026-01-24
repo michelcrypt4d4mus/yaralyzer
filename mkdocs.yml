@@ -12,7 +12,5 @@ site_name: Yaralyzer API Documentation
 theme:
   name: material
 exclude_docs: |
-  - dict_helper.md
-  - list_helper.md
-  - docs/api/dict_helper.md
-  - docs/api/list_helper.md
+  - collections_helper.md
+  - docs/api/collections_helper.md

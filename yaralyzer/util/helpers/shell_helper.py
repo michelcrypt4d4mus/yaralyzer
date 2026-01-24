@@ -32,6 +32,7 @@ class ShellResult:
     """
     result: CompletedProcess
     no_log_args: list[str] = field(default_factory=list)
+    file_mismatch_msg: str = ''
 
     @property
     def invocation_str(self) -> str:
@@ -83,19 +84,19 @@ class ShellResult:
         Args:
             against_dir (Path): Dir where the file to compare against exists already.
         """
-        new_file_path = self.written_file_path()
-        assert new_file_path.exists(), f"'{new_file_path}' does not exist, {self.output_logs()}"
-        fixture_path = relative_path(against_dir.joinpath(new_file_path.name))
+        exported_path = relative_path(self.written_file_path())
+        assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
+        fixture_path = relative_path(against_dir.joinpath(exported_path.name))
 
         if _should_rebuild_fixtures():
-            log.warning(f"\nOverwriting fixture '{fixture_path}'\n   with contents of '{new_file_path}'")
-            shutil.move(new_file_path, fixture_path)
+            log.warning(f"\nOverwriting fixture '{fixture_path}'\n   with contents of '{exported_path}'")
+            shutil.move(exported_path, fixture_path)
             return
 
         assert fixture_path.exists()
         fixture_data = load_file(fixture_path)
-        new_data = load_file(new_file_path)
-        assert new_data == fixture_data
+        new_data = load_file(exported_path)
+        assert new_data == fixture_data, self._fixture_mismatch_log_msg(fixture_path, exported_path)
 
     def output_logs(self) -> str:
         return shell_command_log_str(self.result, ignore_args=self.no_log_args)
@@ -111,6 +112,14 @@ class ShellResult:
         log.error(f"Found {len(written_paths)} written files in the logs")
         log.error(self.output_logs())
         return written_paths
+
+    def _fixture_mismatch_log_msg(self, fixture_path: Path, export_path: Path) -> str:
+        fixture_path = relative_path(fixture_path).relative_to(Path.cwd())
+        export_path = relative_path(export_path).relative_to(Path.cwd())
+        error_msg = f"Contents of '{export_path}'\n  does not match fixture: '{fixture_path}'\n\n"
+        error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
+        error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{fixture_path}' '{export_path}'\n\n"  # noqa: E501
+        return error_msg
 
     @classmethod
     def run_and_compare_exported_file_to_existing(

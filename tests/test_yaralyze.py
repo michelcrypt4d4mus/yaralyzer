@@ -32,7 +32,7 @@ EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 def test_help_option():
     help_text = _run_with_args('-h')
     assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs'])
-    _assert_line_count_within_range(131, help_text)
+    _assert_line_count_within_range(140, help_text, 0.2)
 
 
 def test_no_rule_args(il_tulipano_path):

@@ -30,7 +30,7 @@ jobs:
           mkdir /home/runner/work/yaralyzer/yaralyzer/tests/tmp
       - name: Test with pytest
         run: |
-          pytest -v
+          pytest -vvv
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names

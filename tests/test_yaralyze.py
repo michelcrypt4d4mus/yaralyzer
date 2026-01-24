@@ -8,18 +8,18 @@ import re
 from math import isclose
 from os import environ, path
 from pathlib import Path
-from subprocess import CalledProcessError, check_output, run
+from subprocess import CalledProcessError
 
 import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
 from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file
-from yaralyzer.util.helpers.shell_helper import extract_written_file_path, run_cmd_and_compare_exported_file_to_existing, safe_args
+from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
 
-from .conftest import RENDERED_FIXTURES_DIR, TMP_DIR
+from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR, TMP_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
@@ -30,7 +30,7 @@ EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 
 # Asking for help screen is a good canary test... proves code compiles, at least.
 def test_help_option():
-    help_text = _run_with_args('-h')
+    help_text = _yaralyze_with_args('-h').stdout
     assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs', 'http'])
     assert 'pdfalyzer' not in help_text.lower()
     _assert_line_count_within_range(140, help_text, 0.2)
@@ -38,35 +38,35 @@ def test_help_option():
 
 def test_no_rule_args(il_tulipano_path):
     with pytest.raises(CalledProcessError):
-        _run_with_args(il_tulipano_path)
+        _yaralyze_with_args(il_tulipano_path)
 
 
 def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
     with pytest.raises(CalledProcessError):
-        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
+        _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
-        _run_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
+        _yaralyze_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
-        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
+        _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
     with pytest.raises(CalledProcessError):
-        _run_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
+        _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
 
 
 def test_yaralyze_with_rule_files(il_tulipano_path, tulips_yara_path):
     # yaralyze -Y tests/file_fixtures/yara_rules/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
-    _compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
+    _compare_exported_txt_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
     # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
-    _compare_to_fixture(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
+    _compare_exported_txt_to_fixture(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
 
-def test_yaralyze_with_patterns_fixtures(il_tulipano_path, binary_file_path, tulips_yara_pattern):
-    _compare_to_fixture(il_tulipano_path, '-re', tulips_yara_pattern)
-    _compare_to_fixture(binary_file_path, '-re', '3Hl0')
-    _compare_to_fixture(binary_file_path, '-hex', HEX_STRING)
+def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_pattern):
+    _compare_exported_txt_to_fixture(il_tulipano_path, '-re', tulips_yara_pattern)
+    _compare_exported_txt_to_fixture(binary_file_path, '-re', '3Hl0')
+    _compare_exported_txt_to_fixture(binary_file_path, '-hex', HEX_STRING)
 
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
-    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt', '-out', tmp_dir)
+    _yaralyze_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt')
     rendered_files = [f for f in files_in_dir(tmp_dir) if not str(f).endswith('png')]  # TODO: hack to deal with bad tmp_dir management
     assert len(rendered_files) == 4
     file_sizes = [path.getsize(f) for f in rendered_files]
@@ -88,14 +88,15 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
 
 
 def test_png_export(il_tulipano_path, tmp_dir):
-    result = run(safe_args([YARALYZE, il_tulipano_path, '-re', 'pregiatissimi', '-png', *DEFAULT_CLI_ARGS]), capture_output=True, text=True)
-    png_path = extract_written_file_path(result.stderr)
-    log.error(f"Found png_path: '{png_path}', size {file_size(png_path)}")
-    export_basepath = 'il_tulipano_nero.txt_scanned_with_pregiatissimi__maxdecode256'
-    png_path = tmp_dir.joinpath(f'{export_basepath}.png')
-    assert png_path.exists()
-    assert file_size(png_path) > 500_000
-    assert not tmp_dir.joinpath(f"{export_basepath}.svg").exists()
+    regex = 'pregiatissimi'
+    cmd = _yaralyze_shell_cmd(il_tulipano_path, '-re', regex, '-png')
+    expected_basepath = f'{il_tulipano_path.name}_scanned_with_{regex}{MAXDECODE_SUFFIX}'
+    result = ShellResult.from_cmd(cmd)
+    tmp_png_path = tmp_dir.joinpath(f'{expected_basepath}.png')
+    assert result.written_file_path().resolve() == tmp_png_path
+    assert tmp_png_path.exists(), f"PNG does not exist! '{tmp_png_path}'"
+    assert file_size(tmp_png_path) > 500_000
+    assert not tmp_dir.joinpath(f"{expected_basepath}.svg").exists()
 
 
 def _assert_array_is_close(_list1, _list2):
@@ -104,16 +105,16 @@ def _assert_array_is_close(_list1, _list2):
             assert False, f"File size of {item} too far from {_list2[i]}"
 
 
-def _run_with_args(file_to_scan: str | Path, *args) -> str:
-    """check_output() technically returns bytes so we decode before returning STDOUT output"""
+def _yaralyze_with_args(file_to_scan: str | Path, *args) -> ShellResult:
+    cmd = _yaralyze_shell_cmd(file_to_scan, *args)
+    shell_result = ShellResult.from_cmd(cmd)
+
     try:
-        cmd_list = _build_shell_cmd(file_to_scan, *args)
-        output = check_output(cmd_list, env=environ).decode()
-        # print(output)
-        return output
+        shell_result.result.check_returncode()
+        return shell_result
     except CalledProcessError as e:
         cmd = ' '.join([str(e) for e in e.cmd])
-        raise CalledProcessError(e.returncode, cmd, e.output, e.stderr)
+        raise CalledProcessError(e.returncode, shell_result.invocation_str, e.output, e.stderr)
 
 
 def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol: float = CLOSENESS_THRESHOLD):
@@ -124,15 +125,16 @@ def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol
         raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")
 
 
-def _compare_to_fixture(file_to_scan: str | Path, *args):
+def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
     """
     Compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data.
     'fixture_name' arg should be used in cases where tests with different filename outputs
     can be compared against the same fixture file.
     """
-    cmd_list = _build_shell_cmd(file_to_scan, *[*args, *EXPORT_TEXT_ARGS])
-    run_cmd_and_compare_exported_file_to_existing(cmd_list, RENDERED_FIXTURES_DIR, ignorable_args=DEFAULT_CLI_ARGS)
+    cmd = _yaralyze_shell_cmd(file_to_scan, *[*args, '-txt'])
+    ShellResult.run_and_compare_exported_file_to_existing(cmd, RENDERED_FIXTURES_DIR, no_log_args=DEFAULT_CLI_ARGS)
 
 
-def _build_shell_cmd(file_path: str | Path, *args) -> list[str]:
-    return [YARALYZE] + safe_args([file_path, *args])
+def _yaralyze_shell_cmd(file_path: str | Path, *args) -> list[str]:
+    """Appends DEFAULT_CLI_ARGS."""
+    return [YARALYZE] + safe_args([file_path, *args, *DEFAULT_CLI_ARGS])

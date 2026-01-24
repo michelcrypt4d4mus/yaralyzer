@@ -17,6 +17,7 @@ from yaralyzer.util.constants import (ENV_VARS_OPTION, INKSCAPE_URL, NO_TIMESTAM
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
+from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
@@ -293,7 +294,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         log.warning('--output-dir provided but no export option was chosen')
 
     if args.export_png:
-        if not (env_helper.is_cairosvg_installed() or env_helper.get_inkscape_version()):
+        if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
             handle_invalid_args(PNG_EXPORT_ERROR_MSG)
         elif not args.export_svg:
             args.export_svg = 'svg'

@@ -11,11 +11,11 @@ from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
-from yaralyzer.util.constants import INKSCAPE_URL
+from yaralyzer.util.constants import INKSCAPE, INKSCAPE_URL
 from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_console, log_and_print, log_file_write
-from yaralyzer.util.helpers.env_helper import INKSCAPE, get_inkscape_version, is_cairosvg_installed
+from yaralyzer.util.helpers.env_helper import is_cairosvg_installed
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.helpers.shell_helper import safe_args
+from yaralyzer.util.helpers.shell_helper import get_inkscape_version, safe_args
 from yaralyzer.yaralyzer import Yaralyzer
 
 CAIROSVG_WARNING_MSG = f"PNG images rendered by CairoSVG may contain issues, especially with tables. " \
@@ -118,18 +118,15 @@ def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
     export_method(export_file_path, **kwargs)
     log_file_write(export_file_path, started_at)
 
-    if export_png:
-        png_path = render_png(export_file_path)
-
-        if png_path and not args._svg_requested:
-            log.warning(f"Removing intermediate PNG...")
-            export_file_path.unlink()
-            return png_path
+    if export_png and (png_path := _render_png(export_file_path)) and not args._svg_requested:
+        log.info(f"Removing intermediate PNG '{export_file_path}'")
+        export_file_path.unlink()
+        return png_path
 
     return export_file_path
 
 
-def render_png(svg_path: Path) -> Path | None:
+def _render_png(svg_path: Path) -> Path | None:
     """Turn the svg output into a png with Inkscape or cairosvg. Returns png path if successful."""
     started_at = time.perf_counter()
     inkscape_version = get_inkscape_version()
@@ -147,15 +144,15 @@ def render_png(svg_path: Path) -> Path | None:
         except (CalledProcessError, FileNotFoundError) as e:
             error_msg = f"Failed to render png with {INKSCAPE}! ({e})"
 
-            if not is_cairosvg_installed():
-                log.error(error_msg + f"\n\ncairosvg not available to fallback to.")
-                return
-            else:
+            if is_cairosvg_installed():
                 log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")
+            else:
+                log.error(error_msg + f"\n\ncairosvg not available to fallback to.")
+                return None
 
     try:
-        import cairosvg
         log.warning(CAIROSVG_WARNING_MSG)
+        import cairosvg
         cairosvg.svg2png(url=str(svg_path), write_to=str(png_path))
         log_file_write(png_path, started_at)
         return png_path

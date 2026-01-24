@@ -13,19 +13,18 @@ from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-from .conftest import YARA_FIXTURES_DIR
+from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR
 from .yara.test_yara_rule_builder import HEX_STRING
 
 CLOSENESS_THRESHOLD = 0.05
 EXPECTED_LINES = 1060
-MAXDECODE_SFX = '__maxdecode256'
 
 
 def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips_yara_pattern):
     expected_basename = f"{il_tulipano_path.name}_scanned_with_"
 
     def assert_filename(yaralyzer: Yaralyzer, filename: str) -> None:
-        assert yaralyzer.export_basepath() == Path.cwd().joinpath(filename + MAXDECODE_SFX)
+        assert yaralyzer.export_basepath() == Path.cwd().joinpath(filename + MAXDECODE_SUFFIX)
 
     # Rules files
     expected_rulefile_basename = f"{expected_basename}"

@@ -16,9 +16,12 @@ environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
+# Dirs
 FIXTURES_DIR = PYTESTS_DIR.joinpath('file_fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
+# Strings
+MAXDECODE_SUFFIX = '__maxdecode256'
 
 
 # Full paths to file fixtures

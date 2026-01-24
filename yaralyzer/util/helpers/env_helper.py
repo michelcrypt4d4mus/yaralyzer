@@ -55,6 +55,7 @@ def env_var_cfg_msg(app_name: str) -> Padding:
 
 
 def get_inkscape_version() -> str | None:
+    """Check to see if Inkscape is installed on the current sytem and if so find its version number."""
     try:
         result = run([INKSCAPE, '--version'], capture_output=True, text=True)
         result.check_returncode()
@@ -64,6 +65,7 @@ def get_inkscape_version() -> str | None:
 
 
 def is_cairosvg_installed() -> bool:
+    """True if cairosvg package is available on the current system."""
     try:
         import cairosvg
         return True

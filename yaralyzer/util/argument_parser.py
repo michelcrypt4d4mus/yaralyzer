@@ -317,7 +317,6 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     # chardet.detect() action thresholds
     if args.force_decode_threshold:
         EncodingDetector.force_decode_threshold = args.force_decode_threshold
-
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
@@ -333,6 +332,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         handle_invalid_args(f"'{args.output_dir}' is not a valid directory.")
 
     if args.maximize_width:
+        # TODO: unclear if we need to do this import this way to make the change happen?
         console.console.width = max(env_helper.console_width_possibilities())
 
     if not is_used_as_library:

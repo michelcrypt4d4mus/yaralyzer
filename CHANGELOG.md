@@ -1,5 +1,5 @@
 # NEXT RELEASE
-* Most command line options can be set permanently via env vars in a `.yaralyzer` file
+* Most command line options can be set permanently via env vars or in a `.yaralyzer` file
 * Add `--env-vars` option to display exactly which command line options can be set by which variables
 * Add `--echo-command` option to save the exact command used along with the output
 * Strip invalid chars out of exported HTML / SVG / etc. filenames

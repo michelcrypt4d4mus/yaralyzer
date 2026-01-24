@@ -148,8 +148,11 @@ def render_png(svg_path: Path) -> Path | None:
             else:
                 log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")
 
-    log.warning(CAIROSVG_WARNING_MSG)
-    import cairosvg
-    cairosvg.svg2png(url=svg_path, write_to=str(png_path))
-    log_file_write(png_path, started_at)
-    return png_path
+    try:
+        import cairosvg
+        log.warning(CAIROSVG_WARNING_MSG)
+        cairosvg.svg2png(url=str(svg_path), write_to=str(png_path))
+        log_file_write(png_path, started_at)
+        return png_path
+    except Exception as e:
+        log.error(f"Failed to render png with cairosvg! ({e})")

@@ -15,7 +15,7 @@ from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.output.console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
-from yaralyzer.util.logging import highlighter, log
+from yaralyzer.util.logging import highlighter, log, log_console
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))
@@ -91,7 +91,7 @@ def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> Non
     if e:
         txt.append(f" (caused by {type(e).__name__}: {e})", style='dim')
 
-    console.print(Padding(txt, (1, 0, 0, 0)))
+    log_console.print(Padding(txt, (1, 0, 0, 0)))
 
 
 def print_fatal_error_and_exit(msg: str, e: Exception | None = None, exit_code: int = 1) -> None:

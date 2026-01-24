@@ -4,6 +4,8 @@
 # Almost all of yaralyzer's command line options can be permanently set by capitalizing them and
 # prefixing them with 'YARALYZER_'. Useful if you want to permanently configure options you tend to
 # reuse (e.g. '--maximize-width') so you don't have to type them over and over.
+#
+# To see the list of available environment variables run: yaralyze --env-vars
 
 
 # For example, to set --maximize-width permanently you would create a .yaralyzer file and put this in it:

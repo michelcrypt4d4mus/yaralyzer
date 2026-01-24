@@ -23,6 +23,8 @@ T = TypeVar('T')
 
 # These options cannot be read from an environment variable
 ONLY_CLI_ARGS = [
+    'env_vars',
+    'extract_binary_streams',
     'file_to_scan_path',
     'help',
     'interact',

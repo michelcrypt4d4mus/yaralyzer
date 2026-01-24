@@ -14,7 +14,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.file_helper import files_in_dir, load_file
+from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file
 from yaralyzer.util.helpers.shell_helper import compare_export_to_file, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
@@ -67,7 +67,7 @@ def test_yaralyze_with_patterns_fixtures(il_tulipano_path, binary_file_path, tul
 
 def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt', '-out', tmp_dir)
-    rendered_files = files_in_dir(tmp_dir)
+    rendered_files = [f for f in files_in_dir(tmp_dir) if not str(f).endswith('png')]  # TODO: hack to deal with bad tmp_dir management
     assert len(rendered_files) == 4
     file_sizes = [path.getsize(f) for f in rendered_files]
     _assert_array_is_close(sorted(file_sizes), [1182, 45179, 78781, 243312])
@@ -85,6 +85,15 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
             assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"
             assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"
             assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
+
+
+def test_png_export(binary_file_path, tulips_yara_path, tmp_dir):
+    _run_with_args(binary_file_path, '-Y', tulips_yara_path, '-png', *DEFAULT_CLI_ARGS)
+    export_basepath = 'random_bytes.bin_scanned_with_tulips.yara__maxdecode256'
+    png_path = tmp_dir.joinpath(f'{export_basepath}.png')
+    assert png_path.exists()
+    assert file_size(png_path) > 350_000
+    assert not tmp_dir.joinpath(f"{export_basepath}.svg").exists()
 
 
 def _assert_array_is_close(_list1, _list2):

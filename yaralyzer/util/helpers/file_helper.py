@@ -6,7 +6,9 @@ from pathlib import Path
 
 from yaralyzer.util.constants import KILOBYTE, MEGABYTE
 
-file_size = lambda file_path: Path(file_path).stat().st_size
+
+def file_size(file_path: Path | str) -> int:
+    return Path(file_path).stat().st_size
 
 
 def file_size_str(file_path, digits: int | None = None):

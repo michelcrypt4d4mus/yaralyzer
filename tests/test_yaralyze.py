@@ -31,7 +31,8 @@ EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 # Asking for help screen is a good canary test... proves code compiles, at least.
 def test_help_option():
     help_text = _run_with_args('-h')
-    assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs'])
+    assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs', 'http'])
+    assert 'pdfalyzer' not in help_text.lower()
     _assert_line_count_within_range(140, help_text, 0.2)
 
 

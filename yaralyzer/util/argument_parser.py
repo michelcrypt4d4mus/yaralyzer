@@ -22,7 +22,7 @@ from yaralyzer.util.logging import log, log_argparse_result, log_current_config,
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
-YARA_PATTERN_LABEL_ARG_REGEX = re.compile(r"^\w+$")
+YARA_PATTERN_LABEL_REGEX = re.compile(r"^\w+$")
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
@@ -312,7 +312,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     else:
         log_invocation()
 
-    if args.patterns_label and not YARA_PATTERN_LABEL_ARG_REGEX.match(args.patterns_label):
+    if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
         handle_invalid_args('Pattern label can only include alphanumeric chars and underscore')
 
     # chardet.detect() action thresholds

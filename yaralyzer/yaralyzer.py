@@ -224,15 +224,14 @@ class Yaralyzer:
         """Get the basepath (directory + filename without extension) for exported files."""
         args = YaralyzerConfig.args
         filename_str = INVALID_FOR_FILENAME_REGEX.sub('', str(self).replace(', ', ',').replace(' ', '_'))
-        args.export_basename  = f"{args.file_prefix}{filename_str}"  # noqa: E221
-        args.export_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
-        args.export_basename += args.file_suffix
-        file_basename = args.export_basename
+        export_basename  = f"{args.file_prefix}{filename_str}"  # noqa: E221
+        export_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
+        export_basename += args.file_suffix
 
         if not args.no_timestamps:
-            file_basename += f"__at_{args._invoked_at_str}"
+            export_basename += f"__at_{args._invoked_at_str}"
 
-        return args.output_dir.joinpath(file_basename)
+        return args.output_dir.joinpath(export_basename)
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them."""

@@ -1,3 +1,6 @@
+"""
+Handling of internal YARA errors.
+"""
 import re
 
 import yara

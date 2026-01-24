@@ -28,10 +28,10 @@ def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips
         assert yaralyzer.export_basepath() == Path.cwd().joinpath(filename + MAXDECODE_SFX)
 
     # Rules files
-    expected_rulefile_basename = f"{expected_basename}{tulips_yara_path.name}"
-    assert_filename(a_yaralyzer, expected_rulefile_basename)
+    expected_rulefile_basename = f"{expected_basename}"
+    assert_filename(a_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}")
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
-    assert_filename(diralyzer, expected_rulefile_basename + ',pdf_rule.yara')
+    assert_filename(diralyzer, expected_rulefile_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
     # Regex
     regexalyzer = Yaralyzer.for_patterns([r"illmatic\s*by\s*nas"], 'regex', il_tulipano_path)
     assert_filename(regexalyzer, expected_basename + 'illmaticsbysnas')

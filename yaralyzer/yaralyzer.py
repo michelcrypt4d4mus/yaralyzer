@@ -144,7 +144,7 @@ class Yaralyzer:
         except yara.SyntaxError as e:
             print_fatal_error_and_exit(f"Failed to parse YARA rules file(s): {e}")
 
-        yara_rules_label = comma_join([file.name for file in yara_rules_paths])
+        yara_rules_label = comma_join(sorted([file.name for file in yara_rules_paths]))
         return cls(yara_rules, yara_rules_label, scannable, scannable_label)
 
     @classmethod

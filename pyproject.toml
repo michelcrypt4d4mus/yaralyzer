@@ -68,7 +68,7 @@ keywords = [
 python = "^3.10"
 chardet = ">=5.0.0,<6.0.0"
 python-dotenv = "^1.1.1"
-rich = "^14.1.0"
+rich = "14.1.0"
 rich-argparse-plus = "^0.3.1"
 yara-python = "^4.5.4"
 #plyara = "^2.1.1"  # TODO: use plyara for YARA rule parsing and validation

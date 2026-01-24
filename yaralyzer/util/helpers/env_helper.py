@@ -1,14 +1,18 @@
 """
 Configuration management for Yaralyzer.
 """
+from argparse import _AppendAction, Action
 from contextlib import contextmanager
 from os import environ
 from shutil import get_terminal_size
-from typing import Any, Generator
+from typing import Any, Generator, Literal
 
 from rich.console import Console
+from rich.padding import Padding
+from rich.text import Text
+from rich_argparse_plus import RichHelpFormatterPlus
 
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
 
 DEFAULT_CONSOLE_WIDTH = 160
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
@@ -35,6 +39,17 @@ def console_width_possibilities():
     return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
 
 
+def env_var_cfg_msg(app_name: str) -> Padding:
+    app_name = app_name.lower()
+    txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
+               f"options, either by conventional environment variable setting methods or by creating\na ")
+    txt.append(f".{app_name} ", style='bright_cyan bold')
+    txt.append(f"file in your home or current directory and putting these vars in it.\n"
+               f"For more on how that works see the example env file here:\n\n   ")
+    txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
+    return Padding(txt, (1, 1))
+
+
 def is_env_var_set_and_not_false(var_name: str) -> bool:
     """Return `True` if `var_name` is not empty and set to anything other than "false" (capitalization agnostic)."""
     if var_name in environ:
@@ -52,6 +67,15 @@ def is_invoked_by_pytest() -> bool:
 def is_path_var(env_var_name: str) -> bool:
     """Returns True if `env_var_name` ends with _DIR or _PATH."""
     return env_var_name.endswith('_DIR') or env_var_name.endswith('_PATH')
+
+
+def print_env_var_explanation(env_var: str, action: str | Action) -> None:
+    """Print a line explaiing which command line option corresponds to this env_var."""
+    txt = Text('  ').append(f"{env_var:40}", style=RichHelpFormatterPlus.styles["argparse.args"])
+    option = action.option_strings[-1] if isinstance(action, Action) else action
+    txt.append(' sets ').append(option, style='honeydew2')
+    txt.append(' (comma separated for multiple)' if isinstance(action, _AppendAction) else '', style='dim')
+    stderr_console.print(txt)
 
 
 def should_rebuild_fixtures() -> bool:

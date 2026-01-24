@@ -258,7 +258,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         print(f"{YARALYZER} {version(YARALYZER)}")
         sys.exit()
     elif '--env-vars' in sys.argv:
-        YaralyzerConfig.show_env_vars()
+        YaralyzerConfig.show_configurable_env_vars()
         sys.exit()
 
     # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool

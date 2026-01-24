@@ -3,17 +3,18 @@ Configuration management for Yaralyzer.
 """
 import logging
 import re
-from argparse import _AppendAction, Action, ArgumentParser, Namespace
+from argparse import _AppendAction, ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
-from typing import Any, Callable, List, TypeVar
+from typing import Any, Callable, TypeVar
 
 from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
-from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, stderr_console
+from yaralyzer.util.helpers.env_helper import (env_var_cfg_msg, is_env_var_set_and_not_false, is_invoked_by_pytest,
+     is_path_var, print_env_var_explanation, stderr_console)
 from yaralyzer.util.helpers.string_helper import is_number
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
@@ -145,9 +146,7 @@ class YaralyzerConfig:
         """Sets the `_argument_parser` instance variable that will be used to parse command line args."""
         cls._argument_parser = parser
         cls._argparse_keys = sorted([action.dest for action in parser._actions])
-        cls._append_options = _append_options(parser)
-        cls._append_option_vars = [arg.dest for arg in cls._append_options]
-        print(f"_append_option_vars: {cls._append_option_vars}")
+        cls._append_option_vars = [a.dest for a in parser._actions if isinstance(a, _AppendAction)]
 
     @classmethod
     def set_log_vars(cls) -> None:
@@ -162,18 +161,12 @@ class YaralyzerConfig:
             stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     @classmethod
-    def show_env_vars(cls) -> None:
+    def show_configurable_env_vars(cls) -> None:
         """
         Show the environment variables that can be used to set command line options, either
         permanently in a .yaralyzer file or in other standard environment variable ways.
         """
-        def print_var(dest: str, action: str | Action) -> None:
-            var = cls.env_var_for_command_line_option(dest)
-            txt = Text('').append(f"{var:40}", style=RichHelpFormatterPlus.styles["argparse.args"])
-            option = action.option_strings[-1] if isinstance(action, Action) else action
-            txt.append(' sets ').append(option, style='honeydew2')
-            txt.append(' (comma separated for multiple)' if dest in cls._append_option_vars else '', style='dim')
-            stderr_console.print(txt)
+        stderr_console.print(env_var_cfg_msg(cls.ENV_VAR_PREFIX))
 
         for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
             stderr_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
@@ -182,10 +175,10 @@ class YaralyzerConfig:
                 if not cls._is_configurable_by_env_var(action.dest):
                     continue
 
-                # stderr_console.print(f"{action.dest} is type {action.type}, cls={type(action).__name__}")
-                print_var(action.dest, action.option_strings[-1])
+                var = cls.env_var_for_command_line_option(action.dest)
+                print_env_var_explanation(var, action)
 
-        print_var(cls.env_var_for_command_line_option(LOG_DIR_ENV_VAR), 'writing of logs to files')
+        print_env_var_explanation(cls.log_dir_env_var, 'writing of logs to files')
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:
@@ -206,11 +199,6 @@ class YaralyzerConfig:
 
 
 YaralyzerConfig.set_log_vars()
-
-
-def _append_options(_parser: ArgumentParser) -> list[Action]:
-    """Returns the vars created in a Namespace by _parser that can be specified more than once/are lists."""
-    return [arg for arg in _parser._actions if isinstance(arg, _AppendAction)]
 
 
 def log_level_for(value: str | int) -> int:

@@ -51,6 +51,7 @@ parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
+
 source = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")

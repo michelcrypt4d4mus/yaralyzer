@@ -43,10 +43,10 @@ DEFAULT_ARGV = [
 class YaralyzerConfig:
     """Handles parsing of command line args and environment variables for Yaralyzer."""
 
-    """Env vars that configure yaralyzer command line options (or anything else) should be prefixed with this."""
+    # Env vars that configure yaralyzer command line options (or anything else) should be prefixed with this.
     ENV_VAR_PREFIX = YARALYZER_UPPER
 
-    # """Passed through to yara.set_config()."""
+    # These are passed through to `yara.set_config()``.
     DEFAULT_MAX_MATCH_LENGTH = 100 * KILOBYTE
     DEFAULT_YARA_STACK_SIZE = 2 * 65536
     # Skip decoding binary matches under/over these lengths
@@ -80,12 +80,12 @@ class YaralyzerConfig:
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:
-        """'output_dir' becomes YARALYZER_OUTPUT_DIR. Overriden in pdfalyzer to distinguish yaralyzer only options."""
+        """'output_dir' becomes `YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
 
     @classmethod
     def get_env_value(cls, var: str, var_type: Callable[[str], T] = str) -> T | None:
-        """If called with 'output_dir' it will check env value of 'YARALYZER_OUTPUT_DIR'."""
+        """If called with `'output_dir'` it will check env value of `YARALYZER_OUTPUT_DIR`."""
         env_var = cls.env_var_for_command_line_option(var)
         env_value = environ.get(env_var)
 
@@ -122,10 +122,10 @@ class YaralyzerConfig:
         prefixed by "YARALYZER_".
 
         Example:
-            For the argument --output-dir, the environment will be checked for YARALYZER_OUTPUT_DIR.
+            For the argument `--output-dir`, the environment will be checked for `YARALYZER_OUTPUT_DIR`.
 
         Args:
-            _args (Namespace): Object returned by ArgumentParser.parse_args()
+            _args (Namespace): Object returned by `ArgumentParser.parse_args()`
         """
         cls._args = _args
 
@@ -157,7 +157,7 @@ class YaralyzerConfig:
 
     @classmethod
     def set_log_vars(cls) -> None:
-        """Find any env vars related to logging and set them up. Is called immediately."""
+        """Find any env vars related to logging and set them up. It's called immediately."""
         if (log_dir := cls.get_env_value(LOG_DIR_ENV_VAR, Path)):
             cls.LOG_DIR = Path(log_dir).resolve()
 
@@ -171,7 +171,7 @@ class YaralyzerConfig:
     def show_configurable_env_vars(cls) -> None:
         """
         Show the environment variables that can be used to set command line options, either
-        permanently in a .yaralyzer file or in other standard environment variable ways.
+        permanently in a `.yaralyzer` file or in other standard environment variable ways.
         """
         stderr_console.print(env_var_cfg_msg(cls.ENV_VAR_PREFIX))
 
@@ -195,7 +195,7 @@ class YaralyzerConfig:
 
     @classmethod
     def _is_configurable_by_env_var(cls, option: str) -> bool:
-        """Returns True if this option can be configured by a YARALYZER_VAR_NAME style environment variable."""
+        """Returns `True` if this option can be configured by a `YARALYZER_VAR_NAME` style environment variable."""
         return not (option.startswith('export') or option in ONLY_CLI_ARGS)
 
     @classmethod

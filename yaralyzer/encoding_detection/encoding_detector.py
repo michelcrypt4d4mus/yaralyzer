@@ -1,10 +1,12 @@
 """
 `EncodingDetector` class for managing chardet encoding detection.
 """
+from dataclasses import dataclass, field
 from operator import attrgetter
-from typing import List
+from typing import ClassVar, List
 
 import chardet
+from chardet.resultdict import ResultDict
 from rich import box
 from rich.padding import Padding
 from rich.table import Table
@@ -16,6 +18,7 @@ from yaralyzer.util.logging import log
 CONFIDENCE_SCORE_RANGE = range(0, 101)
 
 
+@dataclass
 class EncodingDetector:
     """
     Manager class to ease dealing with the encoding detection library `chardet`.
@@ -31,41 +34,46 @@ class EncodingDetector:
         raw_chardet_assessments (List[dict]): Raw list of dicts returned by `chardet.detect_all()`.
         force_decode_assessments (List[EncodingAssessment]): Assessments above force decode threshold.
         force_display_assessments (List[EncodingAssessment]): Assessments above force display threshold.
-        has_any_idea (Optional[bool]): `True` if `chardet` had any idea what the encoding might be,
+        has_any_idea (bool | None): `True` if `chardet` had any idea what the encoding might be,
             `False` if not, `None` if `chardet` wasn't run yet.
         force_display_threshold (float): `[class variable]` Default confidence threshold for forcing display
             in decoded table.
         force_decode_threshold (float): `[class variable]` Default confidence threshold for forcing a decode attempt.
     """
 
+    _bytes: bytes
+    assessments: list[EncodingAssessment] = field(default_factory=list)
+    force_decode_assessments: list[EncodingAssessment] = field(default_factory=list)
+    force_display_assessments: list[EncodingAssessment] = field(default_factory=list)
+    has_any_idea: bool | None = None
+    raw_chardet_assessments: list[ResultDict] = field(default_factory=list)
+    table: Table = field(default_factory=lambda: _empty_chardet_results_table())
+    unique_assessments: list[EncodingAssessment] = field(default_factory=list)
+
     # Default value for encodings w/confidences below this will not be displayed in the decoded table
-    force_display_threshold = 20.0
+    force_display_threshold: ClassVar[float] = 20.0
     # Default value for what chardet.detect() confidence % should we force a decode with an obscure encoding.
-    force_decode_threshold = 50.0
+    force_decode_threshold: ClassVar[float] = 50.0
 
-    def __init__(self, _bytes: bytes) -> None:
-        """
-        Args:
-            _bytes (bytes): The bytes to analyze with `chardet`.
-        """
-        self.bytes = _bytes
-        self.bytes_len = len(_bytes)
-        self.table = _empty_chardet_results_table()
+    @property
+    def bytes(self) -> bytes:
+        return self._bytes
 
+    @property
+    def bytes_len(self) -> int:
+        return len(self.bytes)
+
+    def __post_init__(self) -> None:
         # Skip chardet if there's not enough bytes available
         if not self.has_enough_bytes():
             log.debug(f"{self.bytes_len} is not enough bytes to run chardet.detect()")
-            self._set_empty_results()
-            self.has_any_idea = None  # not false!
             return
 
         # Unique by encoding, ignoring language.  Ordered from highest to lowest confidence
-        self.unique_assessments = []
         self.raw_chardet_assessments = chardet.detect_all(self.bytes, ignore_threshold=True)
 
         if len(self.raw_chardet_assessments) == 1 and self.raw_chardet_assessments[0][ENCODING] is None:
             log.info(f"chardet.detect() has no idea what the encoding is, result: {self.raw_chardet_assessments}")
-            self._set_empty_results()
             self.has_any_idea = False
             return
 
@@ -118,14 +126,6 @@ class EncodingDetector:
                 log.debug(f"Skipping chardet result {result} (already saw {already_seen_encodings[result.encoding]})")
 
         self.unique_assessments.sort(key=attrgetter('confidence'), reverse=True)
-
-    def _set_empty_results(self) -> None:
-        """Set empty results for when `chardet` can't help us."""
-        self.assessments = []
-        self.unique_assessments = []
-        self.raw_chardet_assessments = []
-        self.force_decode_assessments = []
-        self.force_display_assessments = []
 
 
 def _empty_chardet_results_table() -> Table:

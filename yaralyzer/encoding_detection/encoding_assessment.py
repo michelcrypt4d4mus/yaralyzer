@@ -3,6 +3,7 @@ Helps with `chardet` library.
 """
 from typing import Any, Optional
 
+from chardet.resultdict import ResultDict
 from rich.text import Text
 
 from yaralyzer.encoding_detection.character_encodings import ENCODING
@@ -25,7 +26,7 @@ class EncodingAssessment:
         encoding_label (Text): Rich `Text` object for displaying the encoding with optional language info.
     """
 
-    def __init__(self, assessment: dict) -> None:
+    def __init__(self, assessment: ResultDict) -> None:
         """
         Args:
             assessment (dict): The `dict` returned by `chardet.detect_all()`.

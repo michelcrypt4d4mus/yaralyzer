@@ -230,7 +230,7 @@ class Yaralyzer:
         file_basename = args.export_basename
 
         if not args.no_timestamps:
-            file_basename += f"__at_{args.invoked_at_str}"
+            file_basename += f"__at_{args._invoked_at_str}"
 
         return args.output_dir.joinpath(file_basename)
 

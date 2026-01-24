@@ -86,7 +86,7 @@ def export_json(yaralyzer: Yaralyzer, export_basepath: str | Path | None = None)
     return output_path
 
 
-def invoke_rich_export(export_method: Callable, export_basepath: str | Path, args: Namespace | None = None) -> Path:
+def invoke_rich_export(export_method: Callable, export_basepath: str | Path, args: Namespace) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
@@ -120,7 +120,12 @@ def invoke_rich_export(export_method: Callable, export_basepath: str | Path, arg
     log_file_write(export_file_path, started_at)
 
     if export_png:
-        render_png(export_file_path)
+        png_path = render_png(export_file_path)
+
+        if png_path and not args._svg_requested:
+            log.warning(f"Removing intermediate PNG...")
+            export_file_path.unlink()
+            return png_path
 
     return export_file_path
 
@@ -132,7 +137,7 @@ def render_png(svg_path: Path) -> Path | None:
     png_path = svg_path.parent.joinpath(svg_path.stem + '.png')
 
     if inkscape_version:
-        log_console.print(f"Rendering .png image with installed {INKSCAPE} {inkscape_version}...", highlight=False)
+        log_console.print(f"Rendering .png image with {INKSCAPE} {inkscape_version}...", highlight=False, style='dim')
         inkscape_cmd_args = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
         log.debug(f"Running inkscape cmd: {invocation_str(inkscape_cmd_args)}")
 

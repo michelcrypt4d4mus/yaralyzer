@@ -250,6 +250,8 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     nor a regex need be provided as it is assumed the constructor will instantiate a
     `Yaralyzer` object directly.
 
+    "Private" options injected by this method outside of user selection will be prefixed with underscore.
+
     Args:
         args (Namespace, optional): If provided, use these args instead of parsing from command line.
         argv (list[str], optional): Use these args instead of sys.argv.
@@ -270,8 +272,8 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
 
     # Parse and validate args
     args = args or parser.parse_args(argv)
-    args.invoked_at_str = timestamp_for_filename()
-    args.standalone_mode = not is_used_as_library
+    args._invoked_at_str = timestamp_for_filename()
+    args._standalone_mode = not is_used_as_library
 
     if args.debug:
         set_log_level(logging.DEBUG)
@@ -282,12 +284,17 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
+    args._svg_requested = bool(args.export_svg)
 
     if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):
         log.warning('--output-dir provided but no export option was chosen')
 
-    if args.export_png and not (env_helper.is_cairosvg_installed() or env_helper.get_inkscape_version()):
-        handle_invalid_args(PNG_EXPORT_ERROR_MSG)
+    if args.export_png:
+        if not (env_helper.is_cairosvg_installed() or env_helper.get_inkscape_version()):
+            handle_invalid_args(PNG_EXPORT_ERROR_MSG)
+        elif not args.export_svg:
+            args.export_svg = 'svg'
+            args._svg_requested = False  # SVGs are necessary intermediate step for PNGs
 
     args.file_to_scan_path = Path(args.file_to_scan_path)
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]

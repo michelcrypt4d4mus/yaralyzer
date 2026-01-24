@@ -125,7 +125,7 @@ class YaralyzerConfig:
         cls._args = _args
 
         for option in cls._argparse_keys:
-            arg_value = vars(_args)[option]
+            arg_value = vars(_args).get(option)
             env_value = cls.get_env_value(option)
             default_value = cls._get_default_arg(option)
             # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}", file=stderr)  # noqa: E501

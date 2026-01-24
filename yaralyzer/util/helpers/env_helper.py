@@ -2,11 +2,12 @@
 Configuration management for Yaralyzer.
 """
 import re
+import sys
 from argparse import _AppendAction, _StoreTrueAction, Action
 from contextlib import contextmanager
 from os import environ
 from shutil import get_terminal_size
-from typing import Any, Generator, Literal
+from typing import Any, Generator
 
 from rich.console import Console
 from rich.padding import Padding
@@ -106,6 +107,17 @@ def print_env_var_explanation(env_var: str, action: str | Action) -> None:
 
 def should_rebuild_fixtures() -> bool:
     return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
+
+
+@contextmanager
+def temporary_argv(new_argv: list[str]) -> Generator[Any, Any, Any]:
+    old_argv = list(sys.argv)
+    sys.argv = list(new_argv)
+
+    try:
+        yield
+    finally:
+        sys.argv = old_argv
 
 
 @contextmanager

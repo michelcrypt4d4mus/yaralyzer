@@ -1,6 +1,7 @@
 """
 Class to manage attempting to decode a chunk of bytes into strings with a given encoding.
 """
+from dataclasses import dataclass, field
 from sys import byteorder
 from typing import Optional
 
@@ -16,6 +17,7 @@ from yaralyzer.util.helpers.rich_helper import prefix_with_style, unprintable_by
 from yaralyzer.util.logging import log
 
 
+@dataclass
 class DecodingAttempt:
     """
     Manages the process of attempting to decode a chunk of bytes into a string using a specified encoding.
@@ -35,20 +37,22 @@ class DecodingAttempt:
         failed_to_decode (bool): True if decoding failed.
         decoded_string (Text): The decoded string as a Rich `Text` object (with highlighting).
     """
+    bytes_match: BytesMatch
+    encoding: str
+    # Non-args
+    encoding_label: str = field(init=False)
+    failed_to_decode: bool = False
+    start_offset: int = 0
+    start_offset_label: str | None = None
+    was_force_decoded: bool = False
 
-    def __init__(self, bytes_match: 'BytesMatch', encoding: str) -> None:
-        """
-        Initialize a `DecodingAttempt` for a specific `encoding` on a given `BytesMatch`.
+    @property
+    def bytes(self) -> bytes:
+        return self.bytes_match.surrounding_bytes
 
-        Args:
-            bytes_match (BytesMatch): The `BytesMatch` object containing the bytes to decode and match metadata.
-            encoding (str): The encoding to attempt for decoding the bytes.
-        """
-        self.bytes = bytes_match.surrounding_bytes
-        self.bytes_match = bytes_match
-        self.encoding = encoding
+    def __post_init__(self):
         # Inferred / derived values
-        self.encoding_label = encoding
+        self.encoding_label = self.encoding
         self.start_offset = 0  # Offset in bytes to start decoding from
         self.start_offset_label = None  # String to indicate what offset we were able to decode
         self.was_force_decoded = False

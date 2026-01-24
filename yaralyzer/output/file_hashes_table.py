@@ -74,9 +74,10 @@ def bytes_hashes_table(
         title_justify=title_justify
     )
 
+    table.columns[1].style = 'orange3'
+    table.columns[1].header_style = 'bright_cyan'
+
     table.add_row('MD5', bytes_info.md5)
     table.add_row('SHA1', bytes_info.sha1)
     table.add_row('SHA256', bytes_info.sha256)
-    table.columns[1].style = 'orange3'
-    table.columns[1].header_style = 'bright_cyan'
     return table

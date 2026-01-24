@@ -58,11 +58,6 @@ def should_rebuild_fixtures() -> bool:
     return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
 
 
-def stderr_console() -> Console:
-    """For use when you need to write output before the main rich.console has managed to get set up."""
-    return Console(stderr=True, **DEFAULT_CONSOLE_KWARGS)
-
-
 @contextmanager
 def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
     """
@@ -91,3 +86,7 @@ DEFAULT_CONSOLE_KWARGS = {
     'color_system': '256',
     'width': CONSOLE_WIDTH,
 }
+
+
+# For use when you need to write output before the main rich.console has managed to get set up.
+stderr_console = Console(stderr=True, **DEFAULT_CONSOLE_KWARGS)

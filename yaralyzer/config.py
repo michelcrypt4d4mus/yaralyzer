@@ -3,10 +3,13 @@ Configuration management for Yaralyzer.
 """
 import logging
 import re
-from argparse import ArgumentParser, Namespace
+from argparse import _AppendAction, Action, ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
 from typing import Any, Callable, List, TypeVar
+
+from rich.text import Text
+from rich_argparse_plus import RichHelpFormatterPlus
 
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZER_UPPER
@@ -21,12 +24,8 @@ T = TypeVar('T')
 ONLY_CLI_ARGS = [
     'file_to_scan_path',
     'help',
-    'hex_patterns',
     'interact',
-    'patterns_label',
-    'regex_patterns',
-    'regex_modifier',
-    'version'
+    'version',
 ]
 
 # For when we need to build a default config outside of CLI usage. TODO: kinda janky
@@ -79,26 +78,27 @@ class YaralyzerConfig:
         return cls.prefixed_env_var(option)
 
     @classmethod
-    def get_env_value(cls, env_var: str, var_type: Callable[[str], T] = str) -> T | None:
+    def get_env_value(cls, var: str, var_type: Callable[[str], T] = str) -> T | None:
         """If called with 'output_dir' it will check env value of 'YARALYZER_OUTPUT_DIR'."""
-        env_var = cls.env_var_for_command_line_option(env_var)
+        env_var = cls.env_var_for_command_line_option(var)
         env_value = environ.get(env_var)
 
+        # Override type for a few important situations
         if not env_value:
             return None
+        elif is_path_var(env_var):
+            env_value = Path(env_value)
 
-        # Override type for a few important situations
-        if is_path_var(env_var):
-            var_type = Path
-        elif is_number(env_value):
-            var_type = float if '.' in env_value else int
-
-        env_value = var_type(env_value)
-
-        if isinstance(env_value, Path):
             if not env_value.exists():
-                raise ValueError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
+                raise EnvironmentError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
+        elif is_number(env_value):
+            env_value = float(env_value) if '.' in env_value else int(env_value)
+        elif var.lower() in cls._append_option_vars:
+            env_value = env_value.split(',')
+        else:
+            env_value = var_type(env_value)
 
+        # print(f"Got value for var='{var}', env_var='{env_var}', value={env_value}")
         return env_value
 
     @classmethod
@@ -122,9 +122,6 @@ class YaralyzerConfig:
         cls._args = _args
 
         for option in cls._argparse_keys:
-            if option.startswith('export') or option in ONLY_CLI_ARGS:
-                continue
-
             arg_value = vars(_args)[option]
             env_value = cls.get_env_value(option)
             default_value = cls._get_default_arg(option)
@@ -146,8 +143,11 @@ class YaralyzerConfig:
     @classmethod
     def set_argument_parser(cls, parser: ArgumentParser) -> None:
         """Sets the `_argument_parser` instance variable that will be used to parse command line args."""
-        cls._argument_parser: ArgumentParser = parser
-        cls._argparse_keys: List[str] = sorted([action.dest for action in parser._actions])
+        cls._argument_parser = parser
+        cls._argparse_keys = sorted([action.dest for action in parser._actions])
+        cls._append_options = _append_options(parser)
+        cls._append_option_vars = [arg.dest for arg in cls._append_options]
+        print(f"_append_option_vars: {cls._append_option_vars}")
 
     @classmethod
     def set_log_vars(cls) -> None:
@@ -159,13 +159,44 @@ class YaralyzerConfig:
             cls.LOG_LEVEL = log_level_for(log_level)
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
-            stderr_console().print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
+            stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
+
+    @classmethod
+    def show_env_vars(cls) -> None:
+        """
+        Show the environment variables that can be used to set command line options, either
+        permanently in a .yaralyzer file or in other standard environment variable ways.
+        """
+        def print_var(dest: str, action: str | Action) -> None:
+            var = cls.env_var_for_command_line_option(dest)
+            txt = Text('').append(f"{var:40}", style=RichHelpFormatterPlus.styles["argparse.args"])
+            option = action.option_strings[-1] if isinstance(action, Action) else action
+            txt.append(' sets ').append(option, style='honeydew2')
+            txt.append(' (comma separated for multiple)' if dest in cls._append_option_vars else '', style='dim')
+            stderr_console.print(txt)
+
+        for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
+            stderr_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
+
+            for action in group._group_actions:
+                if not cls._is_configurable_by_env_var(action.dest):
+                    continue
+
+                # stderr_console.print(f"{action.dest} is type {action.type}, cls={type(action).__name__}")
+                print_var(action.dest, action.option_strings[-1])
+
+        print_var(cls.env_var_for_command_line_option(LOG_DIR_ENV_VAR), 'writing of logs to files')
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:
         """Return the default value for `arg` as defined by a `DEFAULT_` style class variable."""
         default_var = f"DEFAULT_{arg.upper()}"
         return vars(cls).get(default_var)
+
+    @classmethod
+    def _is_configurable_by_env_var(cls, option: str) -> bool:
+        """Returns True if this option can be configured by a YARALYZER_VAR_NAME style environment variable."""
+        return not (option.startswith('export') or option in ONLY_CLI_ARGS)
 
     @classmethod
     def _set_default_args(cls) -> None:
@@ -175,6 +206,11 @@ class YaralyzerConfig:
 
 
 YaralyzerConfig.set_log_vars()
+
+
+def _append_options(_parser: ArgumentParser) -> list[Action]:
+    """Returns the vars created in a Namespace by _parser that can be specified more than once/are lists."""
+    return [arg for arg in _parser._actions if isinstance(arg, _AppendAction)]
 
 
 def log_level_for(value: str | int) -> int:

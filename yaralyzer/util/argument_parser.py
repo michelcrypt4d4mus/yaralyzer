@@ -2,7 +2,7 @@
 import logging
 import re
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import _AppendAction, ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
@@ -51,40 +51,44 @@ parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
+parser.add_argument(
+    '--env-vars', action='store_true',
+    help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
+
 
 source = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-source.add_argument('--yara-file', '-Y',
+source.add_argument('-Y', '--yara-file',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     metavar='FILE',
                     dest='yara_rules_files')
 
-source.add_argument('--rule-dir', '-dir',
+source.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs')
 
-source.add_argument('--regex-pattern', '-re',
+source.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
                     dest='regex_patterns')
 
-source.add_argument('--hex-pattern', '-hex',
+source.add_argument('-hex', '--hex-pattern',
                     help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='HEX_STRING',
                     dest='hex_patterns')
 
-source.add_argument('--patterns-label', '-rpl',
+source.add_argument('-rpl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
                     metavar='STRING')
 
-source.add_argument('--regex-modifier', '-mod',
+source.add_argument('-mod', '--regex-modifier',
                     help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
                     metavar='MODIFIER',
                     choices=YARA_REGEX_MODIFIERS)
@@ -252,6 +256,9 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     """
     if '--version' in sys.argv:
         print(f"{YARALYZER} {version(YARALYZER)}")
+        sys.exit()
+    elif '--env-vars' in sys.argv:
+        YaralyzerConfig.show_env_vars()
         sys.exit()
 
     # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool

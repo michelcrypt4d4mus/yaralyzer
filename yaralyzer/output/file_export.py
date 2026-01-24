@@ -1,18 +1,26 @@
 """
 Functions to export Yaralyzer results to various file formats.
 """
+from argparse import Namespace
 import json
 import re
 import time
 from pathlib import Path
-from subprocess import CalledProcessError, check_output
+from subprocess import CalledProcessError, check_output, run
 from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
+from yaralyzer.util.constants import INKSCAPE_URL
+from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_and_print, log_file_write
+from yaralyzer.util.helpers.env_helper import INKSCAPE, get_inkscape_version, is_cairosvg_installed
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.logging import WRITE_STYLE, log, log_and_print, log_file_write
+from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.yaralyzer import Yaralyzer
+
+CAIROSVG_WARNING_MSG = f"PNG images rendered by cairosvg may contain issues, especially with tables.\n" \
+                       f"Consider installing {INKSCAPE.title()} if you plan to export a lot of images.\n" \
+                       f"{INKSCAPE_URL}"
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -77,13 +85,14 @@ def export_json(yaralyzer: Yaralyzer, export_basepath: str | Path | None = None)
     return output_path
 
 
-def invoke_rich_export(export_method: Callable, export_basepath: str | Path) -> Path:
+def invoke_rich_export(export_method: Callable, export_basepath: str | Path, args: Namespace | None = None) -> Path:
     """
     Announce the export, perform the export, and announce completion.
 
     Args:
-        export_method (Callable): Usually a `Rich.console.save_whatever()` method
+        export_method (Callable): Usually a `Rich.console.save_whatever()` method.
         export_basepath (str): Path to write output to. Should have no file extension.
+        args (Namespace, optional): Arguments parsed by ArgumeentParser.
 
     Returns:
         Path: Path data was exported to.
@@ -91,6 +100,7 @@ def invoke_rich_export(export_method: Callable, export_basepath: str | Path) -> 
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
     export_file_path = Path(f"{export_basepath}.{extname}")
+    export_png = False
 
     if method_name not in _EXPORT_KWARGS:
         raise RuntimeError(f"{method_name} is not a valid Rich.console export method!")
@@ -100,27 +110,46 @@ def invoke_rich_export(export_method: Callable, export_basepath: str | Path) -> 
 
     if 'svg' in method_name:
         kwargs.update({'title': export_file_path.name})
+        export_png = args and args.export_png
 
     # Invoke it
     log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
     started_at = time.perf_counter()
     export_method(export_file_path, **kwargs)
     log_file_write(export_file_path, started_at)
+
+    if export_png:
+        render_png(export_file_path)
+
     return export_file_path
 
 
-def render_png(svg_path: Path) -> None:
-    png_path = svg_path.stem + '.png'
+def render_png(svg_path: Path) -> Path | None:
+    """Turn the svg output into a png with Inkscape or cairosvg. Returns png path if successful."""
+    started_at = time.perf_counter()
+    inkscape_version = get_inkscape_version()
+    png_path = svg_path.parent.joinpath(svg_path.stem + '.png')
 
-    try:
-        # Inkscape is better at converting svg to png
-        inkscape_cmd_args = ['inkscape', f'--export-filename={png_path}', svg_path]
-        log.warning(f"Running inkscape cmd: {' '.join(inkscape_cmd_args)}")
-        check_output(inkscape_cmd_args)
-    except (CalledProcessError, FileNotFoundError) as e:
-        log.error(f"Failed to convert svg to png with inkscape, falling back to cairosvg: {e}")
-        import cairosvg
-        cairosvg.svg2png(url=svg_path, write_to=str(png_path))
+    if inkscape_version:
+        log.warning(f"Rendering .png image with installed {INKSCAPE} {inkscape_version}...")
+        inkscape_cmd_args = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
+        log.warning(f"Running inkscape cmd: {invocation_str(inkscape_cmd_args)}")
 
-    log_file_write(png_path)
-    # svg_path.unlink()
+        try:
+            check_output(inkscape_cmd_args)
+            log_file_write(png_path, started_at)
+            return png_path
+        except (CalledProcessError, FileNotFoundError) as e:
+            error_msg = f"Failed to render png with {INKSCAPE}! ({e})"
+
+            if not is_cairosvg_installed():
+                log.error(error_msg)
+                return
+            else:
+                log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")
+
+    log.warning(CAIROSVG_WARNING_MSG)
+    import cairosvg
+    cairosvg.svg2png(url=svg_path, write_to=str(png_path))
+    log_file_write(png_path, started_at)
+    return png_path

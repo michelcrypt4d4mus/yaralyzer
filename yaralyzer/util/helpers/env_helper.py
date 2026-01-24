@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 from os import environ
 from shutil import get_terminal_size
+from subprocess import CalledProcessError, run
 from typing import Any, Generator
 
 from rich.console import Console
@@ -18,6 +19,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
 
 DEFAULT_CONSOLE_WIDTH = 160
+INKSCAPE = 'inkscape'
 PATH_ENV_VAR_REGEX = re.compile(r".*_(DIR|FILE|PATH)S?", re.I)
 
 
@@ -50,6 +52,23 @@ def env_var_cfg_msg(app_name: str) -> Padding:
                f"For more on how that works see the example env file here:\n\n   ")
     txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
     return Padding(txt, (1, 1, 0, 1))
+
+
+def get_inkscape_version() -> str | None:
+    try:
+        result = run([INKSCAPE, '--version'], capture_output=True, text=True)
+        result.check_returncode()
+        return result.stdout.lower().removeprefix(INKSCAPE).split()[0] or '(unknown)'
+    except (CalledProcessError, FileNotFoundError):
+        pass
+
+
+def is_cairosvg_installed() -> bool:
+    try:
+        import cairosvg
+        return True
+    except ModuleNotFoundError:
+        return False
 
 
 def is_env_var_set_and_not_false(var_name: str) -> bool:

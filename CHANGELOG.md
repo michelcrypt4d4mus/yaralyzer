@@ -1,4 +1,6 @@
 # NEXT RELEASE
+* Add `--export-png` option
+* Add `--suppress-output` option
 
 # 1.2.0
 * Multi-select command line options (e.g. `--yara-file`, `--rule-dir`) can be set permanently via env vars using comma separated strings

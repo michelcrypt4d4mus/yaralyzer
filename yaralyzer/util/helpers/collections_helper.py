@@ -24,13 +24,6 @@ def get_dict_key_by_value(_dict: dict, value):
     return list(_dict.keys())[list(_dict.values()).index(value)]
 
 
-def listify(listlike) -> list:
-    """Create a list of 'listlike'. Returns empty list if 'listlike' is None or empty string."""
-    if isinstance(listlike, list):
-        return listlike
-    elif listlike is None:
-        return [None]
-    elif listlike:
-        return [listlike]
-    else:
-        return []
+def listify(obj: object) -> list:
+    """Make sure `obj` is a list."""
+    return obj if isinstance(obj, list) else [obj]

@@ -67,11 +67,11 @@ def yaralyze():
         print_fatal_error_and_exit(yara_error_msg(e))
 
     if args.export_txt:
-        invoke_rich_export(console.save_text, export_basepath)
+        invoke_rich_export(console.save_text, export_basepath, args)
     if args.export_html:
-        invoke_rich_export(console.save_html, export_basepath)
+        invoke_rich_export(console.save_html, export_basepath, args)
     if args.export_svg:
-        invoke_rich_export(console.save_svg, export_basepath)
+        invoke_rich_export(console.save_svg, export_basepath, args)
     if args.export_json:
         export_json(yaralyzer, export_basepath)
 

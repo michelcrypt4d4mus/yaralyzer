@@ -53,7 +53,7 @@ from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
-WRITE_STYLE = 'grey46 italic'
+WRITE_STYLE = 'grey46'
 
 # TODO: unify themes
 LOG_THEME = Theme({
@@ -164,7 +164,8 @@ def log_current_config() -> None:
 
 def log_file_write(file_path: str | Path, started_at: float) -> None:
     write_time = time.perf_counter() - started_at
-    log_and_print(f"\nWrote '{relative_path(file_path)}' in {write_time:.2f} seconds.", style=WRITE_STYLE)
+    size = file_size_str(file_path)
+    log_and_print(f"\nWrote '{relative_path(file_path)}' in {write_time:.2f} seconds ({size}).", style=WRITE_STYLE)
 
 
 def log_invocation() -> None:
@@ -185,14 +186,15 @@ def set_log_level(level: str | int) -> None:
         handler.setLevel(log_level_for(level))
 
 
-def shell_command_log_str(cmd: list[str], result: CompletedProcess, ignore_args: list[str] | None = None) -> str:
+def shell_command_log_str(result: CompletedProcess, ignore_args: list[str] | None = None) -> str:
     """Long string with all info about a shell command's execution and output."""
-    cmd = [c for c in cmd if c not in (ignore_args or [])]
-    msg = f"ran shell command:\n\n{invocation_str(cmd)}"
+    cmd = invocation_str([arg for arg in result.args if arg not in (ignore_args or [])])
+    msg = f"Return code {result.returncode} from shell command:\n\n{cmd}"
 
     for i, stream in enumerate([result.stdout, result.stderr]):
         label = 'stdout' if i == 0 else 'stderr'
-        decoded_stream = strip_ansi_colors(stream.decode())
+        decoded_stream = stream.decode() if isinstance(stream, bytes) else stream
+        decoded_stream = strip_ansi_colors(decoded_stream)
         msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
 
     return msg + "\n"

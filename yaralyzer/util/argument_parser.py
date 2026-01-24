@@ -12,7 +12,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.constants import ENV_VARS_OPTION, NO_TIMESTAMPS_OPTION, SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER
+from yaralyzer.util.constants import ENV_VARS_OPTION, INKSCAPE_URL, NO_TIMESTAMPS_OPTION, SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
@@ -182,13 +182,16 @@ export.add_argument('-html', '--export-html', action='store_const',
                     const='html',
                     help='export analysis to styled html files')
 
+export.add_argument('-txt', '--export-txt', action='store_const',
+                    const='txt',
+                    help='export analysis to ANSI colored text files')
+
 export.add_argument('-svg', '--export-svg', action='store_const',
                     const='svg',
                     help='export analysis to SVG images')
 
-export.add_argument('-txt', '--export-txt', action='store_const',
-                    const='txt',
-                    help='export analysis to ANSI colored text files')
+export.add_argument('-png', '--export-png', action='store_true',
+                    help='export analysis to PNG images (requires cairosvg or inkscape)')
 
 export.add_argument('-json', '--export-json', action='store_const',
                     const='json',
@@ -281,6 +284,9 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
 
     if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):
         log.warning('--output-dir provided but no export option was chosen')
+
+    if args.export_png and not (env_helper.is_cairosvg_installed() or env_helper.get_inkscape_version()):
+        handle_invalid_args(f"PNG export requires cairosvg or inkscape. Try pip install yaralyzer[img] or {INKSCAPE_URL}.")
 
     args.file_to_scan_path = Path(args.file_to_scan_path)
     yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]

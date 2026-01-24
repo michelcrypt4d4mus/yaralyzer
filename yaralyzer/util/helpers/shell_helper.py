@@ -8,6 +8,7 @@ from os import environ
 from pathlib import Path
 from subprocess import run
 
+from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
@@ -33,7 +34,7 @@ def compare_export_to_file(
     """
     result = run(cmd, capture_output=True, env=environ)
     stderr = strip_ansi_colors(result.stderr.decode())
-    output_logs = shell_command_log_str(cmd, result, ignore_args=ignorable_args)
+    output_logs = shell_command_log_str(result, ignore_args=ignorable_args)
     log.debug(output_logs)
     assert result.returncode == 0, f"Bad return code {result.returncode}, {output_logs}"
     wrote_to_match = WROTE_TO_FILE_REGEX.search(stderr)
@@ -51,6 +52,12 @@ def compare_export_to_file(
     fixture_data = load_file(fixture_path)
     new_data = load_file(new_file_path)
     assert new_data == fixture_data
+
+
+def safe_args(cmd: str | list) -> list[str]:
+    """Make sure everything is a string and not, for instance, a `Path`."""
+    args = cmd.split() if isinstance(cmd, str) else cmd
+    return [str(arg) for arg in args]
 
 
 def should_rebuild_fixtures() -> bool:

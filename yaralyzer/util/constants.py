@@ -20,6 +20,7 @@ SUPPRESS_OUTPUT_OPTION = '--suppress-output'
 
 # URLs
 GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
+INKSCAPE_URL = 'https://inkscape.org/'
 
 
 repo_url = lambda app_name: f"{GITHUB_BASE_URL}/{app_name.lower()}"

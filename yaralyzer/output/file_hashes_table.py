@@ -15,12 +15,7 @@ from yaralyzer.util.helpers.rich_helper import size_text
 
 @dataclass
 class BytesInfo:
-    """
-    Compute the size, MD5, SHA1, and SHA256 hashes for some bytes.
-
-    Attributes:
-        _bytes (bytes):
-    """
+    """Compute the size, MD5, SHA1, and SHA256 hashes for some bytes."""
 
     _bytes: bytes
 

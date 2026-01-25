@@ -12,7 +12,7 @@ ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
 INDENTED_JOINER = ',\n' + INDENT_SPACES
-NUMBER_REGEX = re.compile(r"[\d.]+")
+NUMBER_REGEX = re.compile(r"^[\d.]+$")
 NON_WORD_CHAR_REGEX = re.compile(r"[^\w]")
 
 

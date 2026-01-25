@@ -32,14 +32,6 @@ DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
                        f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
-# One of these must be provided by the user to specify what yara rules to use
-YARA_RULES_ARGS = [
-    'yara_rules_files',
-    'yara_rules_dirs',
-    'hex_patterns',
-    'regex_patterns',
-]
-
 
 def epilog(config: Type[YaralyzerConfig]) -> str:
     """Returns a string with some rich text tags for color to be used as the --help footer."""
@@ -73,28 +65,30 @@ rules = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-rules.add_argument('-Y', '--yara-file',
+yaras = rules.add_mutually_exclusive_group(required=True)
+
+yaras.add_argument('-Y', '--yara-file',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     metavar='FILE',
                     dest='yara_rules_files',
                     type=PathValidator())
 
-rules.add_argument('-dir', '--rule-dir',
+yaras.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs',
                     type=DirValidator())
 
-rules.add_argument('-re', '--regex-pattern',
+yaras.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
                     dest='regex_patterns',
                     type=YaraRegexValidator())
 
-rules.add_argument('-hex', '--hex-pattern',
+yaras.add_argument('-hex', '--hex-pattern',
                     help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='HEX_STRING',
@@ -302,18 +296,11 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
-    num_selected_yara_rules_options = len([arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None])
     args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
     args._svg_requested = bool(args.export_svg)  # So we can clean up intermediate SVG when -png but not -svg
 
     # If yaralyzer is in use as a library for pdfalyzer Yara rules args are not required
-    if not args._standalone_mode:
-        pass
-    elif num_selected_yara_rules_options == 0:
-        handle_invalid_args("You must provide either a YARA rules file, a dir with such files, or a regex")
-    elif num_selected_yara_rules_options > 1:
-        handle_invalid_args("Cannot mix rules files, rules dirs, and regex patterns (for now).")
-    else:
+    if args._standalone_mode:
         log_invocation()
 
     if args.output_dir and not args._any_export_selected:
@@ -344,9 +331,8 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         console.console.width = max(env_helper.console_width_possibilities())
 
     if args._standalone_mode:
-        log_argparse_result(args, 'parsed')
         log_current_config()
-        log_argparse_result(YaralyzerConfig.args, 'with_env_vars')
+        log_argparse_result(YaralyzerConfig.args, 'Parsed with env vars merged')
 
     return args
 

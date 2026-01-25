@@ -53,7 +53,7 @@ def test_private_args(valid_argv):
     with temporary_argv(valid_argv + ['-png']):
         args = parse_arguments()
         assert args.export_svg == 'svg'
-        assert args._svg_requested is False
+        assert args._keep_exported_svg is False
 
 
 def test_show_configurable_env_vars_option():

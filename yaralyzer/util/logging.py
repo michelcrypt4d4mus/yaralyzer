@@ -112,7 +112,7 @@ def invocation_txt() -> Text:
     # TODO: Ugly way to keep local system info out of fixture data
     if not is_invoked_by_pytest():
         txt.append(f"Invocation raw argv:\n\n", style='dim')
-        txt.append(f"{invocation_str(raw=True)}\n", style='wheat4 dim')
+        txt.append(f"{invocation_str(raw=True)}", style='wheat4 dim')
 
     return txt
 
@@ -175,13 +175,6 @@ def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
         log_and_print(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).", style=WRITE_STYLE)
     else:
         log.error(f"Spent {write_time} writing file '{file_path}' but there's nothing there!")
-
-
-def log_invocation() -> None:
-    """Log the command used to launch the `yaralyzer` to the invocation log."""
-    msg = f"THE INVOCATION: '{' '.join(argv)}'"
-    log.info(msg)
-    invocation_log.info(msg)
 
 
 def log_trace(*args) -> None:

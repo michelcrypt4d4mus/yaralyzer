@@ -25,7 +25,7 @@ from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import log, log_argparse_result, log_console, log_current_config, log_invocation, set_log_level
+from yaralyzer.util.logging import log, log_argparse_result, log_console, log_current_config, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -82,21 +82,21 @@ yaras.add_argument('-dir', '--rule-dir',
                     type=DirValidator())
 
 yaras.add_argument('-re', '--regex-pattern',
-                    help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
+                    help='build a YARA rule from PATTERN (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
                     dest='regex_patterns',
                     type=YaraRegexValidator())
 
 yaras.add_argument('-hex', '--hex-pattern',
-                    help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
+                    help='build a YARA rule from a hex string (can be supplied more than once for boolean OR)',
                     action='append',
-                    metavar='HEX_STRING',
+                    metavar='HEX',
                     dest='hex_patterns',
                     type=YaraRegexValidator())
 
 rules.add_argument('-pl', '--patterns-label',
-                    help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
+                    help='optional string to label your YARA patterns (makes it easier to scan results)',
                     metavar='LABEL',
                     type=PatternsLabelValidator())
 
@@ -205,7 +205,8 @@ export.add_argument('-svg', '--export-svg', action='store_const',
                     const='svg',
                     help='export analysis to SVG images')
 
-export.add_argument('-png', '--export-png', action='store_true',
+export.add_argument('-png', '--export-png', action='store_const',
+                    const='png',
                     help='export analysis to PNG images (requires cairosvg or inkscape)')
 
 export.add_argument('-json', '--export-json', action='store_const',
@@ -214,7 +215,7 @@ export.add_argument('-json', '--export-json', action='store_const',
 
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
-                    help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file',
+                    help='write files to OUTPUT_DIR instead of current dir (does nothing if not exporting files)',
                     type=DirValidator())
 
 export.add_argument('-pfx', '--file-prefix',
@@ -258,16 +259,16 @@ YaralyzerConfig.set_argument_parser(parser)
 
 def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = None):
     """
-    Parse command line args. Most arguments can also be communicated to the app by setting env vars.
-    If `args` is provided it should have come from `parser.parse_args()` by an `ArgumentParser`
-    that inherits from Yaralyzer's. Also if 'args' is provided neither rules nor a regex
-    nor a regex need be provided as it is assumed the constructor will instantiate a
-    `Yaralyzer` object directly.
+    Parse command line args. Most arguments can also also be chosen by setting env vars,
+    run with `--env-vars` option for more info on how that works.
+
+    If `args`
 
     "Private" options injected by this method outside of user selection will be prefixed with underscore.
 
     Args:
-        args (Namespace, optional): If provided, use these args instead of parsing from command line.
+        args (Namespace, optional): Use these `args` instead of parsing from `argv`.
+            Must come from an `ArgumentParser` that inherits from Yaralyzer's.
         argv (list[str], optional): Use these args instead of sys.argv.
 
     Raises:
@@ -296,21 +297,19 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
-    args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
-    args._svg_requested = bool(args.export_svg)  # So we can clean up intermediate SVG when -png but not -svg
-
-    # If yaralyzer is in use as a library for pdfalyzer Yara rules args are not required
-    if args._standalone_mode:
-        log_invocation()
+    args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
 
     if args.output_dir and not args._any_export_selected:
         log.warning('--output-dir provided but no export option was chosen')
 
+    # SVG export is a necessary intermediate step for PNG export
     if args.export_png:
+        args._keep_exported_svg = bool(args.export_svg)
+
         if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
             handle_invalid_args(PNG_EXPORT_ERROR_MSG)
         elif not args.export_svg:
-            args.export_svg = 'svg'  # SVGs are necessary intermediate step for PNGs
+            args.export_svg = 'svg'
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:

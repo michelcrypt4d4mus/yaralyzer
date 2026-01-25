@@ -16,7 +16,7 @@ from yaralyzer.util.helpers.shell_helper import ShellResult, get_inkscape_versio
 from yaralyzer.yaralyzer import Yaralyzer
 
 CAIROSVG_WARNING_MSG = f"PNG images rendered by CairoSVG may contain issues, especially with tables. " \
-                       f"CairoSVG crashes are also not unheard of.\n" \
+                       f"CairoSVG crashes are also not unheard of. " \
                        f"Consider installing {INKSCAPE.title()} if you plan to export a lot of images.\n" \
                        f"{INKSCAPE_URL}"
 

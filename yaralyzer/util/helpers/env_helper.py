@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from copy import deepcopy
 from os import environ
 from shutil import get_terminal_size
-from subprocess import CalledProcessError, run
 from typing import Any, Generator
 
 from rich.console import Console

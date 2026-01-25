@@ -19,7 +19,7 @@ from yaralyzer.output.console import console
 from yaralyzer.output.file_export import export_json, invoke_rich_export, render_png
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import PDFALYZER_REPO_URL
-from yaralyzer.util.helpers.rich_helper import print_fatal_error_and_exit
+from yaralyzer.util.exceptions import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.logging import invocation_txt, log, log_console, log_file_export
 from yaralyzer.yara.error import yara_error_msg

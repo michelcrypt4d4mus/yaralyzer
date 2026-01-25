@@ -82,6 +82,11 @@ class YaralyzerConfig:
         return cls._args
 
     @classproperty
+    def executable(cls) -> str:
+        """The command used to run this app."""
+        return cls.app_name.lower().removesuffix('r')
+
+    @classproperty
     def log_dir_env_var(cls) -> str:
         """Environment variable name that can set the log output directory."""
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)

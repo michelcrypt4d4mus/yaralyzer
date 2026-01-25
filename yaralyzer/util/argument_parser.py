@@ -35,10 +35,9 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()
 
-    msg = f"Values for some options can be set permanently by creating a {color_var(f'.{package}')} " \
-          f"file. See the documentation for details.\n" \
-          f"A log of previous {package} invocation args will be inscribed to a file if the " \
-          f"{color_var(config.log_dir_env_var)} environment variable is configured." \
+    msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
+          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable} {ENV_VARS_OPTION}[/argparse.args] " \
+          f"for more info." \
 
     if package == YARALYZER:
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"

@@ -1,5 +1,10 @@
 import re
 from argparse import ArgumentTypeError
+from pathlib import Path
+
+
+class PathArgValidator:
+    pass
 
 
 class PatternsLabelValidator:

@@ -1,10 +1,11 @@
+from argparse import ArgumentTypeError
 from rich.padding import Padding
 from rich.text import Text
 
 from yaralyzer.util.logging import highlighter, log_console
 
 
-class InvalidArgumentError(ValueError):
+class InvalidArgumentError(ArgumentTypeError):
     pass
 
 

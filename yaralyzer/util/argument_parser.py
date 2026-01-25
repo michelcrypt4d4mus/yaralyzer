@@ -23,7 +23,6 @@ from yaralyzer.util.logging import log, log_argparse_result, log_current_config,
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
-YARA_PATTERN_LABEL_REGEX = re.compile(r"^\w+$")
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
@@ -88,7 +87,7 @@ rules.add_argument('-hex', '--hex-pattern',
 rules.add_argument('-rpl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
                     metavar='STRING',
-                    type=PatternsLabelValidator)
+                    type=PatternsLabelValidator())
 
 rules.add_argument('-mod', '--regex-modifier',
                     help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
@@ -245,7 +244,7 @@ YaralyzerConfig.set_argument_parser(parser)
 is_yaralyzing = parser.prog == YARALYZE
 
 
-def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None):
+def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = None):
     """
     Parse command line args. Most arguments can also be communicated to the app by setting env vars.
     If `args` is provided it should have come from `parser.parse_args()` by an `ArgumentParser`
@@ -270,9 +269,9 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         sys.exit()
 
     # Parse and validate args
-    args = args or parser.parse_args(argv)
+    args = _args or parser.parse_args(argv)
     args._invoked_at_str = timestamp_for_filename()
-    args._standalone_mode = args is None
+    args._standalone_mode = _args is None
     # Adjust error handling based on whether the 'yaralyze' shell script is what's being run
     handle_invalid_args = partial(handle_argument_error, is_standalone_mode=args._standalone_mode)
 
@@ -334,7 +333,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         # TODO: unclear if we need to do this import this way to make the change happen?
         console.console.width = max(env_helper.console_width_possibilities())
 
-    if not is_used_as_library:
+    if args._standalone_mode:
         log_argparse_result(args, 'parsed')
         log_current_config()
         log_argparse_result(YaralyzerConfig.args, 'with_env_vars')

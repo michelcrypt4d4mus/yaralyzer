@@ -17,7 +17,7 @@ from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  #
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
-FIXTURES_DIR = PYTESTS_DIR.joinpath('file_fixtures')
+FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
 # Strings

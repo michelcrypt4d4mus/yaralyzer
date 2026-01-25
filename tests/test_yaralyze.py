@@ -53,9 +53,9 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyze_with_rule_files(il_tulipano_path, tulips_yara_path):
-    # yaralyze -Y tests/file_fixtures/yara_rules/tulips.yara tests/file_fixtures/il_tulipano_nero.txt
+    # yaralyze -Y tests/fixtures/yara_rules/tulips.yara tests/fixtures/il_tulipano_nero.txt
     _compare_exported_txt_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
-    # yaralyze -dir tests/file_fixtures/ tests/file_fixtures/il_tulipano_nero.txt
+    # yaralyze -dir tests/fixtures/ tests/fixtures/il_tulipano_nero.txt
     _compare_exported_txt_to_fixture(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
 
 

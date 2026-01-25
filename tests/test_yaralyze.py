@@ -6,7 +6,7 @@ import json
 import logging
 import re
 from math import isclose
-from os import environ, path
+from os.path import getsize
 from pathlib import Path
 from subprocess import CalledProcessError
 
@@ -47,7 +47,7 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path):
     with pytest.raises(CalledProcessError):
         _yaralyze_with_args(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
-        _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', path.dirname(tulips_yara_path))
+        _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-dir', tulips_yara_path.parent)
     with pytest.raises(CalledProcessError):
         _yaralyze_with_args(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
 
@@ -56,7 +56,7 @@ def test_yaralyze_with_rule_files(il_tulipano_path, tulips_yara_path):
     # yaralyze -Y tests/fixtures/yara_rules/tulips.yara tests/fixtures/il_tulipano_nero.txt
     _compare_exported_txt_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
     # yaralyze -dir tests/fixtures/ tests/fixtures/il_tulipano_nero.txt
-    _compare_exported_txt_to_fixture(il_tulipano_path, '-dir', path.dirname(tulips_yara_path))
+    _compare_exported_txt_to_fixture(il_tulipano_path, '-dir', tulips_yara_path.parent)
 
 
 def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_pattern):
@@ -69,7 +69,7 @@ def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
     _yaralyze_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt')
     rendered_files = [f for f in files_in_dir(tmp_dir) if not str(f).endswith('png')]  # TODO: hack to deal with bad tmp_dir management
     assert len(rendered_files) == 4
-    file_sizes = [path.getsize(f) for f in rendered_files]
+    file_sizes = [getsize(f) for f in rendered_files]
     _assert_array_is_close(sorted(file_sizes), [1182, 45179, 78781, 243312])
 
     for file in rendered_files:

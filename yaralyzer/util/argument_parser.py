@@ -15,6 +15,7 @@ from yaralyzer.output import console
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
+from yaralyzer.util.helpers.arguments_helper import PatternsLabelValidator
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
@@ -86,7 +87,8 @@ rules.add_argument('-hex', '--hex-pattern',
 
 rules.add_argument('-rpl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
-                    metavar='STRING')
+                    metavar='STRING',
+                    type=PatternsLabelValidator)
 
 rules.add_argument('-mod', '--regex-modifier',
                     help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
@@ -267,14 +269,12 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         YaralyzerConfig.show_configurable_env_vars()
         sys.exit()
 
-    # Hacky way to adjust arg parsing based on whether yaralyzer is used as a library vs. CLI tool
-    is_used_as_library = args is not None
-    handle_invalid_args = partial(handle_argument_error, is_used_as_library=is_used_as_library)
-
     # Parse and validate args
     args = args or parser.parse_args(argv)
     args._invoked_at_str = timestamp_for_filename()
-    args._standalone_mode = not is_used_as_library
+    args._standalone_mode = args is None
+    # Adjust error handling based on whether the 'yaralyze' shell script is what's being run
+    handle_invalid_args = partial(handle_argument_error, is_standalone_mode=args._standalone_mode)
 
     if args.debug:
         set_log_level(logging.DEBUG)
@@ -285,36 +285,33 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
-    args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
-    args._svg_requested = bool(args.export_svg)
+    args.file_to_scan_path = Path(args.file_to_scan_path)
 
-    if args.output_dir and not any(arg.startswith('export') and val for arg, val in vars(args).items()):
+    if not args.file_to_scan_path.exists():
+        handle_invalid_args(f"'{args.file_to_scan_path}' is not a valid file.")
+
+    num_selected_yara_rules_options = len([arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None])
+    args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
+    args._svg_requested = bool(args.export_svg)  # So we can clean up intermediate file when -png but not -svg
+
+    # If yaralyzer is in use as a library for pdfalyzer Yara rules args are not required
+    if not args._standalone_mode:
+        pass
+    elif num_selected_yara_rules_options == 0:
+        handle_invalid_args("You must provide either a YARA rules file or a regex pattern")
+    elif num_selected_yara_rules_options > 1:
+        handle_invalid_args("Cannot mix rules files, rules dirs, and regex patterns (for now).")
+    else:
+        log_invocation()
+
+    if args.output_dir and not args._any_export_selected:
         log.warning('--output-dir provided but no export option was chosen')
 
     if args.export_png:
         if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
             handle_invalid_args(PNG_EXPORT_ERROR_MSG)
         elif not args.export_svg:
-            args.export_svg = 'svg'
-            args._svg_requested = False  # SVGs are necessary intermediate step for PNGs
-
-    args.file_to_scan_path = Path(args.file_to_scan_path)
-    yara_rules_args = [arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None]
-
-    if not args.file_to_scan_path.exists():
-        handle_invalid_args(f"'{args.file_to_scan_path}' is not a valid file.")
-
-    if is_used_as_library:
-        pass
-    elif len(yara_rules_args) > 1:
-        handle_invalid_args("Cannot mix rules files, rules dirs, and regex patterns (for now).")
-    elif len(yara_rules_args) == 0:
-        handle_invalid_args("You must provide either a YARA rules file or a regex pattern")
-    else:
-        log_invocation()
-
-    if args.patterns_label and not YARA_PATTERN_LABEL_REGEX.match(args.patterns_label):
-        handle_invalid_args('Pattern label can only include alphanumeric chars and underscore')
+            args.export_svg = 'svg'  # SVGs are necessary intermediate step for PNGs
 
     # chardet.detect() action thresholds
     if args.force_decode_threshold:

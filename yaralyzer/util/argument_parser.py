@@ -95,9 +95,9 @@ yaras.add_argument('-hex', '--hex-pattern',
                     dest='hex_patterns',
                     type=YaraRegexValidator())
 
-rules.add_argument('-rpl', '--patterns-label',
+rules.add_argument('-pl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',
-                    metavar='STRING',
+                    metavar='LABEL',
                     type=PatternsLabelValidator())
 
 rules.add_argument('-mod', '--regex-modifier',

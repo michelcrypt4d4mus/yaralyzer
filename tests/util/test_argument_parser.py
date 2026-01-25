@@ -7,7 +7,7 @@ from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
-from yaralyzer.util.logging import log_console
+from yaralyzer.util.logging import log, log_console
 
 ENV_VARS = {
     'YARALYZER_SUPPRESS_DECODES_TABLE': 'True',
@@ -37,6 +37,12 @@ def test_env_var_merge(valid_argv):
 
 def test_option_validators():
     assert cli_option_validators.YaraRegexValidator()('/foo/') == 'foo'
+
+
+def test_output_dir(valid_argv, output_dir_args, tmp_dir):
+    with temporary_argv(valid_argv + output_dir_args):
+        args = parse_arguments()
+        assert args.output_dir == tmp_dir
 
 
 def test_private_args(valid_argv):

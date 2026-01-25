@@ -13,6 +13,7 @@ environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
 # from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
+from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
@@ -64,3 +65,8 @@ def tmp_dir() -> Path:
         tmp_file.unlink()
 
     return TMP_DIR
+
+
+@pytest.fixture
+def output_dir_args(tmp_dir) -> list[str]:
+    return safe_args(['--output-dir', tmp_dir])

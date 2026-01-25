@@ -1,8 +1,8 @@
 import pytest
 
 from yaralyzer.config import YaralyzerConfig
+from yaralyzer.util import cli_option_validators
 from yaralyzer.util.argument_parser import parse_arguments
-from yaralyzer.util.cli_options import cli_option_validators
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
@@ -66,7 +66,8 @@ def test_show_configurable_env_vars_option():
 
     validator_types = [
         v for v in vars(cli_option_validators).values()
-        if isinstance(v, type) and issubclass(v, cli_option_validators.OptionValidator) and not v == cli_option_validators.OptionValidator
+        if isinstance(v, type) and issubclass(v, cli_option_validators.OptionValidator) \
+            and not v == cli_option_validators.OptionValidator
     ]
 
     for validator in validator_types:

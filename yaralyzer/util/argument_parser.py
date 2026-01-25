@@ -3,24 +3,29 @@ Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
 """
 import logging
 import sys
-from argparse import ArgumentParser, Namespace
+from argparse import _AppendAction, _StoreTrueAction, Action, ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
 from typing import Type
 
+from rich.padding import Padding
+from rich.panel import Panel
+from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util.cli_options.cli_option_validators import DirValidator, PathValidator, PatternsLabelValidator, YaraRegexValidator
+from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import log, log_argparse_result, log_current_config, log_invocation, set_log_level
+from yaralyzer.util.logging import log, log_argparse_result, log_console, log_current_config, log_invocation, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -55,6 +60,7 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
+
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=PathValidator())
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
@@ -277,7 +283,7 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         print(f"{YARALYZER} {version(YARALYZER)}")
         sys.exit()
     elif ENV_VARS_OPTION in sys.argv:
-        YaralyzerConfig.show_configurable_env_vars()
+        show_configurable_env_vars(YaralyzerConfig)
         sys.exit()
 
     # Parse and validate args
@@ -347,3 +353,62 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
 
 # TODO this is hacky/ugly
 YaralyzerConfig._parse_arguments = parse_arguments
+
+
+def show_configurable_env_vars(cls: Type[YaralyzerConfig]) -> None:
+    """
+    Show the environment variables that can be used to set command line options, either
+    permanently in a `.yaralyzer` file or in other standard environment variable ways.
+    """
+    panel = Panel(f"{cls.app_name} Environment Variables", style='honeydew2')
+    log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
+    log_console.print(env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
+
+    for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
+        log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
+
+        for action in group._group_actions:
+            if not cls._is_configurable_by_env_var(action.dest):
+                continue
+
+            var = cls.env_var_for_command_line_option(action.dest)
+            _print_env_var_explanation(var, action)
+
+    _print_env_var_explanation(cls.log_dir_env_var, 'writing of logs to files')
+    log_console.line()
+
+
+def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
+    """Print a line explaiing which command line option corresponds to this `env_var`."""
+    env_var_style = RichHelpFormatterPlus.styles["argparse.args"].replace('italic', '')
+    option = action.option_strings[-1] if isinstance(action, Action) else action
+
+    if isinstance(action, str):
+        option_type = 'Path' if env_helper.is_path_var(env_var) else 'str'
+    elif isinstance(action, _StoreTrueAction):
+        option_type = 'bool'
+    elif isinstance(action.type, OptionValidator):
+        option_type = action.type.arg_type_str()
+    elif action.type is not None:
+        option_type = action.type.__name__
+    else:
+        option_type = 'str'
+
+    # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
+    comment = ' (comma separated for multiple)' if isinstance(action, _AppendAction) else ''
+    txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
+    txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
+    txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
+    log_console.print(txt)
+
+
+
+def env_var_cfg_msg(app_name: str) -> Padding:
+    app_name = app_name.lower()
+    txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
+               f"options, either by conventional environment variable setting methods or by creating\na ")
+    txt.append(f".{app_name} ", style='bright_cyan bold')
+    txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
+               f"For more on how that works see the example env file here:\n\n   ")
+    txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
+    return Padding(txt, (1, 1, 0, 2))

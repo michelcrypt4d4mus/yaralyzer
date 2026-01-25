@@ -44,17 +44,6 @@ def console_width_possibilities():
     return [get_terminal_size().columns - 2, DEFAULT_CONSOLE_WIDTH]
 
 
-def env_var_cfg_msg(app_name: str) -> Padding:
-    app_name = app_name.lower()
-    txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
-               f"options, either by conventional environment variable setting methods or by creating\na ")
-    txt.append(f".{app_name} ", style='bright_cyan bold')
-    txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
-               f"For more on how that works see the example env file here:\n\n   ")
-    txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
-    return Padding(txt, (1, 1, 0, 2))
-
-
 def is_cairosvg_installed() -> bool:
     """True if cairosvg package is available on the current system."""
     try:
@@ -81,30 +70,6 @@ def is_invoked_by_pytest() -> bool:
 def is_path_var(env_var_name: str) -> bool:
     """Returns True if `env_var_name` ends with _DIR or _PATH."""
     return bool(PATH_ENV_VAR_REGEX.match(env_var_name))
-
-
-def print_env_var_explanation(env_var: str, action: str | Action) -> None:
-    """Print a line explaiing which command line option corresponds to this env_var."""
-    env_var_style = RichHelpFormatterPlus.styles["argparse.args"].replace('italic', '')
-    option = action.option_strings[-1] if isinstance(action, Action) else action
-
-    if isinstance(action, str):
-        option_type = 'Path' if is_path_var(env_var) else 'str'
-    elif isinstance(action, _StoreTrueAction):
-        option_type = 'bool'
-    elif isinstance(action.type, OptionValidator):
-        option_type = action.type.arg_type_str()
-    elif action.type is not None:
-        option_type = action.type.__name__
-    else:
-        option_type = 'str'
-
-    # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
-    comment = ' (comma separated for multiple)' if isinstance(action, _AppendAction) else ''
-    txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
-    txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
-    txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
-    stderr_console.print(txt)
 
 
 @contextmanager

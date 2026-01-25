@@ -8,16 +8,11 @@ from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
-from rich.padding import Padding
-from rich.panel import Panel
-from rich.text import Text
-from rich_argparse_plus import RichHelpFormatterPlus
-
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, NO_TIMESTAMPS_OPTION, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
-from yaralyzer.util.helpers.env_helper import (CONSOLE_WIDTH, env_var_cfg_msg, is_env_var_set_and_not_false,
-     is_invoked_by_pytest, is_path_var, print_env_var_explanation, stderr_console)
+from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
+     is_invoked_by_pytest, is_path_var, stderr_console)
 from yaralyzer.util.helpers.string_helper import is_number
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
@@ -179,29 +174,6 @@ class YaralyzerConfig:
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
             stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
-
-    @classmethod
-    def show_configurable_env_vars(cls) -> None:
-        """
-        Show the environment variables that can be used to set command line options, either
-        permanently in a `.yaralyzer` file or in other standard environment variable ways.
-        """
-        panel = Panel(f"{cls.app_name} Environment Variables", style='honeydew2')
-        stderr_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(CONSOLE_WIDTH / 2))
-        stderr_console.print(env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
-
-        for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
-            stderr_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
-
-            for action in group._group_actions:
-                if not cls._is_configurable_by_env_var(action.dest):
-                    continue
-
-                var = cls.env_var_for_command_line_option(action.dest)
-                print_env_var_explanation(var, action)
-
-        print_env_var_explanation(cls.log_dir_env_var, 'writing of logs to files')
-        stderr_console.line()
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:

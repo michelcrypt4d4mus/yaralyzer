@@ -15,7 +15,7 @@ from yaralyzer.util.constants import INKSCAPE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
-from yaralyzer.util.logging import LOG_SEPARATOR, log, log_bigly, invocation_str
+from yaralyzer.util.logging import LOG_SEPARATOR, invocation_str, log, log_bigly, log_console
 from yaralyzer.util.timeout import timeout
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
@@ -139,10 +139,9 @@ class ShellResult:
         msg = f"Return code {self.result.returncode} from shell command:\n\n{cmd}"
 
         if with_streams:
-            for i, stream in enumerate([self.stdout_stripped, self.stderr_stripped]):
+            for i, stream in enumerate([self.stdout, self.stderr]):
                 label = 'stdout' if i == 0 else 'stderr'
-                stream = stream[:2500]
-                msg += f"\n\n\n\n[{label} first 2500 chars]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
+                msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
 
         return msg + "\n"
 
@@ -150,6 +149,16 @@ class ShellResult:
         error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n"
         error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
         error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{existing_path}' '{export_path}'\n\n"  # noqa: E501
+        error_msg += f"Result of diff:\n\n"
+
+        try:
+            diff_output = type(self).from_cmd(['diff', existing_path, export_path])
+            log_console.print(f"Result of diff '{existing_path}'\n        against '{export_path}'\n\n")
+            log_console.print(diff_output.output_logs(True))
+            log_console.print(f"\n\n\nRaw diff stdout:\n\n", diff_output.stdout)
+        except Exception as e:
+            log_console.print(f"Failed to print diff of '{existing_path}'\n        against '{export_path}'!", style='bright_red bold')
+
         return error_msg
 
     @classmethod

@@ -16,6 +16,7 @@ TRACE = 'TRACE'
 TRACE_LEVEL = logging.DEBUG - 1
 
 # Command line options
+ECHO_COMMAND_OPTION = '--echo-command'
 ENV_VARS_OPTION = '--env-vars'
 NO_TIMESTAMPS_OPTION = '--no-timestamps'
 SUPPRESS_OUTPUT_OPTION = '--suppress-output'

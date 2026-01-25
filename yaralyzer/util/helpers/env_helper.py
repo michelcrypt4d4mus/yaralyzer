@@ -20,6 +20,7 @@ from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example
 
 DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r".*_(DIR|FILE|PATH)S?", re.I)
+PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 
 
 def config_var_name(env_var: str) -> str:
@@ -144,6 +145,14 @@ def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
     finally:
         environ.clear()
         environ.update(old_environ)
+
+
+def _should_rebuild_fixtures() -> bool:
+    """
+    True if pytest should overwrite fixture data with new output instead of comparing.
+    It's here so that pdfalyzer can also use it.
+    """
+    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
 
 
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)

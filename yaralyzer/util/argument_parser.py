@@ -12,8 +12,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.constants import (ENV_VARS_OPTION, INKSCAPE_URL, NO_TIMESTAMPS_OPTION,
-     SUPPRESS_OUTPUT_OPTION, TRACE, YARALYZE, YARALYZER, YARALYZER_API_DOCS_URL)
+from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
@@ -215,7 +214,7 @@ export.add_argument('-sfx', '--file-suffix',
                     help='optional string to use as the suffix for exported files of any kind',
                     default='')
 
-export.add_argument('--echo-command', action='store_true',
+export.add_argument(ECHO_COMMAND_OPTION, action='store_true',
                    help="prepend the exact command line used to the output (useful for revisiting old exports)")
 
 export.add_argument(NO_TIMESTAMPS_OPTION, action='store_true',

@@ -45,8 +45,8 @@ from rich.text import Text
 from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
-from yaralyzer.util.constants import TRACE_LEVEL
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
+from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
@@ -104,7 +104,7 @@ def configure_logger(log_label: str) -> logging.Logger:
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert sys.argv into something readable."""
     _argv = copy(_argv or argv)
-    _argv = [arg for arg in _argv if arg != '--echo-command']
+    _argv = [arg for arg in _argv if arg != ECHO_COMMAND_OPTION]
 
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
@@ -115,8 +115,12 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
 def invocation_txt() -> Text:
     txt = Text(f"Invoked with this command:\n\n")
     txt.append(f"{invocation_str()}\n\n", style='wheat4')
-    txt.append(f"Invocation raw argv:\n\n", style='dim')
-    txt.append(f"{invocation_str(raw=True)}\n", style='wheat4 dim')
+
+    # TODO: Ugly way to keep local system info out of fixture data
+    if not _should_rebuild_fixtures():
+        txt.append(f"Invocation raw argv:\n\n", style='dim')
+        txt.append(f"{invocation_str(raw=True)}\n", style='wheat4 dim')
+
     return txt
 
 

@@ -6,19 +6,18 @@ import logging
 import re
 import shutil
 from dataclasses import dataclass, field
-from os import environ
+from os import environ, getlogin
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run
 from typing import Self
 
 from yaralyzer.util.constants import INKSCAPE
-from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
+from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 from yaralyzer.util.logging import log, log_bigly, invocation_str, shell_command_log_str
 from yaralyzer.util.timeout import timeout
 
-PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 
 
@@ -93,15 +92,18 @@ class ShellResult:
         for exported_path in exported_paths:
             assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
             existing_path = relative_path(against_dir.joinpath(exported_path.name))
+            exported_data = load_file(exported_path)
 
             if _should_rebuild_fixtures():
+                if getlogin() in strip_ansi_colors(exported_data):
+                    raise ValueError(f"Found local username in exported fixture data!")
+
                 log.warning(f"\nOverwriting fixture '{existing_path}'\n   with contents of '{exported_path}'")
                 shutil.move(exported_path, existing_path)
                 return
 
             assert existing_path.exists(), f"Existing file we want to compare against '{existing_path}' doesn't exist!"
             existing_data = load_file(existing_path)
-            exported_data = load_file(exported_path)
 
             # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
             @timeout(seconds=5)
@@ -118,8 +120,7 @@ class ShellResult:
         """Finds the last match."""
         written_paths = [relative_path(Path(m.group(1))) for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped)]
         assert len(written_paths) > 0, f"Could not find 'wrote to file' msg in stderr:\n\n{self.stderr}"
-        log.error(f"Found {len(written_paths)} written files in the logs")
-        log.error(self.output_logs())
+        log_bigly(f"Found {len(written_paths)} written files in the logs", self.output_logs())
         return written_paths
 
     def last_exported_file_path(self) -> Path:
@@ -167,11 +168,3 @@ def safe_args(cmd: str | list) -> list[str]:
     """Make sure everything is a string and not, for instance, a `Path`."""
     args = cmd.split() if isinstance(cmd, str) else cmd
     return [str(arg) for arg in args]
-
-
-def _should_rebuild_fixtures() -> bool:
-    """
-    True if pytest should overwrite fixture data with new output instead of comparing.
-    It's here so that pdfalyzer can also use it.
-    """
-    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)

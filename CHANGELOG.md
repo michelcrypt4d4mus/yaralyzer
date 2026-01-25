@@ -1,5 +1,5 @@
 # NEXT RELEASE
-* Add `--export-png` option
+* Add `--export-png` option to render .png images of output
 * Add `--suppress-output` option
 
 # 1.2.0

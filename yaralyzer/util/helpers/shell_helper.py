@@ -99,7 +99,7 @@ class ShellResult:
                 shutil.move(exported_path, existing_path)
                 return
 
-            assert existing_path.exists()
+            assert existing_path.exists(), f"Existing file we want to compare against '{existing_path}' doesn't exist!"
             existing_data = load_file(existing_path)
             exported_data = load_file(exported_path)
 

@@ -116,7 +116,7 @@ class ShellResult:
                 is_output_same_as_fixture = exported_data == existing_data
                 assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
-            log.warning(f"Validated '{exported_path}' as matching fixture")
+            log.debug(f"Validated '{exported_path}' as matching the exiting file...")
 
     def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""

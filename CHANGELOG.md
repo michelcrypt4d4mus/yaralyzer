@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Accomodate Python 3.10 for a little while longer
 
 # 1.3.0
 * Add `--export-png` option to render .png images of output

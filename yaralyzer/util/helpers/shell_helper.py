@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from os import environ, getlogin
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run
-from typing import Self
+# from typing import Self  # TODO: this requires python 3.11
 
 from yaralyzer.util.constants import INKSCAPE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
@@ -60,7 +60,7 @@ class ShellResult:
         return strip_ansi_colors(self.stdout)
 
     @classmethod
-    def from_cmd(cls, cmd: str | list, verify_success: bool = False, no_log_args: list[str] | None = None) -> Self:
+    def from_cmd(cls, cmd: str | list, verify_success: bool = False, no_log_args: list[str] | None = None) -> 'ShellResult':
         """
         Alternate constructor that runs `cmd` and gets the result.
 
@@ -158,7 +158,7 @@ class ShellResult:
         cmd: list[str] | str,
         against_dir: Path,
         no_log_args: list[str] | None = None,
-    ) -> Self:
+    ) -> 'ShellResult':
         """
         Used by pytest to compare fixture data to output of export commands. Here so that pdfalyzer can use it.
 

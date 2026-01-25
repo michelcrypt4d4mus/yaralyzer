@@ -4,7 +4,7 @@ Methods for computing and displaying various file hashes.
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+# from typing import Self  # TODO: this requires python 3.11
 
 from rich.console import JustifyMethod
 from rich.table import Column, Table
@@ -36,7 +36,7 @@ class BytesInfo:
         return hashlib.sha256(self._bytes).hexdigest().upper()
 
     @classmethod
-    def for_file(cls, file_path: str | Path) -> Self:
+    def for_file(cls, file_path: str | Path) -> 'BytesInfo':
         """Alternate constructor that reads the bytes from `file_path`."""
         with open(file_path, 'rb') as file:
             return cls(file.read())

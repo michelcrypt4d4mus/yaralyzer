@@ -9,7 +9,7 @@ from typing import Self
 from rich.console import JustifyMethod
 from rich.table import Column, Table
 
-from yaralyzer.output.console import GREY
+from yaralyzer.output.theme import GREY
 from yaralyzer.util.helpers.rich_helper import size_text
 
 

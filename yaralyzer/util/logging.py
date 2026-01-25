@@ -43,25 +43,17 @@ from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 from rich.text import Text
-from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
+from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL, YARALYZER
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
-from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
 WRITE_STYLE = 'grey46'
-
-# TODO: unify themes
-LOG_THEME = Theme({
-    'repr.path': 'dark_orange3',
-    'repr.filename': 'dark_orange3',
-    'repr.none': 'grey23 italic',
-})
 
 DEFAULT_LOG_HANDLER_KWARGS = {
     'console': Console(stderr=True, theme=LOG_THEME, **default_console_kwargs()),

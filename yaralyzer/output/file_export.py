@@ -7,8 +7,7 @@ from pathlib import Path
 from subprocess import CalledProcessError
 from typing import Callable
 
-from rich.terminal_theme import TerminalTheme
-
+from yaralyzer.output.theme import YARALYZER_TERMINAL_THEME
 from yaralyzer.util.constants import INKSCAPE, INKSCAPE_URL
 from yaralyzer.util.logging import log, log_console, log_file_export
 from yaralyzer.util.helpers.env_helper import is_cairosvg_installed
@@ -19,32 +18,6 @@ CAIROSVG_WARNING_MSG = f"PNG images rendered by CairoSVG may contain issues, esp
                        f"CairoSVG crashes are also not unheard of. " \
                        f"Consider installing {INKSCAPE.title()} if you plan to export a lot of images.\n" \
                        f"{INKSCAPE_URL}"
-
-# TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
-YARALYZER_TERMINAL_THEME = TerminalTheme(
-    (0, 0, 0),
-    (255, 255, 255),
-    [
-        (0, 0, 0),
-        (128, 0, 0),
-        (0, 128, 0),
-        (128, 128, 0),
-        (0, 0, 128),
-        (128, 0, 128),
-        (0, 128, 128),
-        (192, 192, 192),
-    ],
-    [
-        (128, 128, 128),
-        (255, 0, 0),
-        (0, 255, 0),
-        (255, 255, 0),
-        (0, 0, 255),
-        (255, 0, 255),
-        (0, 255, 255),
-        (255, 255, 255),
-    ],
-)
 
 # Keys are export function names, values are options we always want to use w/that export function
 # Not meant for direct access; instead call invoke_rich_export().

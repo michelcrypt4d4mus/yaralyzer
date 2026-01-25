@@ -14,7 +14,8 @@ from yaralyzer.config import YaralyzerConfig
 from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
-from yaralyzer.output.console import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME, console
+from yaralyzer.output.console import console
+from yaralyzer.output.theme import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME
 from yaralyzer.util.constants import MAX_FILENAME_LENGTH, YARALYZE
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, to_paths
 from yaralyzer.util.helpers.rich_helper import dim_if, reverse_color, print_fatal_error_and_exit

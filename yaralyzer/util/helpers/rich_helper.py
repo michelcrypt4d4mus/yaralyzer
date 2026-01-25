@@ -1,21 +1,17 @@
 """
-Methods to handle turning various objects into Rich text/table/etc representations
-
-[Rich color names](https://rich.readthedocs.io/en/stable/appendix/colors.html)
-TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
+Methods to handle turning various objects into Rich text/table/etc representations.
 """
-from sys import exit
 from typing import List, Optional, Union
 
 from rich import box
-from rich.columns import Columns
-from rich.console import Group
 from rich.panel import Panel
 from rich.padding import Padding
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.console import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, console
+from yaralyzer.output.theme import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, color_theme_grid
+from yaralyzer.output.console import console
+from yaralyzer.util.constants import YARALYZER
 from yaralyzer.util.logging import highlighter, log, log_console
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
@@ -25,9 +21,6 @@ METER_INTERVAL = (100 / float(len(METER_COLORS))) + 0.1
 UNDERLINE_CONFIDENCE_THRESHOLD = 90
 BOLD_CONFIDENCE_THRESHOLD = 60
 DIM_COUNTRY_THRESHOLD = 25
-
-# For the table shown by running yaralyzer_show_color_theme
-MAX_THEME_COL_SIZE = 35
 
 # Text object defaults mostly for table entries
 NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
@@ -119,26 +112,12 @@ def reverse_color(style: Style) -> Style:
     return Style(color=style.bgcolor, bgcolor=style.color, underline=style.underline, bold=style.bold)
 
 
-def show_color_theme(styles: dict) -> None:
-    """Print all colors in 'styles' to screen in a grid"""
-    panel = Panel('The Yaralyzer Color Theme',  style='reverse', width=60)
-
-    colors = [
-        prefix_with_style(name[:MAX_THEME_COL_SIZE], style=str(style)).append(' ')
-        for name, style in styles.items()
-        if name not in ['reset', 'repr_url']
-    ]
-
-    group = Group(panel, Text(''), Columns(colors, column_first=True, padding=(0, 5), equal=True))
-    console.print(Padding(group, (1, 2)))
-
-
 def size_in_bytes_text(num_bytes: int) -> Text:
     return Text(f"{num_bytes:,d}", 'number').append(' bytes', style='white')
 
 
 def size_text(num_bytes: int) -> Text:
-    """Convert a number of bytes into (e.g.) 54,213 bytes (52 KB)."""
+    """Convert a number of bytes into (e.g.) '54,213 bytes (52 KB)'."""
     kb_txt = prefix_with_style("{:,.1f}".format(num_bytes / 1024), style='bright_cyan', root_style='white')
     kb_txt.append(' kb ')
     bytes_txt = Text('(', 'white') + size_in_bytes_text(num_bytes) + Text(')')
@@ -156,4 +135,4 @@ def unprintable_byte_to_text(code: str, style: str = '') -> Text:
 
 def yaralyzer_show_color_theme() -> None:
     """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
-    show_color_theme(YARALYZER_THEME_DICT)
+    console.print(color_theme_grid(YARALYZER_THEME_DICT, YARALYZER))

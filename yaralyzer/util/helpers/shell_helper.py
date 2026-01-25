@@ -12,7 +12,7 @@ from subprocess import CalledProcessError, CompletedProcess, run
 from typing import Self
 
 from yaralyzer.util.constants import INKSCAPE
-from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR
+from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 from yaralyzer.util.logging import log, log_bigly, invocation_str, shell_command_log_str

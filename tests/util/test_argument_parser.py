@@ -22,7 +22,8 @@ def valid_argv(tulips_yara_path) -> list[str]:
 def test_env_var_merge(valid_argv):
     with temporary_env(ENV_VARS):
         with temporary_argv(valid_argv):
-            parse_arguments()
+            args = parse_arguments()
+            assert args == YaralyzerConfig.args
             assert YaralyzerConfig.args.min_chardet_bytes == 9
             assert YaralyzerConfig.args.suppress_decodes_table is True
             assert YaralyzerConfig.args.surrounding_bytes == 202
@@ -31,16 +32,6 @@ def test_env_var_merge(valid_argv):
         with temporary_argv(valid_argv + ['--surrounding-bytes', '123']):
             parse_arguments()
             assert YaralyzerConfig.args.surrounding_bytes == 123
-
-
-def test_option_env_var_styles():
-    validator_types = [
-        v for v in vars(cli_option_validators).values()
-        if isinstance(v, type) and issubclass(v, OptionValidator) and not v == OptionValidator
-    ]
-
-    for validator in validator_types:
-        assert validator().arg_type_str() in CLI_OPTION_TYPE_STYLES
 
 
 def test_option_validators():
@@ -73,3 +64,11 @@ def test_show_configurable_env_vars_option():
     assert len(lines) > 10
     suffix_line = next(line for line in lines if 'FILE_SUFFIX' in line)
     assert ' str ' in suffix_line
+
+    validator_types = [
+        v for v in vars(cli_option_validators).values()
+        if isinstance(v, type) and issubclass(v, OptionValidator) and not v == OptionValidator
+    ]
+
+    for validator in validator_types:
+        assert validator().arg_type_str() in CLI_OPTION_TYPE_STYLES

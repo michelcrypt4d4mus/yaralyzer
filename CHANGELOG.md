@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.1
 * Accomodate Python 3.10 for a little while longer
 
 # 1.3.0

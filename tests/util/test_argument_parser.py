@@ -1,16 +1,18 @@
 import pytest
 
 from yaralyzer.config import YaralyzerConfig
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util import cli_option_validators
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.logging import log_console
-from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 
-BASE_ARGV = [YARALYZE, __file__, '-Y', 'rules.yara']
-ENV_VARS = {'YARALYZER_SURROUNDING_BYTES': '202', 'YARALYZER_SUPPRESS_DECODES_TABLE': 'True'}
+ENV_VARS = {
+    'YARALYZER_SUPPRESS_DECODES_TABLE': 'True',
+    'YARALYZER_SURROUNDING_BYTES': '202',
+}
 
 
 @pytest.fixture

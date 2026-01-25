@@ -24,7 +24,7 @@ from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
-from yaralyzer.util.helpers.string_helper import comma_join
+from yaralyzer.util.helpers.string_helper import comma_join, props_string_indented
 from yaralyzer.util.logging import log, log_argparse_result, log_console, log_current_config, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
@@ -396,3 +396,14 @@ def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
     txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
     log_console.print(txt)
+
+
+def _debug_parser_args(_parser: ArgumentParser | None = None):
+    """Debug method to look at argparse internals."""
+    for i, action in  enumerate((_parser or parser)._actions):
+        if not action.option_strings:
+            continue
+
+        keys = [k for k, v in vars(action).items() if k not in ['deprecated', 'help', 'option_strings'] and v is not None]
+        log_console.print(f"\n{i}: {action.option_strings}", style='cyan', highlight=False)
+        log_console.print(props_string_indented(action, keys))

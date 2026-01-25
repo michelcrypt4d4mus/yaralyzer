@@ -11,7 +11,9 @@ from yaralyzer.util.constants import TRACE, TRACE_LOG_LEVEL
 ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
-NUMBER_REGEX = re.compile(r"^[\d.]+$")
+INDENTED_JOINER = ',\n' + INDENT_SPACES
+NUMBER_REGEX = re.compile(r"[\d.]+")
+NON_WORD_CHAR_REGEX = re.compile(r"[^\w]")
 
 
 def escape_yara_pattern(pattern: str) -> str:
@@ -21,6 +23,16 @@ def escape_yara_pattern(pattern: str) -> str:
 def hex_to_string(_string: str) -> str:
     r"""String '0D 0A 25 25 45 4F 46 0D 0A' becomes '\r\n%%EOF\r\n'"""
     return bytearray.fromhex(_string.replace(' ', '')).decode()
+
+
+def indented(s: str, spaces: int = 4, prefix: str = '') -> str:
+    indent = ' ' * spaces
+    indent += prefix
+    return indent + f"\n{indent}".join(s.split('\n'))
+
+
+def indented_paragraph(s: str, spaces: int = 4, prefix: str = '') -> str:
+    return '\n'.join([indented(line) for line in s.split('\n')])
 
 
 def is_number(s: str) -> bool:
@@ -49,6 +61,10 @@ def props_string(obj: object, keys: list[str] | None = None, joiner: str = ', ')
     """Generate a string that shows an object's properties, similar to standard repr()."""
     prefix = joiner if '\n' in joiner else ''
     return prefix + joiner.join(props_strings(obj, keys))
+
+
+def props_string_indented(obj: object, keys: list[str] | None = None) -> str:
+    return props_string(obj, keys, INDENTED_JOINER)
 
 
 def props_strings(obj: object, keys: list[str] | None = None) -> list[str]:

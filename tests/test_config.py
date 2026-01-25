@@ -29,9 +29,3 @@ def test_get_env_value(tmp_dir, tulips_yara_path):
     with temporary_env({f"{YARALYZER_UPPER}_SOME_DIR": '1.yara,2.yara'}):
         with pytest.raises(EnvironmentError):
             YaralyzerConfig.get_env_value('SOME_DIR')
-
-
-def test_show_configurable_env_vars():
-    result = run([YARALYZE, ENV_VARS_OPTION], capture_output=True)
-    stderr = strip_ansi_colors(result.stderr.decode())
-    assert 'sets --yara-file (comma separated for multiple)' in stderr

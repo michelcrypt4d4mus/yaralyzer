@@ -33,6 +33,20 @@ def test_env_var_merge(valid_argv):
             assert YaralyzerConfig.args.surrounding_bytes == 123
 
 
+def test_option_env_var_styles():
+    validator_types = [
+        v for v in vars(cli_option_validators).values()
+        if isinstance(v, type) and issubclass(v, OptionValidator) and not v == OptionValidator
+    ]
+
+    for validator in validator_types:
+        assert validator().arg_type_str() in CLI_OPTION_TYPE_STYLES
+
+
+def test_option_validators():
+    assert cli_option_validators.YaraRegexValidator()('/foo/') == 'foo'
+
+
 def test_private_args(valid_argv):
     with temporary_argv(valid_argv):
         args = parse_arguments()
@@ -50,25 +64,12 @@ def test_private_args(valid_argv):
         assert args._svg_requested is False
 
 
-def test_env_vars_option():
+def test_show_configurable_env_vars_option():
     result = ShellResult.from_cmd([YARALYZE, ENV_VARS_OPTION], verify_success=True)
     assert 'YARALYZER_SURROUNDING_BYTES' in result.stderr_stripped
     assert '.yaralyzer' in result.stderr_stripped
+    assert 'sets --yara-file (comma separated for multiple)' in result.stderr_stripped
     lines = result.stderr_stripped.split('\n')
     assert len(lines) > 10
     suffix_line = next(line for line in lines if 'FILE_SUFFIX' in line)
     assert ' str ' in suffix_line
-
-
-def test_option_env_var_styles():
-    validator_types = [
-        v for v in vars(cli_option_validators).values()
-        if isinstance(v, type) and issubclass(v, OptionValidator) and not v == OptionValidator
-    ]
-
-    for validator in validator_types:
-        assert validator().arg_type_str() in CLI_OPTION_TYPE_STYLES
-
-
-def test_option_validators():
-    assert cli_option_validators.YaraRegexValidator()('/foo/') == 'foo'

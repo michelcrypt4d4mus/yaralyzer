@@ -15,7 +15,7 @@ from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
 from yaralyzer.output.console import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME, console
-from yaralyzer.util.constants import YARALYZE
+from yaralyzer.util.constants import MAX_FILENAME_LENGTH, YARALYZE
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, to_paths
 from yaralyzer.util.helpers.rich_helper import dim_if, reverse_color, print_fatal_error_and_exit
 from yaralyzer.util.helpers.string_helper import comma_join, newline_join
@@ -231,7 +231,8 @@ class Yaralyzer:
         if not args.no_timestamps:
             export_basename += f"__at_{args._invoked_at_str}"
 
-        return args.output_dir.joinpath(export_basename)
+        max_filename_length = MAX_FILENAME_LENGTH - len(str(args.output_dir.resolve()))
+        return args.output_dir.joinpath(export_basename[:max_filename_length])
 
     def yaralyze(self) -> None:
         """Use YARA to find matches and then force decode them."""

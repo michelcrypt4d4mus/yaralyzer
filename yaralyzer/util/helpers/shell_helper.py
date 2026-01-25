@@ -131,7 +131,7 @@ class ShellResult:
         return shell_command_log_str(self.result, ignore_args=self.no_log_args)
 
     def _fixture_mismatch_log_msg(self, existing_path: Path, export_path: Path) -> str:
-        error_msg = f"Contents of '{export_path}'\n  does not match fixture: '{existing_path}'\n\n"
+        error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n"
         error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
         error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{existing_path}' '{export_path}'\n\n"  # noqa: E501
         return error_msg

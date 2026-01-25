@@ -46,7 +46,7 @@ from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
 from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_env_var_set_and_not_false, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
@@ -195,11 +195,12 @@ def shell_command_log_str(result: CompletedProcess, ignore_args: list[str] | Non
     cmd = invocation_str([arg for arg in result.args if arg not in (ignore_args or [])])
     msg = f"Return code {result.returncode} from shell command:\n\n{cmd}"
 
-    for i, stream in enumerate([result.stdout, result.stderr]):
-        label = 'stdout' if i == 0 else 'stderr'
-        decoded_stream = stream.decode() if isinstance(stream, bytes) else stream
-        decoded_stream = strip_ansi_colors(decoded_stream)
-        msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
+    # if not is_env_var_set_and_not_false('PYTEST_SUPPRESS_STREAM_LOGS'):
+    #     for i, stream in enumerate([result.stdout, result.stderr]):
+    #         label = 'stdout' if i == 0 else 'stderr'
+    #         decoded_stream = stream.decode() if isinstance(stream, bytes) else stream
+    #         decoded_stream = strip_ansi_colors(decoded_stream)
+    #         msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
 
     return msg + "\n"
 

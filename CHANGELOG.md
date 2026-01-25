@@ -1,6 +1,7 @@
 # NEXT RELEASE
 * Add `--export-png` option to render .png images of output
 * Add `--suppress-output` option
+* Truncate extremely long filenames so they don't exceed system limit
 
 # 1.2.0
 * Multi-select command line options (e.g. `--yara-file`, `--rule-dir`) can be set permanently via env vars using comma separated strings

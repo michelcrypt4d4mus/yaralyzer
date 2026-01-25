@@ -83,7 +83,7 @@ def export_json(yaralyzer: Yaralyzer, args: Namespace) -> Path:
             return json_export_path
 
 
-def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
+def invoke_rich_export(export_method: Callable, args: Namespace) -> None:
     """
     Announce the export, perform the export, and announce completion.
 
@@ -103,15 +103,20 @@ def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
 
     kwargs = _EXPORT_KWARGS[method_name].copy()
     kwargs.update({'clear': False})
+    is_svg_export = 'svg' in method_name
 
-    if 'svg' in method_name:
+    if is_svg_export:
         kwargs.update({'title': export_file_path.name})
 
     # Invoke the export method
     with log_file_export(export_file_path):
         log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
         export_method(export_file_path, **kwargs)
-        return export_file_path
+
+    # PNGs are rendered from SVGs
+    if is_svg_export and args.export_png:
+        with log_file_export(export_file_path.parent.joinpath(export_file_path.stem + '.png')) as png_path:
+            render_png(export_file_path, png_path, args)
 
 
 def render_png(svg_path: Path, png_path: Path, args: Namespace) -> Path | None:
@@ -142,7 +147,6 @@ def _render_png_with_inkscape(svg_path: Path, png_path) -> Path | None:
     log_console.print(f"Rendering .png image with {INKSCAPE}...", highlight=False, style='dim')
     inkscape_cmd = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
     ShellResult.from_cmd(inkscape_cmd, verify_success=True)
-    import pdb;pdb.set_trace()
     return png_path
 
 

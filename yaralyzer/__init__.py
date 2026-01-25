@@ -72,12 +72,7 @@ def yaralyze():
     if args.export_html:
         invoke_rich_export(console.save_html, args)
     if args.export_svg:
-        svg_path = invoke_rich_export(console.save_svg, args)
-
-        # PNGs are rendered from SVGs
-        if args.export_png:
-            with log_file_export(svg_path.parent.joinpath(svg_path.stem + '.png')) as png_path:
-                render_png(svg_path, png_path, args)
+        invoke_rich_export(console.save_svg, args)
     if args.export_json:
         export_json(yaralyzer, args)
 

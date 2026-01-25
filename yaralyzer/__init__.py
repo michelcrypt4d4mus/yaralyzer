@@ -74,7 +74,7 @@ def yaralyze():
     if args.export_svg:
         invoke_rich_export(console.save_svg, args)
     if args.export_json:
-        export_json(yaralyzer, args._export_basepath)
+        export_json(yaralyzer, args)
 
     if str(args.file_to_scan_path).lower().endswith('pdf'):
         log_console.print(PDFALYZER_MSG_TXT)

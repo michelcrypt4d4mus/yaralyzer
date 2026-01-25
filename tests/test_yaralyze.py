@@ -14,7 +14,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file
+from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file, relative_path
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
@@ -24,7 +24,7 @@ from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
-DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', TMP_DIR]
+DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', relative_path(TMP_DIR)]
 EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 
 
@@ -65,14 +65,11 @@ def test_yaralyze_with_patterns(il_tulipano_path, binary_file_path, tulips_yara_
     _compare_exported_txt_to_fixture(binary_file_path, '-hex', HEX_STRING)
 
 
-def test_file_export(binary_file_path, tulips_yara_path, tmp_dir):
-    _yaralyze_with_args(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg', '-txt')
-    rendered_files = [f for f in files_in_dir(tmp_dir) if not str(f).endswith('png')]  # TODO: hack to deal with bad tmp_dir management
-    assert len(rendered_files) == 4
-    file_sizes = [getsize(f) for f in rendered_files]
-    _assert_array_is_close(sorted(file_sizes), [1182, 45179, 78781, 243312])
+def test_multi_export(binary_file_path, tulips_yara_path, tmp_dir):
+    result = _compare_exported_txt_to_fixture(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg')
+    assert len(result.exported_file_paths()) == 4
 
-    for file in rendered_files:
+    for file in result.exported_file_paths():
         if file.name.endswith('.json'):
             json_data = json.loads(load_file(file))  # Ensure JSON is valid
             assert isinstance(json_data, list), "JSON data should be a list of matches"
@@ -97,12 +94,6 @@ def test_png_export(il_tulipano_path, tmp_dir):
     assert tmp_png_path.exists(), f"PNG does not exist! '{tmp_png_path}'"
     assert file_size(tmp_png_path) > 500_000
     assert not tmp_dir.joinpath(f"{expected_basepath}.svg").exists()
-
-
-def _assert_array_is_close(_list1, _list2):
-    for i, item in enumerate(_list1):
-        if not isclose(item, _list2[i], rel_tol=CLOSENESS_THRESHOLD):
-            assert False, f"File size of {item} too far from {_list2[i]}"
 
 
 def _yaralyze_with_args(file_to_scan: str | Path, *args) -> ShellResult:
@@ -132,7 +123,7 @@ def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
     can be compared against the same fixture file.
     """
     cmd = _yaralyze_shell_cmd(file_to_scan, *[*args, '-txt'])
-    ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR, no_log_args=DEFAULT_CLI_ARGS)
+    return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR, DEFAULT_CLI_ARGS)
 
 
 def _yaralyze_shell_cmd(file_path: str | Path, *args) -> list[str]:

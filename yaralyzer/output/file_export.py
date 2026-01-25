@@ -12,7 +12,7 @@ from typing import Callable
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.constants import INKSCAPE, INKSCAPE_URL
-from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_console, log_and_print, log_file_write
+from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_console, log_and_print, log_file_export, log_file_write
 from yaralyzer.util.helpers.env_helper import is_cairosvg_installed
 from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version, safe_args
@@ -65,7 +65,7 @@ _EXPORT_KWARGS = {
 }
 
 
-def export_json(yaralyzer: Yaralyzer, export_basepath: Path | None = None) -> Path:
+def export_json(yaralyzer: Yaralyzer, args: Namespace) -> Path:
     """
     Export YARA scan results to JSON.
 
@@ -74,16 +74,16 @@ def export_json(yaralyzer: Yaralyzer, export_basepath: Path | None = None) -> Pa
         export_basepath (Path | None, Optional): Base path to write output to. Should have no file extension.
 
     Returns:
-        Path: File data was exported to.
+        Path: File path data was exported to.
     """
-    json_export_path = Path(f"{export_basepath or 'yara_matches'}.json")
-    matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
+    json_export_path = Path(f"{args._export_basepath}.json")
 
-    with open(json_export_path, 'w') as f:
-        json.dump(matches_data, f, indent=4)
+    with log_file_export(json_export_path):
+        matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
 
-    log_and_print(f"YARA matches exported to JSON file: '{relative_path(json_export_path)}'", style=WRITE_STYLE)
-    return json_export_path
+        with open(json_export_path, 'w') as f:
+            json.dump(matches_data, f, indent=4)
+            return json_export_path
 
 
 def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:

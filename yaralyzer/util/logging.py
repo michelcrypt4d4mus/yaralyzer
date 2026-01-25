@@ -33,10 +33,12 @@ Python log levels for reference:
 import logging
 import time
 from argparse import Namespace
+from contextlib import contextmanager
 from copy import copy
 from pathlib import Path
 from sys import argv
 from subprocess import CompletedProcess
+from typing import Any, Generator
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
@@ -46,9 +48,8 @@ from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
 from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_env_var_set_and_not_false, is_invoked_by_pytest
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
-from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -204,6 +205,14 @@ def shell_command_log_str(result: CompletedProcess, ignore_args: list[str] | Non
     #         msg += f"\n\n\n\n[{label} first 2500 chars]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
 
     return msg + "\n"
+
+
+@contextmanager
+def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
+    """Standardize the way file exports are logged."""
+    started_at = time.perf_counter()
+    yield
+    log_file_write(file_path, started_at)
 
 
 # See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs

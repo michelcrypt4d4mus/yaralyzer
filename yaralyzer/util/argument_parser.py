@@ -17,8 +17,8 @@ from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
-from yaralyzer.util.cli_options.cli_option_validators import DirValidator, PathValidator, PatternsLabelValidator, YaraRegexValidator
-from yaralyzer.util.cli_options.option_validator import OptionValidator
+from yaralyzer.util.cli_options.cli_option_validators import (DirValidator, PathValidator, OptionValidator,
+     PatternsLabelValidator, YaraRegexValidator)
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper

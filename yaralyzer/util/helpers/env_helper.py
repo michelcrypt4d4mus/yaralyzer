@@ -3,7 +3,6 @@ Configuration management for Yaralyzer.
 """
 import re
 import sys
-from argparse import _AppendAction, _StoreTrueAction, Action
 from contextlib import contextmanager
 from copy import deepcopy
 from os import environ
@@ -11,13 +10,8 @@ from shutil import get_terminal_size
 from typing import Any, Generator
 
 from rich.console import Console
-from rich.padding import Padding
-from rich.text import Text
-from rich_argparse_plus import RichHelpFormatterPlus
 
-from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
-from yaralyzer.util.cli_options.option_validator import OptionValidator
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
 
 DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)

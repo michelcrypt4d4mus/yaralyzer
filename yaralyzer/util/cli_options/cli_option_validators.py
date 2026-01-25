@@ -2,13 +2,22 @@
 Validators for command line arguments.
 """
 import re
+from abc import ABC
 from argparse import ArgumentTypeError
 from pathlib import Path
 
 import yara
 
-from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.yara.yara_rule_builder import PATTERN_TYPES, build_yara_rule
+
+
+class OptionValidator(ABC):
+    """
+    Base class for CLI options validators that needs to be in its own file because of circular
+    dependency issues.
+    """
+    def arg_type_str(self) -> str:
+        return type(self).__name__.removesuffix('Validator')
 
 
 class DirValidator(OptionValidator):

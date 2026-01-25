@@ -6,7 +6,6 @@ import json
 import logging
 import re
 from math import isclose
-from os.path import getsize
 from pathlib import Path
 from subprocess import CalledProcessError
 
@@ -14,7 +13,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.file_helper import file_size, files_in_dir, load_file, relative_path
+from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
@@ -69,19 +68,18 @@ def test_multi_export(binary_file_path, tulips_yara_path, tmp_dir):
     result = _compare_exported_txt_to_fixture(binary_file_path, '-Y', tulips_yara_path, '-html', '-json', '-svg')
     assert len(result.exported_file_paths()) == 4
 
-    for file in result.exported_file_paths():
-        if file.name.endswith('.json'):
-            json_data = json.loads(load_file(file))  # Ensure JSON is valid
-            assert isinstance(json_data, list), "JSON data should be a list of matches"
-            assert len(json_data) == 2, "JSON data should not be empty"
-
-            first_match = json_data[0]
-            assert first_match.get('label') == "There_Will_Be_Tulips: $tulip", "First match should have correct 'label'"
-            assert first_match.get('match_length') == 8, "First match should have 'length' key"
-            assert first_match.get('ordinal') == 1, "First match should have 'ordinal' value of 1"
-            assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"
-            assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"
-            assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
+    # Check JSON
+    json_export_path = next(f for f in result.exported_file_paths() if str(f).endswith('json'))
+    json_data = json.loads(load_file(json_export_path))  # Ensure JSON is valid
+    assert isinstance(json_data, list), "JSON data should be a list of matches"
+    assert len(json_data) == 2, "JSON data should not be empty"
+    first_match = json_data[0]
+    assert first_match.get('label') == "There_Will_Be_Tulips: $tulip", "First match should have correct 'label'"
+    assert first_match.get('match_length') == 8, "First match should have 'length' key"
+    assert first_match.get('ordinal') == 1, "First match should have 'ordinal' value of 1"
+    assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"
+    assert len(first_match.get('matched_bytes')) == 16, "First match should have 16 'matched_bytes'"
+    assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
 def test_png_export(il_tulipano_path, tmp_dir):

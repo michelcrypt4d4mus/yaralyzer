@@ -116,6 +116,8 @@ class ShellResult:
                 is_output_same_as_fixture = exported_data == existing_data
                 assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
+            log.warning(f"Validated '{exported_path}' as matching fixture")
+
     def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""
         written_paths = [relative_path(Path(m.group(1))) for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped)]

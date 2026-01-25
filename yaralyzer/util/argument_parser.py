@@ -24,14 +24,20 @@ from yaralyzer.util.logging import log, log_argparse_result, log_current_config,
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
-YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
-
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
                        f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
+# One of these must be provided by the user to specify what yara rules to use
+YARA_RULES_ARGS = [
+    'yara_rules_files',
+    'yara_rules_dirs',
+    'hex_patterns',
+    'regex_patterns',
+]
+
 
 def epilog(config: Type[YaralyzerConfig]) -> str:
-    """Returns a string with some rich text tags for color."""
+    """Returns a string with some rich text tags for color to be used as the --help footer."""
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()

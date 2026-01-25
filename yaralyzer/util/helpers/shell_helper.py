@@ -2,7 +2,6 @@
 Utility methods for running shell commands, including some code smelly pytest related stuff
 that needs to be here because it's also used by Pdfalyzer.
 """
-import filecmp
 import logging
 import re
 import shutil
@@ -105,7 +104,6 @@ class ShellResult:
 
             assert existing_path.exists(), f"Existing file we want to compare against '{existing_path}' doesn't exist!"
             existing_data = load_file(existing_path)
-            # assert filecmp.cmp(existing_path, exported_path)
 
             # # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
             @timeout(seconds=5)

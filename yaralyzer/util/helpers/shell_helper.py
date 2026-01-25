@@ -1,5 +1,6 @@
 """
-Utility methods used by pytest both here and in Pdfalyzer.
+Utility methods for running shell commands, including some code smelly pytest related stuff
+that needs to be here because it's also used by Pdfalyzer.
 """
 import logging
 import re
@@ -15,6 +16,7 @@ from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 from yaralyzer.util.logging import log, log_bigly, invocation_str, shell_command_log_str
+from yaralyzer.util.timeout import timeout
 
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
@@ -98,9 +100,19 @@ class ShellResult:
                 return
 
             assert existing_path.exists()
-            fixture_data = load_file(existing_path)
-            new_data = load_file(exported_path)
-            assert new_data == fixture_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
+            existing_data = load_file(existing_path)
+            exported_data = load_file(exported_path)
+
+            # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
+            @timeout(seconds=8)
+            def compare_files():
+                assert exported_data == existing_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
+
+            try:
+                compare_files()
+            except TimeoutError:
+                is_output_same_as_fixture = exported_data == existing_data
+                assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(export_path, exported_path)
 
     def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""

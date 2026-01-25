@@ -86,7 +86,7 @@ class ShellResult:
             against_dir (Path): Dir where the file to compare against exists already.
             only_last_file (bool, optional): If True only compare the last file that was written.
         """
-        exported_paths = self.written_file_paths()[-1:] if only_last_file else self.written_file_paths()
+        exported_paths = self.exported_file_paths()[-1:] if only_last_file else self.exported_file_paths()
 
         for exported_path in exported_paths:
             assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
@@ -102,20 +102,20 @@ class ShellResult:
             new_data = load_file(exported_path)
             assert new_data == fixture_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
-    def last_written_file_path(self) -> Path:
-        """Returns the last match."""
-        return self.written_file_paths()[-1]
-
-    def output_logs(self) -> str:
-        return shell_command_log_str(self.result, ignore_args=self.no_log_args)
-
-    def written_file_paths(self) -> list[Path]:
+    def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""
         written_paths = [relative_path(Path(m.group(1))) for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped)]
         assert len(written_paths) > 0, f"Could not find 'wrote to file' msg in stderr:\n\n{self.stderr}"
         log.error(f"Found {len(written_paths)} written files in the logs")
         log.error(self.output_logs())
         return written_paths
+
+    def last_exported_file_path(self) -> Path:
+        """Returns the last file that exported by this shell command."""
+        return self.exported_file_paths()[-1]
+
+    def output_logs(self) -> str:
+        return shell_command_log_str(self.result, ignore_args=self.no_log_args)
 
     def _fixture_mismatch_log_msg(self, fixture_path: Path, export_path: Path) -> str:
         fixture_path = relative_path(fixture_path).relative_to(Path.cwd())

@@ -93,7 +93,7 @@ def test_png_export(il_tulipano_path, tmp_dir):
     expected_basepath = f'{il_tulipano_path.name}_scanned_with_{regex}{MAXDECODE_SUFFIX}'
     result = ShellResult.from_cmd(cmd)
     tmp_png_path = tmp_dir.joinpath(f'{expected_basepath}.png')
-    assert result.last_written_file_path().resolve() == tmp_png_path
+    assert result.last_exported_file_path().resolve() == tmp_png_path
     assert tmp_png_path.exists(), f"PNG does not exist! '{tmp_png_path}'"
     assert file_size(tmp_png_path) > 500_000
     assert not tmp_dir.joinpath(f"{expected_basepath}.svg").exists()

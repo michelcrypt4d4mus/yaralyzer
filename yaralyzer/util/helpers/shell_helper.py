@@ -104,7 +104,7 @@ class ShellResult:
             exported_data = load_file(exported_path)
 
             # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
-            @timeout(seconds=8)
+            @timeout(seconds=5)
             def compare_files():
                 assert exported_data == existing_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
@@ -112,7 +112,7 @@ class ShellResult:
                 compare_files()
             except TimeoutError:
                 is_output_same_as_fixture = exported_data == existing_data
-                assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(export_path, exported_path)
+                assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
     def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""
@@ -129,12 +129,10 @@ class ShellResult:
     def output_logs(self) -> str:
         return shell_command_log_str(self.result, ignore_args=self.no_log_args)
 
-    def _fixture_mismatch_log_msg(self, fixture_path: Path, export_path: Path) -> str:
-        fixture_path = relative_path(fixture_path).relative_to(Path.cwd())
-        export_path = relative_path(export_path).relative_to(Path.cwd())
-        error_msg = f"Contents of '{export_path}'\n  does not match fixture: '{fixture_path}'\n\n"
+    def _fixture_mismatch_log_msg(self, existing_path: Path, export_path: Path) -> str:
+        error_msg = f"Contents of '{export_path}'\n  does not match fixture: '{existing_path}'\n\n"
         error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
-        error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{fixture_path}' '{export_path}'\n\n"  # noqa: E501
+        error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{existing_path}' '{export_path}'\n\n"  # noqa: E501
         return error_msg
 
     @classmethod

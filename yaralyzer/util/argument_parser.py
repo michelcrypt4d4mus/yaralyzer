@@ -347,7 +347,7 @@ def show_configurable_env_vars(cls: Type[YaralyzerConfig]) -> None:
     """
     panel = Panel(f"{cls.app_name} Environment Variables", style='honeydew2')
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
-    log_console.print(env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
+    log_console.print(_env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
 
     for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
         log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
@@ -361,6 +361,17 @@ def show_configurable_env_vars(cls: Type[YaralyzerConfig]) -> None:
 
     _print_env_var_explanation(cls.log_dir_env_var, 'writing of logs to files')
     log_console.line()
+
+
+def _env_var_cfg_msg(app_name: str) -> Padding:
+    app_name = app_name.lower()
+    txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
+               f"options, either by conventional environment variable setting methods or by creating\na ")
+    txt.append(f".{app_name} ", style='bright_cyan bold')
+    txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
+               f"For more on how that works see the example env file here:\n\n   ")
+    txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
+    return Padding(txt, (1, 1, 0, 2))
 
 
 def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
@@ -385,15 +396,3 @@ def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
     txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
     log_console.print(txt)
-
-
-
-def env_var_cfg_msg(app_name: str) -> Padding:
-    app_name = app_name.lower()
-    txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
-               f"options, either by conventional environment variable setting methods or by creating\na ")
-    txt.append(f".{app_name} ", style='bright_cyan bold')
-    txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
-               f"For more on how that works see the example env file here:\n\n   ")
-    txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
-    return Padding(txt, (1, 1, 0, 2))

@@ -4,7 +4,7 @@ from subprocess import run
 import pytest
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.util.constants import YARALYZE, YARALYZER_UPPER
+from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.exceptions import InvalidArgumentError
 from yaralyzer.util.helpers.env_helper import temporary_env
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
@@ -32,6 +32,6 @@ def test_get_env_value(tmp_dir, tulips_yara_path):
 
 
 def test_show_configurable_env_vars():
-    result = run([YARALYZE, '--env-vars'], capture_output=True)
+    result = run([YARALYZE, ENV_VARS_OPTION], capture_output=True)
     stderr = strip_ansi_colors(result.stderr.decode())
     assert 'sets --yara-file (comma separated for multiple)' in stderr

@@ -47,10 +47,10 @@ def env_var_cfg_msg(app_name: str) -> Padding:
     txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
                f"options, either by conventional environment variable setting methods or by creating\na ")
     txt.append(f".{app_name} ", style='bright_cyan bold')
-    txt.append(f"file in your home or current directory and putting these vars in it.\n"
+    txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
                f"For more on how that works see the example env file here:\n\n   ")
     txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')
-    return Padding(txt, (1, 1, 0, 1))
+    return Padding(txt, (1, 1, 0, 2))
 
 
 def is_cairosvg_installed() -> bool:

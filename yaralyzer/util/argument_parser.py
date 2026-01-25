@@ -264,7 +264,7 @@ def parse_arguments(args: Namespace | None = None, argv: list[str] | None = None
     if '--version' in sys.argv:
         print(f"{YARALYZER} {version(YARALYZER)}")
         sys.exit()
-    elif '--env-vars' in sys.argv:
+    elif ENV_VARS_OPTION in sys.argv:
         YaralyzerConfig.show_configurable_env_vars()
         sys.exit()
 

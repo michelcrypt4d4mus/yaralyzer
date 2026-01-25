@@ -73,10 +73,6 @@ def relative_path(path: Path | str) -> Path:
         return Path(path)
 
 
-
-
-
-
 def timestamp_for_filename() -> str:
     """Returns a string showing current time in a file name friendly format."""
     return datetime.now().strftime("%Y-%m-%dT%H.%M.%S")

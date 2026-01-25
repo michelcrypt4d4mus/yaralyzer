@@ -14,7 +14,7 @@ MAX_FILENAME_LENGTH = 245
 
 # Logging constants
 TRACE = 'TRACE'
-TRACE_LEVEL = logging.DEBUG - 1
+TRACE_LOG_LEVEL = logging.DEBUG - 1
 
 # Command line options
 ECHO_COMMAND_OPTION = '--echo-command'

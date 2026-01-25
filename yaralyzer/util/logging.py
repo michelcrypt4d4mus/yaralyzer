@@ -168,10 +168,22 @@ def log_current_config() -> None:
     log.info(msg)
 
 
-def log_file_write(file_path: str | Path, started_at: float) -> None:
-    write_time = time.perf_counter() - started_at
-    size = file_size_str(file_path)
-    log_and_print(f"\nWrote '{relative_path(file_path)}' in {write_time:.2f} seconds ({size}).", style=WRITE_STYLE)
+@contextmanager
+def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
+    """Standardize the way file exports are logged."""
+    if file_path.exists():
+        log.debug(f"Overwriting existing '{file_path}' ({file_size_str(file_path)})...")
+        file_path.unlink()
+
+    started_at = time.perf_counter()
+    yield file_path
+    write_time = f"{time.perf_counter() - started_at:.3f} seconds"
+
+    if file_path.exists():
+        size = file_size_str(file_path)
+        log_and_print(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).", style=WRITE_STYLE)
+    else:
+        log.error(f"Spent {write_time} writing file '{file_path}' but there's nothing there!")
 
 
 def log_invocation() -> None:
@@ -190,14 +202,6 @@ def set_log_level(level: str | int) -> None:
     """Set the log level at any time."""
     for handler in log.handlers + [log]:
         handler.setLevel(log_level_for(level))
-
-
-@contextmanager
-def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
-    """Standardize the way file exports are logged."""
-    started_at = time.perf_counter()
-    yield
-    log_file_write(file_path, started_at)
 
 
 # See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs

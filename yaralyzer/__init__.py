@@ -16,12 +16,12 @@ if not environ.get(INVOKED_BY_PYTEST, False):
             break
 
 from yaralyzer.output.console import console
-from yaralyzer.output.file_export import export_json, invoke_rich_export
+from yaralyzer.output.file_export import export_json, invoke_rich_export, render_png
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import PDFALYZER_REPO_URL
 from yaralyzer.util.helpers.rich_helper import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.logging import invocation_txt, log, log_console
+from yaralyzer.util.logging import invocation_txt, log, log_console, log_file_export
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -72,7 +72,12 @@ def yaralyze():
     if args.export_html:
         invoke_rich_export(console.save_html, args)
     if args.export_svg:
-        invoke_rich_export(console.save_svg, args)
+        svg_path = invoke_rich_export(console.save_svg, args)
+
+        # PNGs are rendered from SVGs
+        if args.export_png:
+            with log_file_export(svg_path.parent.joinpath(svg_path.stem + '.png')) as png_path:
+                render_png(svg_path, png_path, args)
     if args.export_json:
         export_json(yaralyzer, args)
 

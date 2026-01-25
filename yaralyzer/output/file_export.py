@@ -3,18 +3,16 @@ Functions to export Yaralyzer results to various file formats.
 """
 from argparse import Namespace
 import json
-import re
-import time
 from pathlib import Path
-from subprocess import CalledProcessError, check_output, run
+from subprocess import CalledProcessError
 from typing import Callable
 
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.constants import INKSCAPE, INKSCAPE_URL
-from yaralyzer.util.logging import invocation_str, log, log_console, log_file_export, log_file_write
+from yaralyzer.util.logging import log, log_console, log_file_export
 from yaralyzer.util.helpers.env_helper import is_cairosvg_installed
-from yaralyzer.util.helpers.shell_helper import get_inkscape_version, safe_args
+from yaralyzer.util.helpers.shell_helper import ShellResult, get_inkscape_version, safe_args
 from yaralyzer.yaralyzer import Yaralyzer
 
 CAIROSVG_WARNING_MSG = f"PNG images rendered by CairoSVG may contain issues, especially with tables. " \
@@ -99,7 +97,6 @@ def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
     method_name = export_method.__name__
     extname = 'txt' if method_name == 'save_text' else method_name.split('_')[-1]
     export_file_path = Path(f"{args._export_basepath}.{extname}")
-    export_png = False
 
     if method_name not in _EXPORT_KWARGS:
         raise RuntimeError(f"{method_name} is not a valid Rich.console export method!")
@@ -109,50 +106,48 @@ def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
 
     if 'svg' in method_name:
         kwargs.update({'title': export_file_path.name})
-        export_png = args and args.export_png
 
     # Invoke the export method
     with log_file_export(export_file_path):
         log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
         export_method(export_file_path, **kwargs)
-
-    if export_png and (png_path := _render_png(export_file_path)) and not args._svg_requested:
-        log.info(f"Removing intermediate PNG '{export_file_path}'")
-        export_file_path.unlink()
-        return png_path
-
-    return export_file_path
+        return export_file_path
 
 
-def _render_png(svg_path: Path) -> Path | None:
+def render_png(svg_path: Path, png_path: Path, args: Namespace) -> Path | None:
     """Turn the svg output into a png with Inkscape or cairosvg. Returns png path if successful."""
-    started_at = time.perf_counter()
-    inkscape_version = get_inkscape_version()
-    png_path = svg_path.parent.joinpath(svg_path.stem + '.png')
-
-    if inkscape_version:
-        log_console.print(f"Rendering .png image with {INKSCAPE} {inkscape_version}...", highlight=False, style='dim')
-        inkscape_cmd_args = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
-        log.debug(f"Running inkscape cmd: {invocation_str(inkscape_cmd_args)}")
-
-        try:
-            check_output(inkscape_cmd_args)
-            log_file_write(png_path, started_at)
-            return png_path
-        except (CalledProcessError, FileNotFoundError) as e:
-            error_msg = f"Failed to render png with {INKSCAPE}! ({e})"
-
-            if is_cairosvg_installed():
-                log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")
-            else:
-                log.error(error_msg + f"\n\ncairosvg not available to fallback to.")
-                return None
-
     try:
-        log.warning(CAIROSVG_WARNING_MSG)
-        import cairosvg
-        cairosvg.svg2png(url=str(svg_path), write_to=str(png_path))
-        log_file_write(png_path, started_at)
-        return png_path
+        if get_inkscape_version():
+            try:
+                return _render_png_with_inkscape(svg_path, png_path)
+            except (CalledProcessError, FileNotFoundError) as e:
+                error_msg = f"Failed to render png with {INKSCAPE}! ({e})"
+
+                if is_cairosvg_installed():
+                    log.error(error_msg + f"\n\nFalling back to using cairosvg. Rendered image may me imperfect.")
+                else:
+                    log.error(error_msg + f"\n\ncairosvg not available to fallback to.")
+                    raise e
+
+        return _render_png_with_cairosvg(svg_path, png_path)
     except Exception as e:
-        log.error(f"Failed to render png with cairosvg! ({e})")
+        log.error(f"Failed to render png! ({e})")
+    finally:
+        if not args._svg_requested:
+            log.info(f"Removing intermediate SVG file '{svg_path}'...")
+            svg_path.unlink()
+
+
+def _render_png_with_inkscape(svg_path: Path, png_path) -> Path | None:
+    log_console.print(f"Rendering .png image with {INKSCAPE}...", highlight=False, style='dim')
+    inkscape_cmd = safe_args([INKSCAPE, f'--export-filename={png_path}', svg_path])
+    ShellResult.from_cmd(inkscape_cmd, verify_success=True)
+    import pdb;pdb.set_trace()
+    return png_path
+
+
+def _render_png_with_cairosvg(svg_path: Path, png_path) -> Path:
+    log.warning(CAIROSVG_WARNING_MSG)
+    import cairosvg
+    cairosvg.svg2png(url=str(svg_path), write_to=str(png_path))
+    return png_path

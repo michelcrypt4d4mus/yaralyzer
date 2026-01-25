@@ -142,7 +142,8 @@ tuning.add_argument('--min-chardet-table-confidence',
                          "decection scores table",
                     default=YaralyzerConfig.DEFAULT_MIN_CHARDET_TABLE_CONFIDENCE,
                     metavar='PCT_CONFIDENCE',
-                    type=int)
+                    type=int,
+                    choices=CONFIDENCE_SCORE_RANGE)
 
 tuning.add_argument('--force-display-threshold',
                     help="encodings with chardet confidence below this number will neither be displayed nor " +
@@ -242,9 +243,8 @@ debug.add_argument('-L', '--log-level',
 debug.add_argument('-I', '--interact', action='store_true',
                     help='drop into interactive python REPL when parsing is complete')
 
-
+# TODO: this kind of sucks
 YaralyzerConfig.set_argument_parser(parser)
-is_yaralyzing = parser.prog == YARALYZE
 
 
 def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = None):
@@ -282,7 +282,7 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         set_log_level(logging.DEBUG)
 
         if args.log_level and args.log_level != 'DEBUG':
-            log.warning("Ignoring --log-level option as debug mode means log level is DEBUG")
+            log.warning("Ignoring --log-level option, --debug means log level is DEBUG")
     elif args.log_level:
         set_log_level(args.log_level)
 
@@ -320,9 +320,9 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
 
     # Wait until after set_args() to set these defaults in case there's a YARALYZER_[WHATEVER] env var
     # that we need to override.
+    args.output_dir = (args.output_dir or Path.cwd()).resolve()
     args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
     args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
-    args.output_dir = (args.output_dir or Path.cwd()).resolve()
 
     if args.maximize_width:
         # TODO: unclear if we need to do this import this way to make the change happen?
@@ -336,4 +336,5 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
     return args
 
 
+# TODO this is hacky/ugly
 YaralyzerConfig._parse_arguments = parse_arguments

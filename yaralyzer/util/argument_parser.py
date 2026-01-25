@@ -317,7 +317,7 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
-    YaralyzerConfig.set_args(args)
+    YaralyzerConfig.merge_env_options(args)
 
     # Wait until after set_args() to set these defaults in case there's a YARALYZER_[WHATEVER] env var
     # that we need to override.

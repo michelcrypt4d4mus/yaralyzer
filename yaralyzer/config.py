@@ -118,12 +118,7 @@ class YaralyzerConfig:
         return env_value
 
     @classmethod
-    def prefixed_env_var(cls, var: str) -> str:
-        """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
-        return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
-
-    @classmethod
-    def set_args(cls, _args: Namespace) -> None:
+    def merge_env_options(cls, _args: Namespace) -> None:
         """
         Set the `args` class instance variable and update args with any environment variable overrides.
         For each arg the environment will be checked for a variable with the same name, uppercased and
@@ -155,6 +150,11 @@ class YaralyzerConfig:
                 setattr(_args, option, env_value if env_value else arg_value)
             else:
                 setattr(_args, option, arg_value or env_value)
+
+    @classmethod
+    def prefixed_env_var(cls, var: str) -> str:
+        """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
+        return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
 
     @classmethod
     def set_argument_parser(cls, parser: ArgumentParser) -> None:
@@ -189,7 +189,7 @@ class YaralyzerConfig:
     @classmethod
     def _set_default_args(cls) -> None:
         """Set `self.args` to their defaults as if parsed from the command line."""
-        cls.set_args(cls._parse_arguments(None, DEFAULT_ARGV))
+        cls.merge_env_options(cls._parse_arguments(None, DEFAULT_ARGV))
         cls.args.output_dir = Path(cls.args.output_dir or Path.cwd()).resolve()
 
 

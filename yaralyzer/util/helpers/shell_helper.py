@@ -66,6 +66,7 @@ class ShellResult:
             no_log_args (list[str], optional): Args that might be in `cmd` to not show in logs.
         """
         result = cls(run(safe_args(cmd), capture_output=True, env=environ, text=True), no_log_args or [])
+        log.debug(f"Ran command: {result.invocation_str}")
 
         if verify_success:
             try:
@@ -76,39 +77,42 @@ class ShellResult:
 
         return result
 
-    def compare_exported_file_to_existing(self, against_dir: Path) -> None:
+    def compare_exported_files_to_existing(self, against_dir: Path, only_last_file: bool = False) -> None:
         """
         Compare the file exported by this command to an existing file in `against_dir`
         This command should have written to the same filename just in a different dir.
 
         Args:
             against_dir (Path): Dir where the file to compare against exists already.
+            only_last_file (bool, optional): If True only compare the last file that was written.
         """
-        exported_path = relative_path(self.written_file_path())
-        assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
-        fixture_path = relative_path(against_dir.joinpath(exported_path.name))
+        exported_paths = self.written_file_paths()[-1:] if only_last_file else self.written_file_paths()
 
-        if _should_rebuild_fixtures():
-            log.warning(f"\nOverwriting fixture '{fixture_path}'\n   with contents of '{exported_path}'")
-            shutil.move(exported_path, fixture_path)
-            return
+        for exported_path in exported_paths:
+            assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
+            existing_path = relative_path(against_dir.joinpath(exported_path.name))
 
-        assert fixture_path.exists()
-        fixture_data = load_file(fixture_path)
-        new_data = load_file(exported_path)
-        assert new_data == fixture_data, self._fixture_mismatch_log_msg(fixture_path, exported_path)
+            if _should_rebuild_fixtures():
+                log.warning(f"\nOverwriting fixture '{existing_path}'\n   with contents of '{exported_path}'")
+                shutil.move(exported_path, existing_path)
+                return
+
+            assert existing_path.exists()
+            fixture_data = load_file(existing_path)
+            new_data = load_file(exported_path)
+            assert new_data == fixture_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
+
+    def last_written_file_path(self) -> Path:
+        """Returns the last match."""
+        return self.written_file_paths()[-1]
 
     def output_logs(self) -> str:
         return shell_command_log_str(self.result, ignore_args=self.no_log_args)
 
-    def written_file_path(self) -> Path:
-        """Returns the last match."""
-        return self.written_file_paths(self.stderr)[-1]
-
-    def written_file_paths(self, log_text: str) -> list[Path]:
+    def written_file_paths(self) -> list[Path]:
         """Finds the last match."""
         written_paths = [relative_path(Path(m.group(1))) for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped)]
-        assert len(written_paths) > 0, f"Could not find 'wrote to file' msg in stderr:\n\n{log_text}"
+        assert len(written_paths) > 0, f"Could not find 'wrote to file' msg in stderr:\n\n{self.stderr}"
         log.error(f"Found {len(written_paths)} written files in the logs")
         log.error(self.output_logs())
         return written_paths
@@ -122,7 +126,7 @@ class ShellResult:
         return error_msg
 
     @classmethod
-    def run_and_compare_exported_file_to_existing(
+    def run_and_compare_exported_files_to_existing(
         cls,
         cmd: list[str] | str,
         against_dir: Path,
@@ -137,7 +141,7 @@ class ShellResult:
             against_dir (Path): Dir where the existing file fixture lives.
             ignorable_args (list[str], optional): Don't log these args if they exist in `cmd`.
         """
-        cls.from_cmd(cmd, True, no_log_args).compare_exported_file_to_existing(against_dir)
+        cls.from_cmd(cmd, True, no_log_args).compare_exported_files_to_existing(against_dir)
 
 
 def get_inkscape_version() -> str | None:

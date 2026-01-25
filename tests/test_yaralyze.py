@@ -93,7 +93,7 @@ def test_png_export(il_tulipano_path, tmp_dir):
     expected_basepath = f'{il_tulipano_path.name}_scanned_with_{regex}{MAXDECODE_SUFFIX}'
     result = ShellResult.from_cmd(cmd)
     tmp_png_path = tmp_dir.joinpath(f'{expected_basepath}.png')
-    assert result.written_file_path().resolve() == tmp_png_path
+    assert result.last_written_file_path().resolve() == tmp_png_path
     assert tmp_png_path.exists(), f"PNG does not exist! '{tmp_png_path}'"
     assert file_size(tmp_png_path) > 500_000
     assert not tmp_dir.joinpath(f"{expected_basepath}.svg").exists()
@@ -132,7 +132,7 @@ def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
     can be compared against the same fixture file.
     """
     cmd = _yaralyze_shell_cmd(file_to_scan, *[*args, '-txt'])
-    ShellResult.run_and_compare_exported_file_to_existing(cmd, RENDERED_FIXTURES_DIR, no_log_args=DEFAULT_CLI_ARGS)
+    ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR, no_log_args=DEFAULT_CLI_ARGS)
 
 
 def _yaralyze_shell_cmd(file_path: str | Path, *args) -> list[str]:

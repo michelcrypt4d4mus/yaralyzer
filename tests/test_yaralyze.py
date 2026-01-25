@@ -22,7 +22,6 @@ from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR, TMP_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
-WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', relative_path(TMP_DIR)]
 EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
 

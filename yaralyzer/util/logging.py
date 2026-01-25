@@ -46,7 +46,7 @@ from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
 from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest, _should_rebuild_fixtures
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
@@ -117,7 +117,7 @@ def invocation_txt() -> Text:
     txt.append(f"{invocation_str()}\n\n", style='wheat4')
 
     # TODO: Ugly way to keep local system info out of fixture data
-    if not _should_rebuild_fixtures():
+    if not is_invoked_by_pytest():
         txt.append(f"Invocation raw argv:\n\n", style='dim')
         txt.append(f"{invocation_str(raw=True)}\n", style='wheat4 dim')
 

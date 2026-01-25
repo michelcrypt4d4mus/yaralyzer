@@ -52,6 +52,10 @@ class ShellResult:
         return self.result.stdout.decode() if isinstance(self.result.stdout, bytes) else self.result.stdout
 
     @property
+    def stdout_lines(self) -> list[str]:
+        return self.stdout_stripped.split('\n')
+
+    @property
     def stdout_stripped(self) -> str:
         return strip_ansi_colors(self.stdout)
 
@@ -156,12 +160,11 @@ class ShellResult:
         no_log_args: list[str] | None = None,
     ) -> Self:
         """
-        Used by pytest to compare fixture data to output of export commands.
-        It's here so that pdfalyzer can also use it.
+        Used by pytest to compare fixture data to output of export commands. Here so that pdfalyzer can use it.
 
         Args:
-            cmd (list[str]): Shell command to run.
-            against_dir (Path): Dir where the existing file fixture lives.
+            cmd (list[str] | str): Shell command to run.
+            against_dir (Path): Dir where the existing files you want to compare the new oones to live.
             ignorable_args (list[str], optional): Don't log these args if they exist in `cmd`.
         """
         shell_result = cls.from_cmd(cmd, True, no_log_args)

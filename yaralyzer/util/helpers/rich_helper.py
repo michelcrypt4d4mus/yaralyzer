@@ -9,6 +9,7 @@ from typing import List, Optional, Union
 
 from rich import box
 from rich.columns import Columns
+from rich.console import Group
 from rich.panel import Panel
 from rich.padding import Padding
 from rich.style import Style
@@ -120,7 +121,7 @@ def reverse_color(style: Style) -> Style:
 
 def show_color_theme(styles: dict) -> None:
     """Print all colors in 'styles' to screen in a grid"""
-    console.print(Panel('The Yaralyzer Color Theme', style='reverse'))
+    panel = Panel('The Yaralyzer Color Theme',  style='reverse', width=60)
 
     colors = [
         prefix_with_style(name[:MAX_THEME_COL_SIZE], style=str(style)).append(' ')
@@ -128,7 +129,8 @@ def show_color_theme(styles: dict) -> None:
         if name not in ['reset', 'repr_url']
     ]
 
-    console.print(Columns(colors, column_first=True, padding=(0, 5), equal=True))
+    group = Group(panel, Text(''), Columns(colors, column_first=True, padding=(0, 5), equal=True))
+    console.print(Padding(group, (1, 2)))
 
 
 def size_in_bytes_text(num_bytes: int) -> Text:

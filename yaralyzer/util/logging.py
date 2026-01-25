@@ -37,7 +37,6 @@ from contextlib import contextmanager
 from copy import copy
 from pathlib import Path
 from sys import argv
-from subprocess import CompletedProcess
 from typing import Any, Generator
 
 from rich.console import Console

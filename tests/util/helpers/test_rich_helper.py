@@ -1,11 +1,7 @@
-from subprocess import check_output
-
-from tests.test_yaralyze import _assert_line_count_within_range
+from yaralyzer.util.helpers.shell_helper import ShellResult
 
 
 def test_yaralyzer_show_color_theme():
-    _assert_output_line_count(['yaralyzer_show_color_theme'], 11)
-
-
-def _assert_output_line_count(shell_cmd: list[str], expected_line_count: int):
-    _assert_line_count_within_range(expected_line_count, check_output(shell_cmd).decode(), rel_tol=0.2)
+    result = ShellResult.from_cmd('yaralyzer_show_color_theme', verify_success=True)
+    assert 'bytes.decoded' in result.stdout_stripped
+    assert 10 < len(result.stdout_lines) < 20

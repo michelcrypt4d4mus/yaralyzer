@@ -1,6 +1,7 @@
-"""Argument parsing for yaralyzer CLI tool."""
+"""
+Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
+"""
 import logging
-import re
 import sys
 from argparse import ArgumentParser, Namespace
 from functools import partial
@@ -12,10 +13,10 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
+from yaralyzer.util.cli_options.cli_option_validators import DirectoryValidator, PathValidator, PatternsLabelValidator, YaraRegexValidator
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.cli_option_validators import DirArgValidator, FileArgValidator, PatternsLabelValidator, YaraRegexValidator
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
@@ -48,7 +49,7 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
-parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=FileArgValidator())
+parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=PathValidator())
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
@@ -65,14 +66,14 @@ rules.add_argument('-Y', '--yara-file',
                     action='append',
                     metavar='FILE',
                     dest='yara_rules_files',
-                    type=FileArgValidator())
+                    type=PathValidator())
 
 rules.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs',
-                    type=DirArgValidator())
+                    type=DirectoryValidator())
 
 rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
@@ -208,7 +209,7 @@ export.add_argument('-json', '--export-json', action='store_const',
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
                     help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file',
-                    type=DirArgValidator())
+                    type=DirectoryValidator())
 
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',

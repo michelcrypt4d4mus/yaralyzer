@@ -7,10 +7,11 @@ from pathlib import Path
 
 import yara
 
+from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.yara.yara_rule_builder import PATTERN_TYPES, build_yara_rule
 
 
-class DirArgValidator:
+class DirectoryValidator(OptionValidator):
     def __call__(self, value: str) -> Path:
         dir = Path(value)
 
@@ -22,7 +23,7 @@ class DirArgValidator:
         return dir
 
 
-class FileArgValidator:
+class PathValidator(OptionValidator):
     def __call__(self, value: str) -> Path:
         file_path = Path(value)
 
@@ -32,8 +33,11 @@ class FileArgValidator:
         return file_path
 
 
-class PatternsLabelValidator:
+class PatternsLabelValidator(OptionValidator):
     PATTERN_LABEL_REGEX = re.compile(r"^\w+$")
+
+    def arg_type_str(self) -> str:
+        return 'str'
 
     def __call__(self, value: str) -> str:
         if not self.PATTERN_LABEL_REGEX.match(value):
@@ -42,7 +46,10 @@ class PatternsLabelValidator:
         return value
 
 
-class YaraRegexValidator:
+class YaraRegexValidator(OptionValidator):
+    def arg_type_str(self) -> str:
+        return 'Pattern'
+
     def __call__(self, value: str) -> str:
         compiled_rule = None
         compilation_error = None

@@ -128,3 +128,8 @@ def color_theme_grid(styles: dict, app_name: str) -> Padding:
 
     group = Group(panel, Text(''), Columns(colors, column_first=True, padding=(0, 5), equal=True))
     return Padding(group, (1, 2))
+
+
+def theme_colors_with_prefix(prefix: str) -> list[Text]:
+    """Return a list of (name, style) `Text` objects for all styles in the theme that start with `prefix`."""
+    return [Text(k, v) for k, v in YARALYZER_THEME.styles.items() if k.startswith(prefix)]

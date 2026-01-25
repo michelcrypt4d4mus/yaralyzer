@@ -65,3 +65,7 @@ def test_option_env_var_styles():
 
     for validator in validator_types:
         assert validator().arg_type_str() in CLI_OPTION_TYPE_STYLES
+
+
+def test_option_validators():
+    assert cli_option_validators.YaraRegexValidator()('/foo/') == 'foo'

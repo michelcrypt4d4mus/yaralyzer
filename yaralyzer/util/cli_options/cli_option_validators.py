@@ -56,6 +56,8 @@ class YaraRegexValidator(OptionValidator):
 
         if '\n' in value:
             raise ArgumentTypeError("Use \\n if you want newlines in your regex")
+        elif len(value) > 1 and value[0] == '/' and value[-1] == '/':
+            value = value[1:-1]
 
         # Since we can't know if it's a hex or regex pattern yet, try both and accept if either works.
         for pattern_type in PATTERN_TYPES:

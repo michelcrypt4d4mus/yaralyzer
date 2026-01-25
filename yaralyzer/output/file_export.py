@@ -111,7 +111,7 @@ def render_png(svg_path: Path, png_path: Path, args: Namespace) -> Path | None:
     except Exception as e:
         log.error(f"Failed to render png! ({e})")
     finally:
-        if not args._svg_requested:
+        if not args._keep_exported_svg:
             log.info(f"Removing intermediate SVG file '{svg_path}'...")
             svg_path.unlink()
 

@@ -44,11 +44,12 @@ from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 from rich.text import Text
 
-from yaralyzer.config import YaralyzerConfig, log_level_for
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import LOG_THEME
-from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL, YARALYZER
+from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LOG_LEVEL, YARALYZER
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
+from yaralyzer.util.helpers.string_helper import log_level_for
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -112,7 +113,7 @@ def invocation_txt() -> Text:
     # TODO: Ugly way to keep local system info out of fixture data
     if not is_invoked_by_pytest():
         txt.append(f"Invocation raw argv:\n\n", style='dim')
-        txt.append(f"{invocation_str(raw=True)}\n", style='wheat4 dim')
+        txt.append(f"{invocation_str(raw=True)}", style='wheat4 dim')
 
     return txt
 
@@ -177,16 +178,9 @@ def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
         log.error(f"Spent {write_time} writing file '{file_path}' but there's nothing there!")
 
 
-def log_invocation() -> None:
-    """Log the command used to launch the `yaralyzer` to the invocation log."""
-    msg = f"THE INVOCATION: '{' '.join(argv)}'"
-    log.info(msg)
-    invocation_log.info(msg)
-
-
 def log_trace(*args) -> None:
     """Log below logging.DEBUG level."""
-    log.log(TRACE_LEVEL, *args)
+    log.log(TRACE_LOG_LEVEL, *args)
 
 
 def set_log_level(level: str | int) -> None:

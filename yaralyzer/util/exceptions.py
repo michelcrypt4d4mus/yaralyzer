@@ -1,18 +1,20 @@
+from argparse import ArgumentTypeError
 from rich.padding import Padding
 from rich.text import Text
 
 from yaralyzer.util.logging import highlighter, log_console
 
 
-class InvalidArgumentError(ValueError):
+class InvalidArgumentError(ArgumentTypeError):
     pass
 
 
-def handle_argument_error(msg: str, e: Exception | None = None, is_used_as_library: bool = False) -> None:
-    if is_used_as_library:
-        raise e or InvalidArgumentError(msg)
-    else:
+def handle_argument_error(msg: str, e: Exception | None = None, is_standalone_mode: bool = False) -> None:
+    """Standalone mode means in a situation where the `yaralyze` command is being run."""
+    if is_standalone_mode:
         print_fatal_error_and_exit(msg, e)
+    else:
+        raise e or InvalidArgumentError(msg)
 
 
 def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> None:

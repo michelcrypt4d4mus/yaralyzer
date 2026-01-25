@@ -31,6 +31,7 @@ REGEX = 'regex'
 RULE = 'rule'
 UNDERSCORE = '_'
 YARA_REGEX_MODIFIERS = ['nocase', 'ascii', 'wide', 'fullword']
+PATTERN_TYPES: list[PatternType] = ['hex', 'regex']
 
 SAFE_LABEL_REPLACEMENTS = {
     '/': 'frontslash',

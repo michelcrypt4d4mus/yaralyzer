@@ -16,12 +16,12 @@ if not environ.get(INVOKED_BY_PYTEST, False):
             break
 
 from yaralyzer.output.console import console
-from yaralyzer.output.file_export import export_json, invoke_rich_export, render_png
+from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import PDFALYZER_REPO_URL
 from yaralyzer.util.exceptions import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.logging import invocation_txt, log, log_console, log_file_export
+from yaralyzer.util.logging import invocation_txt, log, log_console
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer

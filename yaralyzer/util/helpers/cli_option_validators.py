@@ -47,6 +47,9 @@ class YaraRegexValidator:
         compiled_rule = None
         compilation_error = None
 
+        if '\n' in value:
+            raise ArgumentTypeError("Use \\n if you want newlines in your regex")
+
         # Since we can't know if it's a hex or regex pattern yet, try both and accept if either works.
         for pattern_type in PATTERN_TYPES:
             try:

@@ -1,14 +1,20 @@
 """
 Tests for the Yaralyzer class itself.
 """
+from contextlib import contextmanager
+from copy import deepcopy
 from math import isclose
 from os.path import dirname
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Type
 
 import pytest
 
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
+from yaralyzer.util.argument_parser import parse_arguments
+from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
+from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -18,6 +24,13 @@ from .yara.test_yara_rule_builder import HEX_STRING
 
 CLOSENESS_THRESHOLD = 0.05
 EXPECTED_LINES = 1060
+
+
+@contextmanager
+def temporary_config():
+    old_args = deepcopy(YaralyzerConfig.args)
+    yield
+    YaralyzerConfig._args = old_args
 
 
 def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips_yara_pattern):
@@ -31,6 +44,19 @@ def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips
     assert_filename(a_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}")
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
     assert_filename(diralyzer, expected_rulefile_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
+    tulip_base_args = [YARALYZE, il_tulipano_path, NO_TIMESTAMPS_OPTION, '-Y', tulips_yara_path]
+
+    with temporary_argv(tulip_base_args + ['--file-prefix', 'nas']):
+        with temporary_config():
+            parse_arguments()
+            assert_filename(a_yaralyzer, 'nas__' + expected_rulefile_basename + f"{tulips_yara_path.name}")
+
+    with temporary_argv(tulip_base_args + ['--file-suffix', 'NAS']):
+        with temporary_config():
+            parse_arguments()
+            expected_basename_with_suffix = f"{expected_rulefile_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
+            assert a_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename_with_suffix)
+
     # Regex
     regexalyzer = Yaralyzer.for_patterns([r"illmatic\s*by\s*nas"], 'regex', il_tulipano_path)
     assert_filename(regexalyzer, expected_basename + 'illmaticsbysnas')

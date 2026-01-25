@@ -6,8 +6,9 @@ import sys
 from contextlib import contextmanager
 from copy import deepcopy
 from os import environ
+from pathlib import Path
 from shutil import get_terminal_size
-from typing import Any, Generator
+from typing import Any, Generator, Mapping, Sequence
 
 from rich.console import Console
 
@@ -67,10 +68,10 @@ def is_path_var(env_var_name: str) -> bool:
 
 
 @contextmanager
-def temporary_argv(new_argv: list[str]) -> Generator[Any, Any, Any]:
+def temporary_argv(new_argv: Sequence[str | Path]) -> Generator[Any, Any, Any]:
     """Temporarily replace sys.argv with something else."""
     old_argv = list(sys.argv)
-    sys.argv = list(new_argv)
+    sys.argv = [str(arg) for arg in new_argv]
 
     try:
         yield
@@ -79,7 +80,7 @@ def temporary_argv(new_argv: list[str]) -> Generator[Any, Any, Any]:
 
 
 @contextmanager
-def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
+def temporary_env(env_vars: Mapping[str, str | Path]) -> Generator[Any, Any, Any]:
     """
     Temporarily add variables to the environemnt.
     See: https://shay-palachy.medium.com/temp-environment-variables-for-pytest-7253230bd777
@@ -89,7 +90,7 @@ def temporary_env(env_vars: dict[str, str]) -> Generator[Any, Any, Any]:
             do_stuff()
     """
     old_environ = dict(environ)
-    environ.update(env_vars)
+    environ.update({k: str(v) for k, v in env_vars.items()})
 
     try:
         yield

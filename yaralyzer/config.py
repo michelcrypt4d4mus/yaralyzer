@@ -13,7 +13,7 @@ from yaralyzer.util.constants import KILOBYTE, NO_TIMESTAMPS_OPTION, YARALYZER_U
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
      is_invoked_by_pytest, is_path_var, stderr_console)
-from yaralyzer.util.helpers.string_helper import is_number
+from yaralyzer.util.helpers.string_helper import is_number, log_level_for
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -125,7 +125,7 @@ class YaralyzerConfig:
         prefixed by "YARALYZER_".
 
         Example:
-            For the argument `--output-dir`, the environment will be checked for `YARALYZER_OUTPUT_DIR`.
+            For the argument `--output-dir` the environment will be checked for `YARALYZER_OUTPUT_DIR`.
 
         Args:
             _args (Namespace): Object returned by `ArgumentParser.parse_args()`
@@ -165,7 +165,7 @@ class YaralyzerConfig:
 
     @classmethod
     def set_log_vars(cls) -> None:
-        """Find any env vars related to logging and set them up. It's called immediately."""
+        """Should be called immediately to find any env vars related to logging and set them up."""
         if (log_dir := cls.get_env_value(LOG_DIR_ENV_VAR, Path)):
             cls.LOG_DIR = Path(log_dir).resolve()
 
@@ -194,14 +194,3 @@ class YaralyzerConfig:
 
 
 YaralyzerConfig.set_log_vars()
-
-
-def log_level_for(value: str | int) -> int:
-    if isinstance(value, int):
-        return value
-    elif re.match(r"\d+", value):
-        return int(value)
-    elif value in logging.getLevelNamesMapping():
-        return logging.getLevelNamesMapping()[value]
-    else:
-        raise ValueError(f"'{value}' is not a valid log level!")

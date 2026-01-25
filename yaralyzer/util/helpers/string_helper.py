@@ -1,9 +1,12 @@
 """
 Helper methods to work with strings.
 """
+import logging
 import re
 from functools import partial
 from typing import Any, Callable, List
+
+from yaralyzer.util.constants import TRACE, TRACE_LOG_LEVEL
 
 ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
@@ -28,13 +31,28 @@ def line_count(_string: str) -> int:
     return len(_string.split("\n"))
 
 
+def log_level_for(value: str | int) -> int:
+    """Accepts log level strings like WARNING, INFO, etc. as well as custom `TRACE` level."""
+    if isinstance(value, int):
+        return value
+    elif re.match(r"\d+", value):
+        return int(value)
+    elif value in logging.getLevelNamesMapping():
+        return logging.getLevelNamesMapping()[value]
+    elif value == TRACE:
+        return TRACE_LOG_LEVEL
+    else:
+        raise ValueError(f"'{value}' is not a valid log level!")
+
+
 def props_string(obj: object, keys: list[str] | None = None, joiner: str = ', ') -> str:
+    """Generate a string that shows an object's properties, similar to standard repr()."""
     prefix = joiner if '\n' in joiner else ''
     return prefix + joiner.join(props_strings(obj, keys))
 
 
 def props_strings(obj: object, keys: list[str] | None = None) -> list[str]:
-    """Get props of 'obj' in the format ["prop1=5", "prop2='string'"] etc."""
+    """Get props of 'obj' in the format ["prop1=5", "prop2='string'"] etc. (for repr(), mostly)."""
     props = []
 
     for k in (keys or [k for k in vars(obj).keys()]):

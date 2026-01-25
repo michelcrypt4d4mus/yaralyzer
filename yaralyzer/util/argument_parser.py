@@ -15,7 +15,7 @@ from yaralyzer.output import console
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.cli_option_validators import DirArgValidator, FileArgValidator, PatternsLabelValidator
+from yaralyzer.util.helpers.cli_option_validators import DirArgValidator, FileArgValidator, PatternsLabelValidator, YaraRegexValidator
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
@@ -78,13 +78,15 @@ rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
-                    dest='regex_patterns')
+                    dest='regex_patterns',
+                    type=YaraRegexValidator())
 
 rules.add_argument('-hex', '--hex-pattern',
                     help='build a YARA rule from HEX_STRING and run it (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='HEX_STRING',
-                    dest='hex_patterns')
+                    dest='hex_patterns',
+                    type=YaraRegexValidator())
 
 rules.add_argument('-rpl', '--patterns-label',
                     help='supply an optional STRING to label your YARA patterns makes it easier to scan results',

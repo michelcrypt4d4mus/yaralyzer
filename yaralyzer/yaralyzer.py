@@ -1,7 +1,7 @@
 """Main Yaralyzer class and alternate constructors."""
 import re
 from pathlib import Path
-from typing import Callable, Iterator, List, Tuple
+from typing import Callable, Iterator
 
 import yara
 from rich.console import Console, ConsoleOptions, RenderResult
@@ -53,8 +53,8 @@ class Yaralyzer:
         rules (yara.Rules): The compiled YARA rules to use for scanning.
         rules_label (str): A label for the ruleset, typically derived from filenames or user input.
         highlight_style (str): The style to use for highlighting matches in the output.
-        non_matches (List[dict]): A list of YARA rules that did not match the binary data.
-        matches (List[YaraMatch]): A list of YaraMatch objects representing the matches found.
+        non_matches (list[dict]): A list of YARA rules that did not match the binary data.
+        matches (list[YaraMatch]): A list of YaraMatch objects representing the matches found.
         extraction_stats (RegexMatchMetrics): Metrics related to decoding attempts on matched data
     """
 
@@ -109,8 +109,8 @@ class Yaralyzer:
         self.rules_label: str = rules_label
         self.highlight_style: str = highlight_style
         # Outcome tracking variables
-        self.non_matches: List[dict] = []
-        self.matches: List[YaraMatch] = []
+        self.non_matches: list[dict] = []
+        self.matches: list[YaraMatch] = []
         self.extraction_stats = RegexMatchMetrics()
 
     @classmethod
@@ -124,7 +124,7 @@ class Yaralyzer:
         Alternate constructor to load YARA rules from files and label rules with the filenames.
 
         Args:
-            yara_rules_files (List[str]): List of file paths to YARA rules files.
+            yara_rules_files (list[str]): list of file paths to YARA rules files.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
             scannable_label (str | None, optional): Label for the `scannable` data.
@@ -160,7 +160,7 @@ class Yaralyzer:
         Alternate constructor that will load all `.yara` files in `yara_rules_dir`.
 
         Args:
-            dirs (List[str]): List of directories to search for `.yara` files.
+            dirs (list[str]): list of directories to search for `.yara` files.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
             scannable_label (str | None, optional): Label for the `scannable` data.
@@ -193,7 +193,7 @@ class Yaralyzer:
         Alternate constructor taking regex pattern strings. Rules label defaults to the patterns joined by comma.
 
         Args:
-            patterns (List[str]): List of regex or hex patterns to build rules from.
+            patterns (list[str]): list of regex or hex patterns to build rules from.
             patterns_type (PatternType): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
@@ -240,12 +240,12 @@ class Yaralyzer:
         """Use YARA to find matches and then force decode them."""
         console.print(self)
 
-    def match_iterator(self) -> Iterator[Tuple[BytesMatch, BytesDecoder]]:
+    def match_iterator(self) -> Iterator[tuple[BytesMatch, BytesDecoder]]:
         """
         Iterator version of `yaralyze()`.
 
         Yields:
-            Tuple[BytesMatch, BytesDecoder]: Match and decode data tuple.
+            tuple[BytesMatch, BytesDecoder]: Match and decode data tuple.
         """
         self.rules.match(data=self.bytes, callback=self._yara_callback)
 

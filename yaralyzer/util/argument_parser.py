@@ -26,7 +26,7 @@ YARA_PATTERN_LABEL_REGEX = re.compile(r"^\w+$")
 YARA_RULES_ARGS = ['yara_rules_files', 'yara_rules_dirs', 'hex_patterns', 'regex_patterns']
 
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
-                       f"Maybe try pip install yaralyzer[img] or {INKSCAPE_URL}"
+                       f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
 
 def epilog(config: Type[YaralyzerConfig]) -> str:
@@ -36,8 +36,8 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
     package = config.ENV_VAR_PREFIX.lower()
 
     msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
-          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable} {ENV_VARS_OPTION}[/argparse.args] " \
-          f"for more info." \
+          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable} {ENV_VARS_OPTION}" \
+          f"[/argparse.args] for more info." \
 
     if package == YARALYZER:
         msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
@@ -197,7 +197,7 @@ export.add_argument('-png', '--export-png', action='store_true',
 
 export.add_argument('-json', '--export-json', action='store_const',
                     const='json',
-                    help='export analysis to JSON files (experimental)')
+                    help='export analysis to JSON files (experimental / possibly incomplete)')
 
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',

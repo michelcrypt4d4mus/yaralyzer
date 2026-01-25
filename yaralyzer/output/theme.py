@@ -89,7 +89,7 @@ LOG_THEME = Theme(LOG_THEME_DICT)
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 
 CLI_OPTION_TYPE_STYLES = {
-    'Dir': 'magenta',
+    'Dir': 'violet',
     'Path': 'magenta',
     'Pattern': 'orange1',
     'bool': 'bright_red',

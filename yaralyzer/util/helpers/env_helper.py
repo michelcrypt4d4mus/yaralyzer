@@ -20,7 +20,7 @@ from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
 
 DEFAULT_CONSOLE_WIDTH = 160
-PATH_ENV_VAR_REGEX = re.compile(r".*_(DIR|FILE|PATH)S?", re.I)
+PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 
 
@@ -86,30 +86,24 @@ def is_path_var(env_var_name: str) -> bool:
 def print_env_var_explanation(env_var: str, action: str | Action) -> None:
     """Print a line explaiing which command line option corresponds to this env_var."""
     env_var_style = RichHelpFormatterPlus.styles["argparse.args"].replace('italic', '')
-    txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
     option = action.option_strings[-1] if isinstance(action, Action) else action
-    comment = ''
 
-    if is_path_var(env_var):
-        option_type = 'Path'
+    if isinstance(action, str):
+        option_type = 'Path' if is_path_var(env_var) else 'str'
     elif isinstance(action, _StoreTrueAction):
         option_type = 'bool'
-    elif 'type' in vars(action) and (_option_type := getattr(action, 'type')) is not None:
-        #print(f"\n\n_option_type='{_option_type}', type(_option_type)= {type(_option_type)}\n\n")
-        if isinstance(_option_type, OptionValidator):
-            option_type = _option_type.arg_type_str()
-        else:
-            option_type = _option_type.__name__
+    elif isinstance(action.type, OptionValidator):
+        option_type = action.type.arg_type_str()
+    elif action.type is not None:
+        option_type = action.type.__name__
     else:
         option_type = 'str'
 
-    if isinstance(action, _AppendAction):
-        comment = ' (comma separated for multiple)'
-
     # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
+    comment = ' (comma separated for multiple)' if isinstance(action, _AppendAction) else ''
+    txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
-    txt.append(' sets ').append(option, style='honeydew2')
-    txt.append(comment, style='dim')
+    txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
     stderr_console.print(txt)
 
 

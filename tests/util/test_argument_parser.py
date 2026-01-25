@@ -54,7 +54,10 @@ def test_env_vars_option():
     result = ShellResult.from_cmd([YARALYZE, ENV_VARS_OPTION], verify_success=True)
     assert 'YARALYZER_SURROUNDING_BYTES' in result.stderr_stripped
     assert '.yaralyzer' in result.stderr_stripped
-    assert len(result.stderr_stripped.split('\n')) > 10
+    lines = result.stderr_stripped.split('\n')
+    assert len(lines) > 10
+    suffix_line = next(line for line in lines if 'FILE_SUFFIX' in line)
+    assert ' str ' in suffix_line
 
 
 def test_option_env_var_styles():

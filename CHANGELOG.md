@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+# 1.3.0
 * Add `--export-png` option to render .png images of output
 * Add `--suppress-output` option
 * Truncate extremely long filenames so they don't exceed system limit

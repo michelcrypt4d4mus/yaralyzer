@@ -15,7 +15,7 @@ from yaralyzer.output import console
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.arguments_helper import PatternsLabelValidator
+from yaralyzer.util.helpers.cli_option_validators import DirArgValidator, FileArgValidator, PatternsLabelValidator
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
@@ -48,7 +48,7 @@ def epilog(config: Type[YaralyzerConfig]) -> str:
 # Positional args, version, help, etc
 RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
-parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan')
+parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=FileArgValidator())
 parser.add_argument('--version', action='store_true', help='show version number and exit')
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
@@ -64,13 +64,15 @@ rules.add_argument('-Y', '--yara-file',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     metavar='FILE',
-                    dest='yara_rules_files')
+                    dest='yara_rules_files',
+                    type=FileArgValidator())
 
 rules.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
-                    dest='yara_rules_dirs')
+                    dest='yara_rules_dirs',
+                    type=DirArgValidator())
 
 rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
@@ -202,7 +204,8 @@ export.add_argument('-json', '--export-json', action='store_const',
 
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
-                    help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file')
+                    help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file',
+                    type=DirArgValidator())
 
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',
@@ -284,20 +287,15 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         set_log_level(args.log_level)
 
     log_argparse_result(args, 'RAW')
-    args.file_to_scan_path = Path(args.file_to_scan_path)
-
-    if not args.file_to_scan_path.exists():
-        handle_invalid_args(f"'{args.file_to_scan_path}' is not a valid file.")
-
     num_selected_yara_rules_options = len([arg for arg in YARA_RULES_ARGS if vars(args)[arg] is not None])
     args._any_export_selected = any(arg for arg, val in vars(args).items() if arg.startswith('export') and val)
-    args._svg_requested = bool(args.export_svg)  # So we can clean up intermediate file when -png but not -svg
+    args._svg_requested = bool(args.export_svg)  # So we can clean up intermediate SVG when -png but not -svg
 
     # If yaralyzer is in use as a library for pdfalyzer Yara rules args are not required
     if not args._standalone_mode:
         pass
     elif num_selected_yara_rules_options == 0:
-        handle_invalid_args("You must provide either a YARA rules file or a regex pattern")
+        handle_invalid_args("You must provide either a YARA rules file, a dir with such files, or a regex")
     elif num_selected_yara_rules_options > 1:
         handle_invalid_args("Cannot mix rules files, rules dirs, and regex patterns (for now).")
     else:
@@ -324,10 +322,7 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
     # that we need to override.
     args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
     args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
-    args.output_dir = Path(args.output_dir or Path.cwd()).resolve()
-
-    if not args.output_dir.is_dir():
-        handle_invalid_args(f"'{args.output_dir}' is not a valid directory.")
+    args.output_dir = (args.output_dir or Path.cwd()).resolve()
 
     if args.maximize_width:
         # TODO: unclear if we need to do this import this way to make the change happen?

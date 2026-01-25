@@ -33,7 +33,6 @@ class ShellResult:
     """
     result: CompletedProcess
     no_log_args: list[str] = field(default_factory=list)
-    file_mismatch_msg: str = ''
 
     @property
     def invocation_str(self) -> str:

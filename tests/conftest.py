@@ -6,7 +6,6 @@ import pytest
 PYTESTS_DIR = Path(__file__).parent
 PROJECT_DIR = PYTESTS_DIR.parent
 LOG_DIR = PROJECT_DIR.joinpath('log').resolve()
-TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 
 # Some env vars that we need or are helpful for pytest
 environ['INVOKED_BY_PYTEST'] = 'True'
@@ -17,6 +16,7 @@ from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  #
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
+TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')

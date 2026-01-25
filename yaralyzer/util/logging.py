@@ -200,7 +200,8 @@ def shell_command_log_str(result: CompletedProcess, ignore_args: list[str] | Non
     #         label = 'stdout' if i == 0 else 'stderr'
     #         decoded_stream = stream.decode() if isinstance(stream, bytes) else stream
     #         decoded_stream = strip_ansi_colors(decoded_stream)
-    #         msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
+    #         decoded_stream = decoded_stream[:2500]
+    #         msg += f"\n\n\n\n[{label} first 2500 chars]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
 
     return msg + "\n"
 

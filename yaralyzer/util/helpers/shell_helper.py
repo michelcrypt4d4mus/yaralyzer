@@ -2,6 +2,7 @@
 Utility methods for running shell commands, including some code smelly pytest related stuff
 that needs to be here because it's also used by Pdfalyzer.
 """
+import filecmp
 import logging
 import re
 import shutil
@@ -100,12 +101,13 @@ class ShellResult:
 
                 log.warning(f"\nOverwriting fixture '{existing_path}'\n   with contents of '{exported_path}'")
                 shutil.move(exported_path, existing_path)
-                return
+                continue
 
             assert existing_path.exists(), f"Existing file we want to compare against '{existing_path}' doesn't exist!"
             existing_data = load_file(existing_path)
+            # assert filecmp.cmp(existing_path, exported_path)
 
-            # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
+            # # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
             @timeout(seconds=5)
             def compare_files():
                 assert exported_data == existing_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
@@ -113,6 +115,7 @@ class ShellResult:
             try:
                 compare_files()
             except TimeoutError:
+                log.error(f"Got timeout error when comparing '{existing_path}' to '{exported_path}'!")
                 is_output_same_as_fixture = exported_data == existing_data
                 assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(existing_path, exported_path)
 
@@ -142,7 +145,7 @@ class ShellResult:
         cmd: list[str] | str,
         against_dir: Path,
         no_log_args: list[str] | None = None,
-    ) -> None:
+    ) -> Self:
         """
         Used by pytest to compare fixture data to output of export commands.
         It's here so that pdfalyzer can also use it.
@@ -152,7 +155,9 @@ class ShellResult:
             against_dir (Path): Dir where the existing file fixture lives.
             ignorable_args (list[str], optional): Don't log these args if they exist in `cmd`.
         """
-        cls.from_cmd(cmd, True, no_log_args).compare_exported_files_to_existing(against_dir)
+        shell_result = cls.from_cmd(cmd, True, no_log_args)
+        shell_result.compare_exported_files_to_existing(against_dir)
+        return shell_result
 
 
 def get_inkscape_version() -> str | None:

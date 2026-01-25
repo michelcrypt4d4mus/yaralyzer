@@ -11,7 +11,7 @@ from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.yara.yara_rule_builder import PATTERN_TYPES, build_yara_rule
 
 
-class DirectoryValidator(OptionValidator):
+class DirValidator(OptionValidator):
     def __call__(self, value: str) -> Path:
         dir = Path(value)
 

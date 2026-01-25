@@ -13,7 +13,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.util.cli_options.cli_option_validators import DirectoryValidator, PathValidator, PatternsLabelValidator, YaraRegexValidator
+from yaralyzer.util.cli_options.cli_option_validators import DirValidator, PathValidator, PatternsLabelValidator, YaraRegexValidator
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
@@ -73,7 +73,7 @@ rules.add_argument('-dir', '--rule-dir',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs',
-                    type=DirectoryValidator())
+                    type=DirValidator())
 
 rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN and run it (can be supplied more than once for boolean OR)',
@@ -209,7 +209,7 @@ export.add_argument('-json', '--export-json', action='store_const',
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
                     help='write files to OUTPUT_DIR instead of current dir, does nothing if not exporting a file',
-                    type=DirectoryValidator())
+                    type=DirValidator())
 
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',

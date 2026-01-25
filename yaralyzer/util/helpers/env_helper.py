@@ -15,6 +15,7 @@ from rich.padding import Padding
 from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util.cli_options.option_validator import OptionValidator
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, example_dotenv_file_url
 
@@ -80,15 +81,6 @@ def is_invoked_by_pytest() -> bool:
 def is_path_var(env_var_name: str) -> bool:
     """Returns True if `env_var_name` ends with _DIR or _PATH."""
     return bool(PATH_ENV_VAR_REGEX.match(env_var_name))
-
-CLI_OPTION_TYPE_STYLES = {
-    'dir': 'magenta',
-    'Path': 'magenta',
-    'bool': 'bright_red',
-    'int': 'cyan',
-    'float': 'blue',
-    'str': 'green',
-}
 
 
 def print_env_var_explanation(env_var: str, action: str | Action) -> None:

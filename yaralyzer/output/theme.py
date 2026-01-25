@@ -88,6 +88,16 @@ LOG_THEME_DICT = {
 LOG_THEME = Theme(LOG_THEME_DICT)
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
 
+CLI_OPTION_TYPE_STYLES = {
+    'Dir': 'magenta',
+    'Path': 'magenta',
+    'Pattern': 'orange1',
+    'bool': 'bright_red',
+    'int': 'cyan',
+    'float': 'blue',
+    'str': 'green',
+}
+
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(

@@ -47,9 +47,10 @@ from rich.text import Text
 from rich.theme import Theme
 
 from yaralyzer.config import YaralyzerConfig, log_level_for
-from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL
+from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LEVEL, YARALYZER
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
+from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
@@ -83,7 +84,7 @@ def configure_logger(log_label: str) -> logging.Logger:
     Returns:
         logging.Logger: The configured `logger`.
     """
-    log_name = f"yaralyzer.{log_label}"
+    log_name = f"{YARALYZER}.{log_label}"
     logger = logging.getLogger(log_name)
     rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
 
@@ -189,22 +190,6 @@ def set_log_level(level: str | int) -> None:
     """Set the log level at any time."""
     for handler in log.handlers + [log]:
         handler.setLevel(log_level_for(level))
-
-
-def shell_command_log_str(result: CompletedProcess, ignore_args: list[str] | None = None) -> str:
-    """Long string with all info about a shell command's execution and output."""
-    cmd = invocation_str([arg for arg in result.args if arg not in (ignore_args or [])])
-    msg = f"Return code {result.returncode} from shell command:\n\n{cmd}"
-
-    # if not is_env_var_set_and_not_false('PYTEST_SUPPRESS_STREAM_LOGS'):
-    #     for i, stream in enumerate([result.stdout, result.stderr]):
-    #         label = 'stdout' if i == 0 else 'stderr'
-    #         decoded_stream = stream.decode() if isinstance(stream, bytes) else stream
-    #         decoded_stream = strip_ansi_colors(decoded_stream)
-    #         decoded_stream = decoded_stream[:2500]
-    #         msg += f"\n\n\n\n[{label} first 2500 chars]\n{LOG_SEPARATOR}\n{decoded_stream}\n{LOG_SEPARATOR}"
-
-    return msg + "\n"
 
 
 @contextmanager

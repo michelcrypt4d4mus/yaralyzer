@@ -15,7 +15,7 @@ from yaralyzer.util.constants import INKSCAPE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
-from yaralyzer.util.logging import log, log_bigly, invocation_str, shell_command_log_str
+from yaralyzer.util.logging import LOG_SEPARATOR, log, log_bigly, invocation_str
 from yaralyzer.util.timeout import timeout
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
@@ -128,8 +128,18 @@ class ShellResult:
         """Returns the last file that exported by this shell command."""
         return self.exported_file_paths()[-1]
 
-    def output_logs(self) -> str:
-        return shell_command_log_str(self.result, ignore_args=self.no_log_args)
+    def output_logs(self, with_streams: bool = False) -> str:
+        """Long string with all info about a shell command's execution and output."""
+        cmd = invocation_str([arg for arg in self.result.args if arg not in (self.no_log_args or [])])
+        msg = f"Return code {self.result.returncode} from shell command:\n\n{cmd}"
+
+        if with_streams:
+            for i, stream in enumerate([self.stdout_stripped, self.stderr_stripped]):
+                label = 'stdout' if i == 0 else 'stderr'
+                stream = stream[:2500]
+                msg += f"\n\n\n\n[{label} first 2500 chars]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
+
+        return msg + "\n"
 
     def _fixture_mismatch_log_msg(self, existing_path: Path, export_path: Path) -> str:
         error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n"

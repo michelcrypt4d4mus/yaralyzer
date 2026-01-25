@@ -12,9 +12,8 @@ from typing import Callable
 from rich.terminal_theme import TerminalTheme
 
 from yaralyzer.util.constants import INKSCAPE, INKSCAPE_URL
-from yaralyzer.util.logging import WRITE_STYLE, invocation_str, log, log_console, log_and_print, log_file_export, log_file_write
+from yaralyzer.util.logging import invocation_str, log, log_console, log_file_export, log_file_write
 from yaralyzer.util.helpers.env_helper import is_cairosvg_installed
-from yaralyzer.util.helpers.file_helper import relative_path
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version, safe_args
 from yaralyzer.yaralyzer import Yaralyzer
 
@@ -79,7 +78,7 @@ def export_json(yaralyzer: Yaralyzer, args: Namespace) -> Path:
     json_export_path = Path(f"{args._export_basepath}.json")
 
     with log_file_export(json_export_path):
-        matches_data = [match.to_json() for match, _decoder in yaralyzer.match_iterator()]
+        matches_data = [m.to_json() for m, _decoder in yaralyzer.match_iterator()]
 
         with open(json_export_path, 'w') as f:
             json.dump(matches_data, f, indent=4)
@@ -112,11 +111,10 @@ def invoke_rich_export(export_method: Callable, args: Namespace) -> Path:
         kwargs.update({'title': export_file_path.name})
         export_png = args and args.export_png
 
-    # Invoke it
-    log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
-    started_at = time.perf_counter()
-    export_method(export_file_path, **kwargs)
-    log_file_write(export_file_path, started_at)
+    # Invoke the export method
+    with log_file_export(export_file_path):
+        log.info(f"Invoking rich.console.{method_name}('{export_file_path}') with kwargs: '{kwargs}'...")
+        export_method(export_file_path, **kwargs)
 
     if export_png and (png_path := _render_png(export_file_path)) and not args._svg_requested:
         log.info(f"Removing intermediate PNG '{export_file_path}'")

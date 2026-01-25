@@ -41,7 +41,7 @@ class PatternsLabelValidator(OptionValidator):
 
     def __call__(self, value: str) -> str:
         if not self.PATTERN_LABEL_REGEX.match(value):
-            raise ArgumentTypeError('--patterns-label can only include alphanumeric chars and underscore')
+            raise ArgumentTypeError('--patterns-label can only include alphanumeric and underscore')
 
         return value
 
@@ -57,6 +57,7 @@ class YaraRegexValidator(OptionValidator):
         if '\n' in value:
             raise ArgumentTypeError("Use \\n if you want newlines in your regex")
         elif len(value) > 1 and value[0] == '/' and value[-1] == '/':
+            print(f"(hint: you don't need to surround your regex with front slashes)")
             value = value[1:-1]
 
         # Since we can't know if it's a hex or regex pattern yet, try both and accept if either works.

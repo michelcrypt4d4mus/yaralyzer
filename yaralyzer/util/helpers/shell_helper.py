@@ -153,9 +153,9 @@ class ShellResult:
 
         try:
             diff_output = type(self).from_cmd(['diff', existing_path, export_path])
-            log_console.print(f"Result of diff '{existing_path}'\n        against '{export_path}'\n\n")
-            log_console.print(diff_output.output_logs(True))
-            log_console.print(f"\n\n\nRaw diff stdout:\n\n", diff_output.stdout)
+            print(f"Result of diff '{existing_path}'\n       against '{export_path}'\n\n")
+            print(diff_output.output_logs(True))
+            print(f"\n\n\nRaw diff stdout:\n\n", diff_output.stdout)
         except Exception as e:
             log_console.print(f"Failed to print diff of '{existing_path}'\n        against '{export_path}'!", style='bright_red bold')
 

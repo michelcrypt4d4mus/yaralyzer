@@ -25,7 +25,7 @@ jobs:
         run: |
           poetry install
       - name: View lazydocs --help
-        run: poetry --help
+        run: lazydocs --help
       - name: Build and deploy documentation
         run: |
           lazydocs --output-path docs/api \

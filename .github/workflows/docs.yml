@@ -12,12 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.11 (lazydocs fails with greater versions)
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: 1.6.1
+      - name: View poetry --help
+        run: poetry --help
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --group docs
+          poetry install
       - name: Build and deploy documentation
         run: ./scripts/build_docs.sh

@@ -1,2 +1,2 @@
 #!/bin/bash
-poetry install --all-extras
+poetry install --all-extras --all-groups

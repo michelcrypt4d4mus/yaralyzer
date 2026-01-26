@@ -3,9 +3,6 @@ Tests for invoking yaralyze script from shell (NOT for Yaralyzer() class directl
 are over in test_yaralyzer.py)
 """
 import json
-import logging
-import os
-import re
 from math import isclose
 from pathlib import Path
 from subprocess import CalledProcessError
@@ -15,6 +12,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
+from yaralyzer.util.helpers.env_helper import is_linux, is_windows
 from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
@@ -85,7 +83,7 @@ def test_multi_export(binary_file_path, tulips_yara_path, tmp_dir):
     assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
-@pytest.mark.skipif(os.name != 'linux', reason="cairo executable doesn't come with cairosvg on macOS and windows")
+@pytest.mark.skipif(not is_linux(), reason="cairo executable doesn't come with cairosvg on macOS and windows")
 def test_png_export(il_tulipano_path, tmp_dir):
     regex = 'pregiatissimi'
     cmd = _yaralyze_shell_cmd(il_tulipano_path, '-re', regex, '-png')
@@ -130,4 +128,6 @@ def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
 
 def _yaralyze_shell_cmd(file_path: str | Path, *args) -> list[str]:
     """Appends DEFAULT_CLI_ARGS."""
-    return [YARALYZE] + safe_args([file_path, *args, *DEFAULT_CLI_ARGS])
+    cmd = [YARALYZE]
+    cmd = (['poetry', 'run'] if is_windows() else []) + cmd
+    return cmd + safe_args([file_path, *args, *DEFAULT_CLI_ARGS])

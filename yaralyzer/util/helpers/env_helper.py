@@ -1,6 +1,7 @@
 """
 Configuration management for Yaralyzer.
 """
+import os
 import re
 import sys
 from contextlib import contextmanager
@@ -20,6 +21,10 @@ DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 DOTFILE_DIRS = [Path.cwd(), Path.home()]
+
+is_linux = lambda: os.name == 'linux'
+is_macos = lambda: os.name == 'darwin'
+is_windows = lambda: os.name == 'windows'
 
 
 def config_var_name(env_var: str) -> str:
@@ -142,6 +147,5 @@ def default_console_kwargs() -> dict[str, str | int]:
 
 
 # For use when you need to write output before the main rich.console has managed to get set up.
-
 stderr_console = Console(stderr=True, **{**DEFAULT_CONSOLE_KWARGS, 'width': max(console_width_possibilities())})
 # stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')

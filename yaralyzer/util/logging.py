@@ -46,7 +46,7 @@ from rich.text import Text
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import LOG_THEME
-from yaralyzer.util.constants import ECHO_COMMAND_OPTION, TRACE_LOG_LEVEL, YARALYZER
+from yaralyzer.util.constants import ECHO_COMMAND_OPTION, YARALYZER
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import log_level_for
@@ -180,7 +180,7 @@ def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
 
 def log_trace(*args) -> None:
     """Log below logging.DEBUG level."""
-    log.log(TRACE_LOG_LEVEL, *args)
+    log.log(logging.NOTSET, *args)
 
 
 def set_log_level(level: str | int) -> None:

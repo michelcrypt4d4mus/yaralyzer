@@ -14,10 +14,6 @@ KILOBYTE = 1024
 MEGABYTE = KILOBYTE * KILOBYTE
 MAX_FILENAME_LENGTH = 245
 
-# Logging constants
-TRACE = 'TRACE'
-TRACE_LOG_LEVEL = logging.DEBUG - 1
-
 # Command line options
 ECHO_COMMAND_OPTION = '--echo-command'
 ENV_VARS_OPTION = '--env-vars'

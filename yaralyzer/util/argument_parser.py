@@ -3,8 +3,8 @@ Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
 """
 import logging
 import sys
+import argparse
 from argparse import _AppendAction, _StoreFalseAction, _StoreTrueAction, Action, ArgumentParser, Namespace
-from functools import partial
 from importlib.metadata import version
 from pathlib import Path
 
@@ -45,7 +45,7 @@ def epilog(config: type[YaralyzerConfig]) -> str:
     package = config.ENV_VAR_PREFIX.lower()
 
     msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
-          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable_name} {ENV_VARS_OPTION}" \
+          f"{color_var(f'.{package}')} file. Try [argparse.args]{config.executable_name} {ENV_VARS_OPTION}" \
           f"[/argparse.args] for more info." \
 
     if package == YARALYZER:
@@ -60,12 +60,15 @@ parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCR
 
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=PathValidator())
 parser.add_argument('--version', action='store_true', help='show version number and exit')
-parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
+
+parser.add_argument('--maximize-width', action='store_true',
+                    help="maximize display width to fill the terminal")
 
 parser.add_argument(ENV_VARS_OPTION, action='store_true',
                     help=f"show env vars that can set these options permanently if placed in a .{parser.prog}r file")
 
 
+# YARA rule selection
 yaras = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
@@ -111,7 +114,7 @@ yaras.add_argument('-mod', '--regex-modifier',
                     choices=YARA_REGEX_MODIFIERS)
 
 
-# Fine tuning
+# Fine tuning of output
 tuning = parser.add_argument_group(
     'FINE TUNING',
     "Tune various aspects of the analyses and visualizations to your needs. As an example setting " +
@@ -220,7 +223,7 @@ export.add_argument('-json', '--export-json', action='store_const',
 
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
-                    help='write files to OUTPUT_DIR instead of current dir (does nothing if not exporting files)',
+                    help='export files to OUTPUT_DIR instead of the current directory',
                     type=DirValidator())
 
 export.add_argument('-pfx', '--file-prefix',
@@ -252,7 +255,7 @@ level.add_argument('-D', '--debug', action='store_true',
 
 level.add_argument('-L', '--log-level',
                    help='set the log level',
-                    choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
+                   choices=[level for level in logging.getLevelNamesMapping().keys()])
 
 debug.add_argument('-I', '--interact', action='store_true',
                    help='drop into interactive python REPL when parsing is complete')
@@ -260,7 +263,11 @@ debug.add_argument('-I', '--interact', action='store_true',
 debug.add_argument('--show-colors', action='store_true',
                    help='show the color theme and exit')
 
+
+# Preliminaty sys.argv processing
 should_exit_early = any(arg in EARLY_EXIT_ARGS for arg in sys.argv)
+# TODO: replacing -rpl with to avoid breaking existing users. Delete on version bump.
+sys.argv = ['-pl' if arg == '-rpl' else arg for arg in sys.argv]
 
 
 def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = None):
@@ -270,9 +277,9 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     "Private" args injected outside of user selection will be prefixed with underscore.
 
     Args:
-        args (Namespace, optional): Use these `args` instead of parsing from `argv`.
+        config (type[YaralyzerConfig]): Either YarlyzeerConfig or PdfalyzerConfig.
+        args (Namespace, optional): Use these `args` instead of parsing from `sys.argv`.
             Must come from an `ArgumentParser` that inherits from Yaralyzer's.
-        argv (list[str], optional): Use these args instead of sys.argv.
 
     Raises:
         InvalidArgumentError: If args are invalid.
@@ -293,7 +300,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     args._standalone_mode = _args is None
     args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
 
-    # TODO: unclear why we need to do these imports this way to make the change happen?
     if args.maximize_width:
         console.width = max(env_helper.console_width_possibilities())
 
@@ -327,7 +333,7 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     """
     panel = Panel(f"{config.app_name} Environment Variables", style='honeydew2')
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
-    log_console.print(_env_var_cfg_msg(config.ENV_VAR_PREFIX), style='grey54')
+    log_console.print(_configurable_env_vars_header(config.ENV_VAR_PREFIX), style='grey54')
 
     for group in [g for g in config._argument_parser._action_groups if 'positional' not in str(g.title)]:
         log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
@@ -343,7 +349,8 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     log_console.line()
 
 
-def _env_var_cfg_msg(app_name: str) -> Padding:
+def _configurable_env_vars_header(app_name: str) -> Padding:
+    """Informational panel about the configurable env vars."""
     app_name = app_name.lower()
     txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
                f"options, either by conventional environment variable setting methods or by creating\na ")
@@ -385,5 +392,6 @@ def _print_env_var_explanation(env_var: str, action: str | Action, config: type[
 
 
 def _max_arg_width() -> int:
+    """Maximum length of an available argument string."""
     opts = [opt for opt in parser._actions if 'option_strings' in dir(opt)]
     return max(len(o) for opt in opts for o in opt.option_strings)

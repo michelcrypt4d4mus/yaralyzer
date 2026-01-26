@@ -6,8 +6,6 @@ import re
 from functools import partial
 from typing import Any, Callable, List
 
-from yaralyzer.util.constants import TRACE, TRACE_LOG_LEVEL
-
 ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
@@ -54,8 +52,6 @@ def log_level_for(value: str | int) -> int:
         return int(value)
     elif value in logging.getLevelNamesMapping():
         return logging.getLevelNamesMapping()[value]
-    elif value == TRACE:
-        return TRACE_LOG_LEVEL
     else:
         raise ValueError(f"'{value}' is not a valid log level!")
 

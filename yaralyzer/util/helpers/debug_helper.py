@@ -1,10 +1,25 @@
 import re
+from argparse import ArgumentParser
 from os import getlogin
 
 from yaralyzer.util.helpers.env_helper import stderr_console
-from yaralyzer.util.helpers.string_helper import indented
+from yaralyzer.util.helpers.string_helper import indented, props_string_indented
 
+SKIP_OPTIONS = ['deprecated', 'help', 'option_strings']
 STACK_STRIPPER_REGEX = re.compile(fr"/.*{getlogin()}.*pypoetry/virtualenvs/")
+
+
+def debug_argparser(parser: ArgumentParser):
+    """Debug method to look at argparse internals."""
+    from yaralyzer.util.logging import log_console
+
+    for i, action in enumerate((parser)._actions):
+        if not action.option_strings:
+            continue
+
+        keys = [k for k, v in vars(action).items() if k not in SKIP_OPTIONS and v is not None]
+        log_console.print(f"\n{i}: {action.option_strings}", style='cyan', highlight=False)
+        log_console.print(props_string_indented(action, keys))
 
 
 def print_stack():

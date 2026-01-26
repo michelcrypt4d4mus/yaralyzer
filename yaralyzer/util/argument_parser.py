@@ -375,14 +375,3 @@ def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
     txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
     log_console.print(txt)
-
-
-def _debug_parser_args(_parser: ArgumentParser | None = None):
-    """Debug method to look at argparse internals."""
-    for i, action in  enumerate((_parser or parser)._actions):
-        if not action.option_strings:
-            continue
-
-        keys = [k for k, v in vars(action).items() if k not in ['deprecated', 'help', 'option_strings'] and v is not None]
-        log_console.print(f"\n{i}: {action.option_strings}", style='cyan', highlight=False)
-        log_console.print(props_string_indented(action, keys))

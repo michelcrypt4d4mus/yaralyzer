@@ -152,7 +152,7 @@ class ShellResult:
         error_msg += f"Result of diff:\n\n"
 
         try:
-            diff_output = type(self).from_cmd(['diff', existing_path, export_path])
+            diff_output = type(self).from_cmd(['diff', '-a', existing_path, export_path])
             print(f"Result of diff '{existing_path}'\n       against '{export_path}'\n\n")
             print(diff_output.output_logs(True))
             print(f"\n\n\nRaw diff stdout:\n\n", diff_output.stdout)

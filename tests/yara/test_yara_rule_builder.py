@@ -29,7 +29,6 @@ def test_yara_rule_string():
 
 def test_yara_rule_modifier():
     rule_string = yara_rule_string(modifier='wide', **REGEX_RULE_KWARGS)
-    print(rule_string)
     assert rule_string == EXPECTED_RULE.replace('Storch/', 'Storch/ wide')
 
 

@@ -272,7 +272,7 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         sys.exit()
     elif ENV_VARS_OPTION in sys.argv:
         show_configurable_env_vars(config)
-        sys.exit()
+        sys.exit(0)
 
     # Parse args and set a few private variables we want that are unrelated to user input
     args = _args or parser.parse_args()
@@ -358,7 +358,7 @@ def _print_env_var_explanation(env_var: str, action: str | Action, config: type[
 
     if isinstance(action, str):
         option_type = 'Path' if env_helper.is_path_var(env_var) else 'str'
-    elif isinstance(action, _StoreFalseAction, _StoreTrueAction):
+    elif isinstance(action, (_StoreFalseAction, _StoreTrueAction)):
         option_type = 'bool'
     elif isinstance(action.type, OptionValidator):
         option_type = action.type.arg_type_str()

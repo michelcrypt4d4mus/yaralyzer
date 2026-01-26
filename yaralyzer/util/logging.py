@@ -140,8 +140,7 @@ def log_argparse_result(args: Namespace, label: str) -> None:
     log.debug(log_msg)
 
 
-def log_bigly(msg: str, big_msg: object, level: int = logging.WARNING) -> None:
-    log_console.line()
+def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
     log.log(level, f"{msg}\n\n {big_msg}\n")
 
 

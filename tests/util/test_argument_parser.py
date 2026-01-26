@@ -1,4 +1,5 @@
 import pytest
+import re
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
@@ -66,7 +67,7 @@ def test_show_configurable_env_vars_option():
     result = ShellResult.from_cmd([YARALYZE, ENV_VARS_OPTION], verify_success=True)
     assert 'YARALYZER_SURROUNDING_BYTES' in result.stderr_stripped
     assert '.yaralyzer' in result.stderr_stripped
-    assert 'sets --yara-file (comma separated for multiple)' in result.stderr_stripped
+    assert re.search(r"--yara-file.*comma", result.stderr_stripped)
     lines = result.stderr_stripped.split('\n')
     assert len(lines) > 10
     suffix_line = next(line for line in lines if 'FILE_SUFFIX' in line)

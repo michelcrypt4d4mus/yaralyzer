@@ -1,6 +1,6 @@
 """
 Utility methods for running shell commands, including some code smelly pytest related stuff
-that needs to be here because it's also used by Pdfalyzer.
+that needs to be here because it's used by the pytest suite in this repo and in Pdfalyzzer.
 """
 import logging
 import re

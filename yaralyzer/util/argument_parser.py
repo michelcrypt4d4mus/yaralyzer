@@ -29,8 +29,8 @@ from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
 
-PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
-                       f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
+PNG_EXPORT_WARNING = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
+                     f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
 
 def epilog(config: type[YaralyzerConfig]) -> str:
@@ -302,7 +302,7 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         args._keep_exported_svg = bool(args.export_svg)
 
         if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
-            handle_invalid_args(PNG_EXPORT_ERROR_MSG)
+            handle_invalid_args(PNG_EXPORT_WARNING)
         elif not args.export_svg:
             args.export_svg = 'svg'
 

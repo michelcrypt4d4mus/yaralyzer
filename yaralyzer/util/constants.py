@@ -1,5 +1,7 @@
 import logging
 
+from rich.text import Text
+
 
 # Strings
 YARALYZE = 'yaralyze'
@@ -32,6 +34,9 @@ PDFALYZER_REPO_URL = repo_url('pdfalyzer')
 YARALYZER_REPO_URL = repo_url(YARALYZER)
 YARALYZER_API_DOCS_URL = f"https://michelcrypt4d4mus.github.io/{YARALYZER}"
 
+PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in Pdfalyzer, birthplace of the Yaralyzer:"
+PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold').append('\n -> ', style='bright_white') \
+                .append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
 
 # Misc URLs etc.
 INKSCAPE = 'inkscape'

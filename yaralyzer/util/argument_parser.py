@@ -13,7 +13,7 @@ from rich.panel import Panel
 from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
+from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE
 from yaralyzer.output import console
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, color_theme_grid
 from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, OptionValidator,
@@ -162,7 +162,7 @@ tuning.add_argument('--min-chardet-table-confidence',
 tuning.add_argument('--force-display-threshold',
                     help="encodings with chardet confidence below this number will neither be displayed nor " +
                          "decoded in the decodings table",
-                    default=EncodingDetector.force_display_threshold,
+                    default=YaralyzerConfig.DEFAULT_FORCE_DISPLAY_THRESHOLD,
                     metavar='PCT_CONFIDENCE',
                     type=int,
                     choices=CONFIDENCE_SCORE_RANGE)
@@ -172,7 +172,7 @@ tuning.add_argument('--force-decode-threshold',
                          "as to the likelihood some bytes were written with a particular encoding will cause " +
                          "the yaralyzer to attempt decoding those bytes in that encoding even if it is not a " +
                          "configured encoding",
-                    default=EncodingDetector.force_decode_threshold,
+                    default=YaralyzerConfig.DEFAULT_FORCE_DECODE_THRESHOLD,
                     metavar='PCT_CONFIDENCE',
                     type=int,
                     choices=CONFIDENCE_SCORE_RANGE)
@@ -320,12 +320,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
             handle_invalid_args(PNG_EXPORT_WARNING)
         elif not args.export_svg:
             args.export_svg = 'svg'
-
-    # chardet.detect() action thresholds
-    if args.force_decode_threshold:
-        EncodingDetector.force_decode_threshold = args.force_decode_threshold
-    if args.force_display_threshold:
-        EncodingDetector.force_display_threshold = args.force_display_threshold
 
     return args
 

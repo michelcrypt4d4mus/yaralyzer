@@ -54,6 +54,9 @@ class YaralyzerConfig:
     DEFAULT_MIN_CHARDET_BYTES = 9
     # Number of bytes to show before/after byte previews and decodes. Configured by command line or env var
     DEFAULT_SURROUNDING_BYTES = 64
+    # EncodingDetector defaults
+    DEFAULT_FORCE_DISPLAY_THRESHOLD = 20.0
+    DEFAULT_FORCE_DECODE_THRESHOLD = 50.0
 
     # Logging stuff
     LOG_DIR: Path | None = None

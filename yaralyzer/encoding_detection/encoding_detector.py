@@ -50,11 +50,6 @@ class EncodingDetector:
     table: Table = field(default_factory=lambda: _empty_chardet_results_table())
     unique_assessments: list[EncodingAssessment] = field(default_factory=list)
 
-    # Default value for encodings w/confidences below this will not be displayed in the decoded table
-    force_display_threshold: ClassVar[float] = 20.0
-    # Default value for what chardet.detect() confidence % should we force a decode with an obscure encoding.
-    force_decode_threshold: ClassVar[float] = 50.0
-
     @property
     def bytes(self) -> bytes:
         return self._bytes
@@ -80,8 +75,8 @@ class EncodingDetector:
         self.has_any_idea = True
         self.assessments = [EncodingAssessment(a) for a in self.raw_chardet_assessments]
         self._uniquify_results_and_build_table()
-        self.force_decode_assessments = self.assessments_above_confidence(type(self).force_decode_threshold)
-        self.force_display_assessments = self.assessments_above_confidence(type(self).force_display_threshold)
+        self.force_decode_assessments = self.assessments_above_confidence(YaralyzerConfig.args.force_decode_threshold)
+        self.force_display_assessments = self.assessments_above_confidence(YaralyzerConfig.args.force_display_threshold)
 
     def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
         """

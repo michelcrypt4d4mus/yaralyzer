@@ -374,7 +374,7 @@ def _print_env_var_explanation(env_var: str, action: str | Action, config: type[
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
     txt.append(' sets ').append(f"{option:{_max_arg_width()}}", style='honeydew2').append(comment, style='dim')
 
-    if (env_value := config.get_env_value(env_var)):
+    if (env_value := config.get_env_value(env_var)) is not None:
         env_value = [str(e) for e in env_value] if isinstance(env_value, list) else env_value
         txt.append(f" [env: ", style='wheat4').append(highlighter(str(env_value))).append(']', style='wheat4')
 

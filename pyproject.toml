@@ -123,3 +123,9 @@ ignore = [
     "D407",  # Missing dashed underline after section
     "D413",  # Missing blank line after last section
 ]
+
+[tool.pytest.ini_options]
+addopts = [
+    # "--import-mode=importlib",
+    "-v",
+]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 # Script to build and serve documentation using mkdocs and lazydocs.
 # GitHub Pages site: https://michelcrypt4d4mus.github.io/yaralyzer/
 # Some docs on docstrings: https://www.geeksforgeeks.org/python/python-docstrings/
@@ -11,7 +11,7 @@ YARALYZER_PKG="yaralyzer"
 
 # Generate documnentation markdown files using lazydocs
 # TODO: the --ignored-modules doesn't actually ignore the modules, it just doesn't error out if they fail
-python -m lazydocs --output-path docs/api \
+lazydocs --output-path docs/api \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
          --ignored-modules="yaralyzer.util.helpers" \
@@ -23,6 +23,6 @@ python -m lazydocs --output-path docs/api \
          "$YARALYZER_PKG/yara"
          # "$YARALYZER_PKG/helpers" \ Ignoring helpers module for now bc it has a lot of cruft and ignoring doesn't seem to work
 
-python -m mkdocs build
+mkdocs build
 # mkdocs serve
-python -m mkdocs gh-deploy --force
+mkdocs gh-deploy --force

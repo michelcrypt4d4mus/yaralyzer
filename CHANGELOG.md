@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.2
 * Use custom validators and exclusive argument groups so `argparse` can handle most validations
 * Change shorthand for `--patterns-label` from `-rpl` to `-pl`
 * Drop the `yaralyzer_show_color_theme` script in favour of a `--show-colors` debug option

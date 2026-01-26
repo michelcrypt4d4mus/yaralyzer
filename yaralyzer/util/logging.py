@@ -163,7 +163,7 @@ def log_current_config(config: type[YaralyzerConfig]) -> None:
 
 @contextmanager
 def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
-    """Standardize the way file exports are logged."""
+    """Standardize the way file exports are logged about."""
     if file_path.exists():
         log.debug(f"Overwriting existing '{file_path}' ({file_size_str(file_path)})...")
         file_path.unlink()

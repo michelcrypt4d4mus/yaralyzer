@@ -8,15 +8,18 @@ from copy import deepcopy
 from os import environ
 from pathlib import Path
 from shutil import get_terminal_size
-from typing import Any, Generator, Mapping, Sequence
+from typing import Any, Generator, Literal, Mapping, Sequence
 
+from dotenv import load_dotenv
 from rich.console import Console
 
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, dotfile_name
+from yaralyzer.util.helpers.file_helper import relative_path
 
 DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
+DOTFILE_DIRS = [Path.cwd(), Path.home()]
 
 
 def config_var_name(env_var: str) -> str:
@@ -65,6 +68,18 @@ def is_invoked_by_pytest() -> bool:
 def is_path_var(env_var_name: str) -> bool:
     """Returns True if `env_var_name` ends with _DIR or _PATH."""
     return bool(PATH_ENV_VAR_REGEX.match(env_var_name))
+
+
+def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
+    if is_invoked_by_pytest():
+        return
+
+    for dotenv_file in [dir.joinpath(dotfile_name(app_name)) for dir in DOTFILE_DIRS]:
+        if dotenv_file.exists():
+            load_dotenv(dotenv_path=dotenv_file)
+            lines = [l for l in dotenv_file.read_text().split('\n') if not l.startswith('#')]
+            stderr_console.print(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...", style='dim')
+            return
 
 
 @contextmanager

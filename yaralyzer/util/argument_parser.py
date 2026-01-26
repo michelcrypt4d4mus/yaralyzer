@@ -331,7 +331,7 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     Show the environment variables that can be used to set command line options, either
     permanently in a `.yaralyzer` file or in other standard environment variable ways.
     """
-    panel = Panel(f"{config.app_name} Environment Variables", style='honeydew2')
+    panel = Panel(f"{config.app_name.title()} Environment Variables", style='honeydew2')
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
     log_console.print(_configurable_env_vars_header(config.ENV_VAR_PREFIX), style='grey54')
 
@@ -354,7 +354,7 @@ def _configurable_env_vars_header(app_name: str) -> Padding:
     app_name = app_name.lower()
     txt = Text(f"These are the environment variables can be set to configure {app_name}'s command line\n"
                f"options, either by conventional environment variable setting methods or by creating\na ")
-    txt.append(f".{app_name} ", style='bright_cyan bold')
+    txt.append(f"{dotfile_name(app_name)} ", style='bright_cyan bold')
     txt.append(f"file in your home or current directory and putting these vars in it.\n\n"
                f"For more on how that works see the example env file here:\n\n   ")
     txt.append(f"{example_dotenv_file_url(app_name)}", style='cornflower_blue underline bold')

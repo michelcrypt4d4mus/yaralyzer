@@ -8,15 +8,13 @@ from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
-from rich.style import Style
-
 from yaralyzer.output.theme import YARALYZER_THEME_DICT
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
 from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
-     is_invoked_by_pytest, is_path_var, stderr_console, temporary_argv)
+     is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
@@ -218,6 +216,8 @@ class YaralyzerConfig:
     @classmethod
     def _set_class_vars_from_env(cls) -> None:
         """Check the environment for LOG_LEVEL and LOG_DIR so the log setter upper can use them."""
+        load_dotenv_file(cls.app_name.lower())
+
         if (log_dir := cls.get_env_value(LOG_DIR_ENV_VAR, Path)):
             cls.LOG_DIR = Path(log_dir).resolve()
 

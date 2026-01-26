@@ -1,13 +1,16 @@
 import logging
 
 from rich.text import Text
+from typing import Literal
 
 
-# Strings
+# App Strings
 YARALYZE = 'yaralyze'
 YARALYZER = f"{YARALYZE}r"
 YARALYZER_UPPER = YARALYZER.upper()
 INVOKED_BY_PYTEST = 'INVOKED_BY_PYTEST'
+
+dotfile_name = lambda app_name: f".{app_name}".lower()
 
 # Numbeers
 KILOBYTE = 1024
@@ -24,7 +27,7 @@ SUPPRESS_OUTPUT_OPTION = '--suppress-output'
 GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'
 
 repo_url = lambda app_name: f"{GITHUB_BASE_URL}/{app_name.lower()}"
-example_dotenv_file_url = lambda app_name: f"{repo_url(app_name)}/blob/master/.{app_name.lower()}.example"
+example_dotenv_file_url = lambda app_name: f"{repo_url(app_name)}/blob/master/{dotfile_name(app_name)}.example"
 
 PDFALYZER_REPO_URL = repo_url('pdfalyzer')
 YARALYZER_REPO_URL = repo_url(YARALYZER)

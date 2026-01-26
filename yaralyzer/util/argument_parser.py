@@ -14,7 +14,7 @@ from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE
-from yaralyzer.output import console
+from yaralyzer.output.console import console
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, color_theme_grid
 from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, OptionValidator,
      PatternsLabelValidator, YaraRegexValidator)
@@ -283,7 +283,7 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         elif ENV_VARS_OPTION in sys.argv:
             show_configurable_env_vars(config)
         elif '--show-colors' in sys.argv:
-            console.console.print(color_theme_grid(config.COLOR_THEME, config.app_name))
+            console.print(color_theme_grid(config.COLOR_THEME, config.app_name))
 
         sys.exit()
 
@@ -295,10 +295,10 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
 
     # TODO: unclear why we need to do these imports this way to make the change happen?
     if args.maximize_width:
-        console.console.width = max(env_helper.console_width_possibilities())
+        console.width = max(env_helper.console_width_possibilities())
 
     if args._any_export_selected:
-        console.console.record = True
+        console.record = True
     elif args.output_dir:
         log.warning('--output-dir provided but no export option was chosen')
 
@@ -375,11 +375,11 @@ def _print_env_var_explanation(env_var: str, action: str | Action, config: type[
     env_value = config.get_env_value(env_var)
     txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
-    txt.append(' sets ').append(f"{option:{_max_arg_width()}}", style='honeydew2').append(comment, style='dim')
+    txt.append(' sets ').append(f"{option:{_max_arg_width()}} ", style='honeydew2').append(comment, style='dim')
 
     if (env_value := config.get_env_value(env_var)) is not None:
         env_value = [str(e) for e in env_value] if isinstance(env_value, list) else env_value
-        txt.append(f" [env: ", style='wheat4').append(highlighter(str(env_value))).append(']', style='wheat4')
+        txt += Text(f"[env: ", style='bold reverse').append(highlighter(f"{env_value}")).append(']')
 
     log_console.print(txt)
 

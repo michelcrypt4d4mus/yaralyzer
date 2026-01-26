@@ -63,7 +63,7 @@ parser.add_argument('--version', action='store_true', help='show version number 
 parser.add_argument('--maximize-width', action='store_true', help="maximize display width to fill the terminal")
 
 parser.add_argument(ENV_VARS_OPTION, action='store_true',
-                    help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
+                    help=f"show env vars that can set these options permanently if placed in a .{parser.prog}r file")
 
 
 yaras = parser.add_argument_group(

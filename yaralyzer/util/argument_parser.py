@@ -3,7 +3,7 @@ Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
 """
 import logging
 import sys
-from argparse import _AppendAction, _StoreTrueAction, Action, ArgumentParser, Namespace
+from argparse import _AppendAction, _StoreFalseAction, _StoreTrueAction, Action, ArgumentParser, Namespace
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
@@ -358,7 +358,7 @@ def _print_env_var_explanation(env_var: str, action: str | Action, config: type[
 
     if isinstance(action, str):
         option_type = 'Path' if env_helper.is_path_var(env_var) else 'str'
-    elif isinstance(action, _StoreTrueAction):
+    elif isinstance(action, _StoreFalseAction, _StoreTrueAction):
         option_type = 'bool'
     elif isinstance(action.type, OptionValidator):
         option_type = action.type.arg_type_str()

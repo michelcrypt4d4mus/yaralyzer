@@ -5,7 +5,7 @@ from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util import cli_option_validators
 from yaralyzer.util.argument_parser import parse_arguments
-from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE
+from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.logging import log, log_console
@@ -61,6 +61,13 @@ def test_private_args(valid_argv):
         args = YaralyzerConfig.parse_args()
         assert args.export_svg == 'svg'
         assert args._keep_exported_svg is False
+
+
+def test_yaralyzer_show_colors_option():
+    result = ShellResult.from_cmd('yaralyze --show-colors', verify_success=True)
+    assert 'bytes.decoded' in result.stdout_stripped
+    assert YARALYZER in result.stdout_stripped.lower()
+    assert 10 < len(result.stdout_lines) < 20
 
 
 def test_show_configurable_env_vars_option():

@@ -291,35 +291,31 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     args = _args or parser.parse_args()
     args._invoked_at_str = timestamp_for_filename()
     args._standalone_mode = _args is None
-    # Adjust error handling based on whether the 'yaralyze' shell script is what's being run
-    handle_invalid_args = partial(handle_argument_error, is_standalone_mode=args._standalone_mode)
-
-    if args.debug:
-        set_log_level(logging.DEBUG)
-    elif args.log_level:
-        set_log_level(args.log_level)
-
-    log_argparse_result(args, 'RAW')
     args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
 
-    if args.output_dir and not args._any_export_selected:
-        log.warning('--output-dir provided but no export option was chosen')
-
-   # TODO: unclear why we need to do these imports this way to make the change happen?
+    # TODO: unclear why we need to do these imports this way to make the change happen?
     if args.maximize_width:
         console.console.width = max(env_helper.console_width_possibilities())
 
     if args._any_export_selected:
         console.console.record = True
+    elif args.output_dir:
+        log.warning('--output-dir provided but no export option was chosen')
 
     # SVG export is a necessary intermediate step for PNG export
     if args.export_png:
         args._keep_exported_svg = bool(args.export_svg)
 
         if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
-            handle_invalid_args(PNG_EXPORT_WARNING)
+            handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._standalone_mode)
         elif not args.export_svg:
             args.export_svg = 'svg'
+
+    if args.debug:
+        set_log_level(logging.DEBUG)
+        log_argparse_result(args, 'RAW')
+    elif args.log_level:
+        set_log_level(args.log_level)
 
     return args
 

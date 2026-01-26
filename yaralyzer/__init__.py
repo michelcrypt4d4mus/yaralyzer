@@ -14,7 +14,7 @@ from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-YaralyzerConfig.set_parsers(parser, parse_arguments)
+YaralyzerConfig.init(parser, parse_arguments)
 
 
 def yaralyze():

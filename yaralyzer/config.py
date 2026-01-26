@@ -87,6 +87,25 @@ class YaralyzerConfig:
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
 
     @classmethod
+    def init(
+        cls,
+        argparser: ArgumentParser,
+        parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
+    ) -> None:
+        """
+        Should be called immediately upon package load.
+
+        Args:
+            argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
+            parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
+        """
+        cls._set_class_vars_from_env()
+        cls._argument_parser = argparser
+        cls._argparse_dests = sorted([action.dest for action in argparser._actions])
+        cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
+        cls._parse_arguments = parse_arguments
+
+    @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:
         """'output_dir' becomes `YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
@@ -129,26 +148,6 @@ class YaralyzerConfig:
         args = cls._parse_arguments(cls, None)
         cls._merge_env_options(args)
         return args
-
-    @classmethod
-    def set_parsers(
-        cls,
-        argparser: ArgumentParser,
-        parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
-    ) -> None:
-        """
-        Should be called immediately so this class can manage the argument parsing. Sort of like
-        this class's `__init__()` method.
-
-        Args:
-            argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
-            parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
-        """
-        cls._set_class_vars_from_env()
-        cls._argument_parser = argparser
-        cls._argparse_dests = sorted([action.dest for action in argparser._actions])
-        cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
-        cls._parse_arguments = parse_arguments
 
     @classmethod
     def prefixed_env_var(cls, var: str) -> str:

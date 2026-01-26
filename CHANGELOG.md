@@ -8,7 +8,7 @@
 * Change shorthand for `--patterns-label` from `-rpl` to `-pl`
 * Drop the `yaralyzer_show_color_theme` script in favour of a `--show-colors` debug option
 
-### 1.3.1
+### 1.3.
 * Accomodate Python 3.10 for a little while longer
 
 # 1.3.0

@@ -1,5 +1,6 @@
 """Main Yaralyzer class and alternate constructors."""
 import re
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterator
 
@@ -29,7 +30,7 @@ YARA_FILE_DOES_NOT_EXIST_ERROR_MSG = "is not a valid yara rules file (it doesn't
 INVALID_FOR_FILENAME_REGEX = re.compile(r"[^\w,.=+-;]+")
 
 
-# TODO: might be worth introducing a Scannable namedtuple or similar
+@dataclass
 class Yaralyzer:
     """
     Central class that handles setting up / compiling YARA rules and reading binary data from files as needed.
@@ -47,78 +48,55 @@ class Yaralyzer:
     The real action happens in the `__rich__console__()` dunder method.
 
     Attributes:
-        bytes (bytes): The binary data to scan.
-        bytes_length (int): The length of the binary data.
-        scannable_label (str): A label for the binary data, typically the filename or a user-provided label.
-        rules (yara.Rules): The compiled YARA rules to use for scanning.
+        rules (yara.Rules): The YARA rules to use for scanning.
         rules_label (str): A label for the ruleset, typically derived from filenames or user input.
-        highlight_style (str): The style to use for highlighting matches in the output.
+        scannable (bytes | str | Path): The data to scan. If it's `bytes` then that data is scanned;
+            if it's a string it is treated as a file path to load bytes from.
+        scannable_label (str, optional): A label for the binary data. Required if `scannable` is raw
+            `bytes`, otherwise defaults to the basename of `scannable` file.
+        highlight_style (str, optional): The style to use for highlighting matches in the output.
+        _bytes (bytes): The binary data to scan, derived from the `scannable` arg.
         non_matches (list[dict]): A list of YARA rules that did not match the binary data.
         matches (list[YaraMatch]): A list of YaraMatch objects representing the matches found.
         extraction_stats (RegexMatchMetrics): Metrics related to decoding attempts on matched data
+
+    Raises:
+        TypeError: If `scannable` is `bytes` and `scannable_label` is not provided.
     """
+    rules: yara.Rules
+    rules_label: str
+    scannable: str | bytes | Path
+    scannable_label: str = ''
+    highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+    _bytes: bytes = field(init=False)
 
-    def __init__(
-        self,
-        rules: str | yara.Rules,
-        rules_label: str,
-        scannable: bytes | str | Path,
-        scannable_label: str | None = None,
-        highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
-    ) -> None:
-        """
-        Initialize a `Yaralyzer` instance for scanning binary data with YARA rules.
+    # Outcome tracking variables
+    non_matches: list[dict] = field(default_factory=list)
+    matches: list[YaraMatch] = field(default_factory=list)
+    extraction_stats: RegexMatchMetrics = field(default_factory=RegexMatchMetrics)
 
-        Args:
-            rules (str | yara.Rules): YARA rules to use for scanning. Can be a string or a pre-compiled
-                `yara.Rules` object (strings will be compiled to an instance of `yara.Rules`).
-            rules_label (str): Label to identify the ruleset in output and logs.
-            scannable (bytes | str | Path): The data to scan. If it's `bytes` type then that data is scanned;
-                if it's a string it is treated as a file path to load bytes from.
-            scannable_label (str | None, optional): Label for the `scannable` arg data.
-                Required if `scannable` is `bytes`. If `scannable` is a Path `scannable_label` will
-                default to the file's basename.
-            highlight_style (str, optional): Style to use for highlighting matches in output.
-                Defaults to `YaralyzerConfig.HIGHLIGHT_STYLE`.
-
-        Raises:
-            TypeError: If `scannable` is `bytes` and `scannable_label` is not provided.
-        """
+    def __post_init__(self):
         yara.set_config(
             stack_size=YaralyzerConfig.args.yara_stack_size,
             max_match_data=YaralyzerConfig.args.max_match_length
         )
 
-        if isinstance(scannable, (bytes, bytearray, memoryview)):
-            if scannable_label is None:
+        if isinstance(self.scannable, (bytes, bytearray, memoryview)):
+            if not self.scannable_label:
                 raise TypeError("Must provide 'scannable_label' arg when yaralyzing raw bytes")
 
-            self.bytes: bytes = scannable
-            self.scannable_label: str = scannable_label
+            self._bytes = self.scannable
         else:
-            self.bytes: bytes = load_binary_data(scannable)
-            self.scannable_label: str = scannable_label or Path(scannable).name
-
-        if isinstance(rules, yara.Rules):
-            self.rules: yara.Rules = rules
-        else:
-            log.info(f"Compiling YARA rules from provided string:\n{rules}")
-            self.rules: yara.Rules = yara.compile(source=rules)
-
-        self.bytes_length: int = len(self.bytes)
-        self.rules_label: str = rules_label
-        self.highlight_style: str = highlight_style
-        # Outcome tracking variables
-        self.non_matches: list[dict] = []
-        self.matches: list[YaraMatch] = []
-        self.extraction_stats = RegexMatchMetrics()
+            self.scannable = Path(self.scannable)
+            self._bytes = self.scannable.read_bytes()
+            self.scannable_label = self.scannable_label or self.scannable.name
 
     @classmethod
     def for_rules_files(
         cls,
         yara_rules_files: list[str] | list[Path],
         scannable: bytes | str | Path,
-        scannable_label: str | None = None
+        scannable_label: str = ''
     ) -> 'Yaralyzer':
         """
         Alternate constructor to load YARA rules from files and label rules with the filenames.
@@ -127,7 +105,7 @@ class Yaralyzer:
             yara_rules_files (list[str]): list of file paths to YARA rules files.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
-            scannable_label (str | None, optional): Label for the `scannable` data.
+            scannable_label (str, optional): Label for the `scannable` data.
                 Required if `scannable` is `bytes`. If scannable is a file path, defaults to the file's basename.
 
         Raises:
@@ -154,7 +132,7 @@ class Yaralyzer:
         cls,
         dirs: list[str] | list[Path] | list[str | Path],
         scannable: bytes | str | Path,
-        scannable_label: str | None = None
+        scannable_label: str = ''
     ) -> 'Yaralyzer':
         """
         Alternate constructor that will load all `.yara` files in `yara_rules_dir`.
@@ -184,7 +162,7 @@ class Yaralyzer:
         patterns: list[str],
         patterns_type: PatternType,
         scannable: bytes | str | Path,
-        scannable_label: str | None = None,
+        scannable_label: str = '',
         rules_label: str | None = None,
         pattern_label: str | None = None,
         regex_modifier: YaraModifierType | None = None,
@@ -197,8 +175,7 @@ class Yaralyzer:
             patterns_type (PatternType): Either `"regex"` or `"hex"` to indicate the type of patterns provided.
             scannable (Union[bytes, str]): The data to scan. If `bytes`, raw data is scanned;
                 if `str`, it is treated as a file path to load bytes from.
-            scannable_label (str | None, optional): Label for the `scannable` data.
-                Required if `scannable` is `bytes`.
+            scannable_label (str | None, optional): Label for the `scannable` data. Required if `scannable` is `bytes`.
                 If scannable is a file path, defaults to the file's basename.
             rules_label (str | None, optional): Label for the ruleset. Defaults to the patterns joined by comma.
             pattern_label (str | None, optional): Label for each pattern in the YARA rules. Defaults to "pattern".
@@ -218,9 +195,11 @@ class Yaralyzer:
                 modifier=regex_modifier
             ))
 
-        rules_string = newline_join(rule_strings)
         rules_label = comma_join(patterns)
-        return cls(rules_string, rules_label, scannable, scannable_label)
+        rules_string = newline_join(rule_strings)
+        log.info(f"Compiling YARA rules from rules_string:\n{rules_string}")
+        rules = yara.compile(source=rules_string)
+        return cls(rules, rules_label, scannable, scannable_label)
 
     def export_basepath(self) -> Path:
         """Get the basepath (directory + filename without extension) for exported files."""
@@ -247,13 +226,13 @@ class Yaralyzer:
         Yields:
             tuple[BytesMatch, BytesDecoder]: Match and decode data tuple.
         """
-        self.rules.match(data=self.bytes, callback=self._yara_callback)
+        self.rules.match(data=self._bytes, callback=self._yara_callback)
 
         for yara_match in self.matches:
             console.print(yara_match)
             console.line()
 
-            for match in BytesMatch.from_yara_match(self.bytes, yara_match.match, self.highlight_style):
+            for match in BytesMatch.from_yara_match(self._bytes, yara_match.match, self.highlight_style):
                 decoder = BytesDecoder(match, yara_match.rule_name)
                 self.extraction_stats.tally_match(decoder)
                 yield match, decoder
@@ -306,7 +285,7 @@ class Yaralyzer:
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
         """Does the stuff. TODO: not the best place to put the core logic."""
-        yield bytes_hashes_table(self.bytes, self.scannable_label)
+        yield bytes_hashes_table(self._bytes, self.scannable_label)
 
         for _bytes_match, bytes_decoder in self.match_iterator():
             for attempt in bytes_decoder.__rich_console__(_console, options):

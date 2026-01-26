@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Catch `OSError` when checking `cairosvg` and the python package is installed by the actual `cairo` executable is missing
 
 ### 1.3.3
 * Avoid `logging.getLevelNamesMapping()` so python 3.10 still works (also it's deprecated / regarded as a mistake)

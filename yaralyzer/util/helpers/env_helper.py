@@ -47,7 +47,7 @@ def is_cairosvg_installed() -> bool:
     try:
         import cairosvg
         return True
-    except ModuleNotFoundError:
+    except (ModuleNotFoundError, OSError):
         return False
 
 

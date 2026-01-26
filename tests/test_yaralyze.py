@@ -12,7 +12,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.env_helper import is_linux, is_windows
+from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, is_windows
 from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
@@ -83,7 +83,7 @@ def test_multi_export(binary_file_path, tulips_yara_path, tmp_dir):
     assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
-@pytest.mark.skipif(not is_linux(), reason="cairo executable doesn't come with cairosvg on macOS and windows")
+@pytest.mark.skipif(is_github_workflow() and not is_linux(), reason="cairo executable doesn't come w/pkg on macOS/windows")
 def test_png_export(il_tulipano_path, tmp_dir):
     regex = 'pregiatissimi'
     cmd = _yaralyze_shell_cmd(il_tulipano_path, '-re', regex, '-png')

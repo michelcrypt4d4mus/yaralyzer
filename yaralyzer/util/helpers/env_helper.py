@@ -65,6 +65,10 @@ def is_env_var_set_and_not_false(var_name: str) -> bool:
         return False
 
 
+def is_github_workflow() -> bool:
+    return is_env_var_set_and_not_false('GITHUB_ACTION')
+
+
 def is_invoked_by_pytest() -> bool:
     """Return `True` if invoked in a `pytest` context."""
     return is_env_var_set_and_not_false(INVOKED_BY_PYTEST)

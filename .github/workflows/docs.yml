@@ -27,4 +27,4 @@ jobs:
       - name: View lazydocs --help
         run: poetry --help
       - name: Build and deploy documentation
-        run: ./scripts/build_docs.sh
+        run: source ./scripts/build_docs.sh

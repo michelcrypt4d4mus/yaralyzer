@@ -1,7 +1,7 @@
 # NEXT RELEASE
 * Use custom validators and exclusive argument groups so `argparse` can handle most validations
 * Change shorthand for `--patterns-label` from `-rpl` to `-pl`
-* `--show-colors` debug option to show the color theme
+* Drop the `yaralyzer_show_color_theme` script in favour of a `--show-colors` debug option
 
 ### 1.3.1
 * Accomodate Python 3.10 for a little while longer

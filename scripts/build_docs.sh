@@ -11,7 +11,7 @@ YARALYZER_PKG="yaralyzer"
 
 # Generate documnentation markdown files using lazydocs
 # TODO: the --ignored-modules doesn't actually ignore the modules, it just doesn't error out if they fail
-lazydocs --output-path docs/api \
+python -m lazydocs --output-path docs/api \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
          --ignored-modules="yaralyzer.util.helpers" \
@@ -23,6 +23,6 @@ lazydocs --output-path docs/api \
          "$YARALYZER_PKG/yara"
          # "$YARALYZER_PKG/helpers" \ Ignoring helpers module for now bc it has a lot of cruft and ignoring doesn't seem to work
 
-mkdocs build
+python -m mkdocs build
 # mkdocs serve
-mkdocs gh-deploy --force
+python -m mkdocs gh-deploy --force

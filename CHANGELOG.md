@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.3
 * Avoid `logging.getLevelNamesMapping()` so python 3.10 still works (also it's deprecated / regarded as a mistake)
 
 ### 1.3.2

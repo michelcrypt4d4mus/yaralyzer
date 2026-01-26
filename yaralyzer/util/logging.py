@@ -107,6 +107,7 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
 
 
 def invocation_txt() -> Text:
+    from yaralyzer.util.helpers.debug_helper import print_stack
     txt = Text(f"Invoked with this command:\n\n")
     txt.append(f"{invocation_str()}\n\n", style='wheat4')
 
@@ -115,6 +116,7 @@ def invocation_txt() -> Text:
         txt.append(f"Invocation raw argv:\n\n", style='dim')
         txt.append(f"{invocation_str(raw=True)}", style='wheat4 dim')
 
+    print_stack()
     return txt
 
 

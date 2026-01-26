@@ -84,11 +84,13 @@ YARA_ERROR_CODES = {
 
 def yara_error_msg(exception: yara.Error) -> str:
     """Turn a mysterious YARA error code number into a human readable string."""
-    internal_error_match = INTERNAL_ERROR_REGEX.search(str(exception))
-
-    if internal_error_match:
+    if (internal_error_match := INTERNAL_ERROR_REGEX.search(str(exception))):
         error_code = int(internal_error_match.group(1))
-        error_msg = YARA_ERROR_CODES[error_code]
-        return f"Internal YARA error! (code: {error_code}, type: {error_msg})"
+        msg = f"Internal YARA error! (code: {error_code}, type: {YARA_ERROR_CODES[error_code]})"
+
+        if error_code == 25:
+            msg += "\n\nRunning with a larger --yara-stack-size may solve this problem."
+
+        return msg
     else:
         return f"YARA error: {exception}"

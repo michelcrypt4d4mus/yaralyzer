@@ -5,13 +5,11 @@ from typing import List, Optional, Union
 
 from rich import box
 from rich.panel import Panel
-from rich.padding import Padding
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.theme import BYTES_BRIGHTEST, BYTES_HIGHLIGHT, YARALYZER_THEME_DICT, color_theme_grid
+from yaralyzer.output.theme import BYTES_BRIGHTEST, BYTES_HIGHLIGHT
 from yaralyzer.output.console import console
-from yaralyzer.util.constants import YARALYZER
 from yaralyzer.util.logging import highlighter, log, log_console
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
@@ -105,8 +103,3 @@ def unprintable_byte_to_text(code: str, style: str = '') -> Text:
     txt.append(code.upper(), style=f"{style} italic dim")
     txt.append(Text(']', style=style))
     return txt
-
-
-def yaralyzer_show_color_theme() -> None:
-    """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
-    console.print(color_theme_grid(YARALYZER_THEME_DICT, YARALYZER))

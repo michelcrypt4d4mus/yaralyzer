@@ -25,7 +25,7 @@ GREY = 'color(241)'
 GREY_ADDRESS = 'color(238)'
 PEACH = 'color(215)'
 
-# For the table shown by running yaralyzer_show_color_theme
+# For the table shown by running --show-colors
 MAX_THEME_COL_SIZE = 35
 
 # Theme used by main console

@@ -8,10 +8,10 @@ TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 PROJECT_DIR = PYTESTS_DIR.parent
 LOG_DIR = PROJECT_DIR.joinpath('log').resolve()
 
-for test_dir in [LOG_DIR, TMP_DIR]:
-    if not test_dir.exists():
-        print(f"Creating required dir '{LOG_DIR}'")
-        test_dir.mkdir(parents=True, exist_ok=True)
+for required_dir in [LOG_DIR, TMP_DIR]:
+    if not required_dir.exists():
+        print(f"Creating required dir '{required_dir}'")
+        required_dir.mkdir(parents=True, exist_ok=True)
 
 # Must be set before importing yaralyzer.helper.env_helper
 environ['INVOKED_BY_PYTEST'] = 'True'

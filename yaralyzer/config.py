@@ -40,8 +40,8 @@ ONLY_CLI_ARGS = [
 class YaralyzerConfig:
     """Handles parsing of command line args and environment variables for Yaralyzer."""
 
-    # Env vars that configure yaralyzer command line options (or anything else) should be prefixed with this.
-    ENV_VAR_PREFIX = YARALYZER_UPPER
+    ENV_VAR_PREFIX = YARALYZER_UPPER     # Yaralyzer env vars are always prefixed with this
+    COLOR_THEME = YARALYZER_THEME_DICT   # Overloaded in pdfalyzer
 
     # These are passed through to `yara.set_config()``.
     DEFAULT_MAX_MATCH_LENGTH = 100 * KILOBYTE
@@ -58,7 +58,6 @@ class YaralyzerConfig:
     # Logging stuff
     LOG_DIR: Path | None = None
     LOG_LEVEL: int = logging.WARNING
-    COLOR_THEME = YARALYZER_THEME_DICT
 
     _append_option_vars: list[str] = []
     _argparse_dests: list[str] = []

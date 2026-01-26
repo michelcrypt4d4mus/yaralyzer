@@ -15,7 +15,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE, EncodingDetector
 from yaralyzer.output import console
-from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, color_theme_grid
 from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, OptionValidator,
      PatternsLabelValidator, YaraRegexValidator)
 from yaralyzer.util.constants import *
@@ -32,6 +32,11 @@ DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make
 PNG_EXPORT_WARNING = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
                      f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
+EARLY_EXIT_ARGS = [
+    '--show-colors',
+    ENV_VARS_OPTION,
+    '--version',
+]
 
 def epilog(config: type[YaralyzerConfig]) -> str:
     """Returns a string with some rich text tags for color to be used as the --help footer."""
@@ -243,14 +248,19 @@ debug = parser.add_argument_group('DEBUG', 'Debugging/interactive options.')
 level = debug.add_mutually_exclusive_group()
 
 level.add_argument('-D', '--debug', action='store_true',
-                    help='show verbose debug log output')
+                   help='show verbose debug log output')
 
 level.add_argument('-L', '--log-level',
-                    help='set the log level',
+                   help='set the log level',
                     choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
 
 debug.add_argument('-I', '--interact', action='store_true',
-                    help='drop into interactive python REPL when parsing is complete')
+                   help='drop into interactive python REPL when parsing is complete')
+
+debug.add_argument('--show-colors', action='store_true',
+                   help='show the color theme and exit')
+
+should_exit_early = any(arg in EARLY_EXIT_ARGS for arg in sys.argv)
 
 
 def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = None):
@@ -267,12 +277,15 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     Raises:
         InvalidArgumentError: If args are invalid.
     """
-    if '--version' in sys.argv:
-        print(f"{config.app_name} {version(config.app_name)}")
+    if should_exit_early:
+        if '--version' in sys.argv:
+            print(f"{config.app_name} {version(config.app_name)}")
+        elif ENV_VARS_OPTION in sys.argv:
+            show_configurable_env_vars(config)
+        elif '--show-colors' in sys.argv:
+            console.console.print(color_theme_grid(config.color_theme(), config.app_name))
+
         sys.exit()
-    elif ENV_VARS_OPTION in sys.argv:
-        show_configurable_env_vars(config)
-        sys.exit(0)
 
     # Parse args and set a few private variables we want that are unrelated to user input
     args = _args or parser.parse_args()

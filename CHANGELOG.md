@@ -1,6 +1,7 @@
 # NEXT RELEASE
+* Use custom validators and exclusive argument groups so `argparse` can handle most validations
 * Change shorthand for `--patterns-label` from `-rpl` to `-pl`
-* Use custom validators and exclusive argument groups so `argparse` can handle more validations
+* `--show-colors` debug option to show the color theme
 
 ### 1.3.1
 * Accomodate Python 3.10 for a little while longer

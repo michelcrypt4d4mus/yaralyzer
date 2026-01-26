@@ -8,6 +8,8 @@ from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
+from rich.style import Style
+
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
@@ -81,6 +83,11 @@ class YaralyzerConfig:
     def log_dir_env_var(cls) -> str:
         """Environment variable name that can set the log output directory."""
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
+
+    @classmethod
+    def color_theme(cls) -> dict[str, str | Style]:
+        from .output.theme import THEME_DICT
+        return THEME_DICT
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:

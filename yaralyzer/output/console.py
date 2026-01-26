@@ -7,11 +7,12 @@ from typing import List
 
 from rich.console import Console
 from rich.errors import MarkupError
+from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.util.constants import SUPPRESS_OUTPUT_OPTION
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, stderr_console
-from yaralyzer.output.theme import YARALYZER_THEME
+from yaralyzer.output.theme import YARALYZER_THEME, color_theme_grid
 
 
 console_kwargs = default_console_kwargs()
@@ -36,3 +37,8 @@ def console_print_with_fallback(_string: Text | str, style=None) -> None:
 def console_width() -> int:
     """Current width set in `console` object."""
     return console._width or 80  # TODO: wtf?
+
+
+def show_color_theme(theme_dict: dict[str, str | Style], app_name: str) -> None:
+    """Script method to show yaralyzer's color theme. Invocable with 'yaralyzer_show_colors'."""
+    console.print(color_theme_grid(theme_dict, app_name))

@@ -96,7 +96,7 @@ def configure_logger(log_label: str) -> logging.Logger:
 
 
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
-    """Convert sys.argv into something readable."""
+    """Convert `sys.argv` into something readable by relativizing paths."""
     _argv = copy(_argv or argv)
     _argv = [arg for arg in _argv if arg != ECHO_COMMAND_OPTION]
 

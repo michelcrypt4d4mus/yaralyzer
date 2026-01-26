@@ -243,10 +243,12 @@ debug = parser.add_argument_group(
     'DEBUG',
     'Debugging/interactive options.')
 
-debug.add_argument('-D', '--debug', action='store_true',
+level = debug.add_mutually_exclusive_group()
+
+level.add_argument('-D', '--debug', action='store_true',
                     help='show verbose debug log output')
 
-debug.add_argument('-L', '--log-level',
+level.add_argument('-L', '--log-level',
                     help='set the log level',
                     choices=[TRACE, 'DEBUG', 'INFO', 'WARN', 'ERROR'])
 
@@ -276,7 +278,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         sys.exit()
 
     # Parse args and set a few private variables we want that are unrelated to user input
-    log.warning(f"About to parse, sys.argv is {sys.argv}")
     args = _args or parser.parse_args()
     args._invoked_at_str = timestamp_for_filename()
     args._standalone_mode = _args is None
@@ -285,9 +286,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
 
     if args.debug:
         set_log_level(logging.DEBUG)
-
-        if args.log_level and args.log_level != 'DEBUG':
-            log.warning("Ignoring --log-level option, --debug means log level is DEBUG")
     elif args.log_level:
         set_log_level(args.log_level)
 

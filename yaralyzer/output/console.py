@@ -3,7 +3,6 @@ Holds the rich.Console instance that controls the stdout printing and file expor
 """
 from os import devnull
 from sys import argv
-from typing import List
 
 from rich.console import Console
 from rich.errors import MarkupError

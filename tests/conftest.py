@@ -12,6 +12,9 @@ environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
 # from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
+from yaralyzer.config import YaralyzerConfig
+from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
+from yaralyzer.util.helpers.env_helper import temporary_argv
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
 from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
@@ -53,9 +56,17 @@ def tulips_yara_pattern() -> str:
 
 
 # A Yaralyzer
-@pytest.fixture(scope="session")
-def a_yaralyzer(il_tulipano_path, tulips_yara_path) -> Yaralyzer:
-    return Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
+@pytest.fixture
+def tulip_base_args(il_tulipano_path, tulips_yara_path) -> list[str]:
+    return safe_args([YARALYZE, il_tulipano_path, NO_TIMESTAMPS_OPTION, '-Y', tulips_yara_path])
+
+
+# A Yaralyzer
+@pytest.fixture
+def a_yaralyzer(il_tulipano_path, tulip_base_args, tulips_yara_path) -> Yaralyzer:
+    with temporary_argv(tulip_base_args):
+        YaralyzerConfig.parse_args()
+        return Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
 
 
 @pytest.fixture

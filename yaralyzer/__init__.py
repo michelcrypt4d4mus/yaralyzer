@@ -15,13 +15,14 @@ if not environ.get(INVOKED_BY_PYTEST, False):
             load_dotenv(dotenv_path=dotenv_file)
             break
 
+from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
 from yaralyzer.output.file_export import export_json, invoke_rich_export
-from yaralyzer.util.argument_parser import parse_arguments
+from yaralyzer.util.argument_parser import parser, parse_arguments
 from yaralyzer.util.constants import PDFALYZER_REPO_URL
 from yaralyzer.util.exceptions import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import relative_path
-from yaralyzer.util.logging import invocation_txt, log, log_console
+from yaralyzer.util.logging import invocation_txt, log, log_console, log_current_config
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -30,13 +31,18 @@ PDFALYZER_MSG = "\nIf you are analyzing a PDF you may be interested in Pdfalyzer
 PDFALYZER_MSG_TXT = Text(PDFALYZER_MSG, style='bright_white bold').append('\n -> ', style='bright_white')
 PDFALYZER_MSG_TXT.append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
 
+YaralyzerConfig.set_parsers(parser, parse_arguments)
+
 
 def yaralyze():
     """
     Entry point for Yaralyzer when invoked as a script. Args are parsed from the command line
     and environment variables. See `yaralyze --help` for details.
     """
-    args = parse_arguments()
+    args = YaralyzerConfig.parse_args()
+
+    if args._standalone_mode:
+        log_current_config(YaralyzerConfig)
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)

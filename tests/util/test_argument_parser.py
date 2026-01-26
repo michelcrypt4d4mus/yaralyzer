@@ -23,7 +23,7 @@ def valid_argv(tulips_yara_path) -> list[str]:
 def test_env_var_merge(valid_argv):
     with temporary_env(ENV_VARS):
         with temporary_argv(valid_argv):
-            args = parse_arguments()
+            args = YaralyzerConfig.parse_args()
             assert args == YaralyzerConfig.args
             assert YaralyzerConfig.args.min_chardet_bytes == 9
             assert YaralyzerConfig.args.suppress_decodes_table is True
@@ -31,7 +31,7 @@ def test_env_var_merge(valid_argv):
 
         # Ensure CLI overrides env vars
         with temporary_argv(valid_argv + ['--surrounding-bytes', '123']):
-            parse_arguments()
+            YaralyzerConfig.parse_args()
             assert YaralyzerConfig.args.surrounding_bytes == 123
 
 
@@ -41,23 +41,23 @@ def test_option_validators():
 
 def test_output_dir(valid_argv, output_dir_args, tmp_dir):
     with temporary_argv(valid_argv + output_dir_args):
-        args = parse_arguments()
+        args = YaralyzerConfig.parse_args()
         assert args.output_dir == tmp_dir
 
 
 def test_private_args(valid_argv):
     with temporary_argv(valid_argv):
-        args = parse_arguments()
+        args = YaralyzerConfig.parse_args()
         assert len(YaralyzerConfig.args._invoked_at_str) == 19
         assert args._standalone_mode is True
         assert args._any_export_selected is False
 
     with temporary_argv(valid_argv + ['-txt']):
-        args = parse_arguments()
+        args = YaralyzerConfig.parse_args()
         assert args._any_export_selected is True
 
     with temporary_argv(valid_argv + ['-png']):
-        args = parse_arguments()
+        args = YaralyzerConfig.parse_args()
         assert args.export_svg == 'svg'
         assert args._keep_exported_svg is False
 

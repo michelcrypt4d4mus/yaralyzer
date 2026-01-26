@@ -7,7 +7,6 @@ from argparse import _AppendAction, _StoreTrueAction, Action, ArgumentParser, Na
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from typing import Type
 
 from rich.padding import Padding
 from rich.panel import Panel
@@ -25,22 +24,23 @@ from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join, props_string_indented
-from yaralyzer.util.logging import log, log_argparse_result, log_console, log_current_config, set_log_level
+from yaralyzer.util.logging import log, log_argparse_result, log_console, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
+
 PNG_EXPORT_ERROR_MSG = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
                        f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
 
 
-def epilog(config: Type[YaralyzerConfig]) -> str:
+def epilog(config: type[YaralyzerConfig]) -> str:
     """Returns a string with some rich text tags for color to be used as the --help footer."""
     color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()
 
     msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
-          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable} {ENV_VARS_OPTION}" \
+          f" {color_var(f'.{package}')} file. Try [argparse.args]{config.executable_name} {ENV_VARS_OPTION}" \
           f"[/argparse.args] for more info." \
 
     if package == YARALYZER:
@@ -61,46 +61,46 @@ parser.add_argument(ENV_VARS_OPTION, action='store_true',
                     help=f"show the env vars that can set these options permanently if placed in a .{parser.prog}r file")
 
 
-rules = parser.add_argument_group(
+yaras = parser.add_argument_group(
     'YARA RULES',
     "Load YARA rules from preconfigured files or use one off YARA regular expression strings")
 
-yaras = rules.add_mutually_exclusive_group(required=True)
+rules = yaras.add_mutually_exclusive_group(required=True)
 
-yaras.add_argument('-Y', '--yara-file',
+rules.add_argument('-Y', '--yara-file',
                     help='path to a YARA rules file to check against (can be supplied more than once)',
                     action='append',
                     metavar='FILE',
                     dest='yara_rules_files',
                     type=PathValidator())
 
-yaras.add_argument('-dir', '--rule-dir',
+rules.add_argument('-dir', '--rule-dir',
                     help='directory with yara rules files (all files in dir are used, can be supplied more than once)',
                     action='append',
                     metavar='DIR',
                     dest='yara_rules_dirs',
                     type=DirValidator())
 
-yaras.add_argument('-re', '--regex-pattern',
+rules.add_argument('-re', '--regex-pattern',
                     help='build a YARA rule from PATTERN (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='PATTERN',
                     dest='regex_patterns',
                     type=YaraRegexValidator())
 
-yaras.add_argument('-hex', '--hex-pattern',
+rules.add_argument('-hex', '--hex-pattern',
                     help='build a YARA rule from a hex string (can be supplied more than once for boolean OR)',
                     action='append',
                     metavar='HEX',
                     dest='hex_patterns',
                     type=YaraRegexValidator())
 
-rules.add_argument('-pl', '--patterns-label',
+yaras.add_argument('-pl', '--patterns-label',
                     help='optional string to label your YARA patterns (makes it easier to scan results)',
                     metavar='LABEL',
                     type=PatternsLabelValidator())
 
-rules.add_argument('-mod', '--regex-modifier',
+yaras.add_argument('-mod', '--regex-modifier',
                     help=f"optional modifier keyword for YARA regexes ({comma_join(YARA_REGEX_MODIFIERS)})",
                     metavar='MODIFIER',
                     choices=YARA_REGEX_MODIFIERS)
@@ -253,18 +253,12 @@ debug.add_argument('-L', '--log-level',
 debug.add_argument('-I', '--interact', action='store_true',
                     help='drop into interactive python REPL when parsing is complete')
 
-# TODO: this kind of sucks
-YaralyzerConfig.set_argument_parser(parser)
 
-
-def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = None):
+def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = None):
     """
     Parse command line args. Most arguments can also also be chosen by setting env vars,
     run with `--env-vars` option for more info on how that works.
-
-    If `args`
-
-    "Private" options injected by this method outside of user selection will be prefixed with underscore.
+    "Private" args injected outside of user selection will be prefixed with underscore.
 
     Args:
         args (Namespace, optional): Use these `args` instead of parsing from `argv`.
@@ -275,14 +269,15 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
         InvalidArgumentError: If args are invalid.
     """
     if '--version' in sys.argv:
-        print(f"{YARALYZER} {version(YARALYZER)}")
+        print(f"{config.app_name} {version(config.app_name)}")
         sys.exit()
     elif ENV_VARS_OPTION in sys.argv:
-        show_configurable_env_vars(YaralyzerConfig)
+        show_configurable_env_vars(config)
         sys.exit()
 
-    # Parse and validate args
-    args = _args or parser.parse_args(argv)
+    # Parse args and set a few private variables we want that are unrelated to user input
+    log.warning(f"About to parse, sys.argv is {sys.argv}")
+    args = _args or parser.parse_args()
     args._invoked_at_str = timestamp_for_filename()
     args._standalone_mode = _args is None
     # Adjust error handling based on whether the 'yaralyze' shell script is what's being run
@@ -317,30 +312,14 @@ def parse_arguments(_args: Namespace | None = None, argv: list[str] | None = Non
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
 
-    YaralyzerConfig.merge_env_options(args)
-
-    # Wait until after set_args() to set these defaults in case there's a YARALYZER_[WHATEVER] env var
-    # that we need to override.
-    args.output_dir = (args.output_dir or Path.cwd()).resolve()
-    args.file_prefix = (args.file_prefix + '__') if args.file_prefix else ''
-    args.file_suffix = ('_' + args.file_suffix) if args.file_suffix else ''
-
     if args.maximize_width:
         # TODO: unclear if we need to do this import this way to make the change happen?
         console.console.width = max(env_helper.console_width_possibilities())
 
-    if args._standalone_mode:
-        log_current_config()
-        log_argparse_result(YaralyzerConfig.args, 'Parsed with env vars merged')
-
     return args
 
 
-# TODO this is hacky/ugly
-YaralyzerConfig._parse_arguments = parse_arguments
-
-
-def show_configurable_env_vars(cls: Type[YaralyzerConfig]) -> None:
+def show_configurable_env_vars(cls: type[YaralyzerConfig]) -> None:
     """
     Show the environment variables that can be used to set command line options, either
     permanently in a `.yaralyzer` file or in other standard environment variable ways.
@@ -349,7 +328,7 @@ def show_configurable_env_vars(cls: Type[YaralyzerConfig]) -> None:
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
     log_console.print(_env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
 
-    for group in [g for g in cls._argument_parser._action_groups if 'positional' not in g.title]:
+    for group in [g for g in cls._argument_parser._action_groups if 'positional' not in str(g.title)]:
         log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
 
         for action in group._group_actions:

@@ -29,11 +29,11 @@ EXPECTED_LINES = 1060
 @contextmanager
 def temporary_config():
     old_args = deepcopy(YaralyzerConfig.args)
-    yield
+    yield YaralyzerConfig
     YaralyzerConfig._args = old_args
 
 
-def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips_yara_pattern):
+def test_export_basepath(a_yaralyzer, il_tulipano_path, tulip_base_args, tulips_yara_path, tulips_yara_pattern):
     expected_basename = f"{il_tulipano_path.name}_scanned_with_"
 
     def assert_filename(yaralyzer: Yaralyzer, filename: str) -> None:
@@ -44,16 +44,15 @@ def test_export_basepath(a_yaralyzer, il_tulipano_path, tulips_yara_path, tulips
     assert_filename(a_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}")
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
     assert_filename(diralyzer, expected_rulefile_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
-    tulip_base_args = [YARALYZE, il_tulipano_path, NO_TIMESTAMPS_OPTION, '-Y', tulips_yara_path]
 
     with temporary_argv(tulip_base_args + ['--file-prefix', 'nas']):
-        with temporary_config():
-            parse_arguments()
+        with temporary_config() as cfg:
+            cfg.parse_args()
             assert_filename(a_yaralyzer, 'nas__' + expected_rulefile_basename + f"{tulips_yara_path.name}")
 
     with temporary_argv(tulip_base_args + ['--file-suffix', 'NAS']):
-        with temporary_config():
-            parse_arguments()
+        with temporary_config() as cfg:
+            cfg.parse_args()
             expected_basename_with_suffix = f"{expected_rulefile_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
             assert a_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename_with_suffix)
 

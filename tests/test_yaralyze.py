@@ -123,7 +123,7 @@ def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
     can be compared against the same fixture file.
     """
     cmd = _yaralyze_shell_cmd(file_to_scan, *[*args, '-txt'])
-    return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR, DEFAULT_CLI_ARGS)
+    return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
 
 
 def _yaralyze_shell_cmd(file_path: str | Path, *args) -> list[str]:

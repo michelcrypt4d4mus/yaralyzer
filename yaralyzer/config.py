@@ -9,15 +9,19 @@ from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import KILOBYTE, NO_TIMESTAMPS_OPTION, YARALYZER_UPPER
+from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
+from yaralyzer.util.helpers.debug_helper import print_stack
 from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
-     is_invoked_by_pytest, is_path_var, stderr_console)
+     is_invoked_by_pytest, is_path_var, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.string_helper import is_number, log_level_for
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
 T = TypeVar('T')
+
+# For when we need to build a default config outside of CLI usage. TODO: kinda janky
+DEFAULT_ARGV = [YARALYZE, __file__, '--regex-pattern', 'foobar']
 
 # These options cannot be read from an environment variable
 ONLY_CLI_ARGS = [
@@ -27,13 +31,6 @@ ONLY_CLI_ARGS = [
     'help',
     'interact',
     'version',
-]
-
-# For when we need to build a default config outside of CLI usage. TODO: kinda janky
-DEFAULT_ARGV = [
-    __file__,
-    '--regex-pattern', 'foobar',
-    NO_TIMESTAMPS_OPTION,
 ]
 
 
@@ -59,10 +56,9 @@ class YaralyzerConfig:
     LOG_DIR: Path | None = None
     LOG_LEVEL: int = logging.WARNING
 
-    # TODO: Is set in argument_parser.py. Hacky workaround to make our parse_arguments() available here
-    _parse_arguments: Callable[[Namespace | None, list[str] | None], Namespace] = lambda args, argv: Namespace()
     _append_option_vars: list[str] = []
-    _argparse_keys: list[str] = []
+    _argparse_dests: list[str] = []
+    _parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
 
     @classproperty
     def app_name(cls) -> str:
@@ -77,8 +73,8 @@ class YaralyzerConfig:
         return cls._args
 
     @classproperty
-    def executable(cls) -> str:
-        """The command used to run this app."""
+    def executable_name(cls) -> str:
+        """The command used to run this app, e.g. `'yaralyze'`."""
         return cls.app_name.lower().removesuffix('r')
 
     @classproperty
@@ -118,7 +114,49 @@ class YaralyzerConfig:
         return env_value
 
     @classmethod
-    def merge_env_options(cls, _args: Namespace) -> None:
+    def parse_args(cls) -> Namespace:
+        """Parse `sys.argv` and merge the result with any options set in the environment variables."""
+        args = cls._parse_arguments(cls, None)
+        cls._merge_env_options(args)
+        return args
+
+    @classmethod
+    def set_parsers(
+        cls,
+        argparser: ArgumentParser,
+        parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
+    ) -> None:
+        """
+        Should be called immediately so this class can manage the argument parsing. Sort of like
+        this class's `__init__()` method.
+
+        Args:
+            argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
+            parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
+        """
+        cls._set_log_vars()
+        cls._argument_parser = argparser
+        cls._argparse_dests = sorted([action.dest for action in argparser._actions])
+        cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
+        cls._parse_arguments = parse_arguments
+
+    @classmethod
+    def prefixed_env_var(cls, var: str) -> str:
+        """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
+        return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
+
+    @classmethod
+    def _get_default_arg(cls, arg: str) -> Any:
+        """Return the default value for `arg` as defined by a `DEFAULT_` style class variable."""
+        return vars(cls).get(f"DEFAULT_{arg.upper()}")
+
+    @classmethod
+    def _is_configurable_by_env_var(cls, option: str) -> bool:
+        """Returns `True` if this option can be configured by a `YARALYZER_VAR_NAME` style environment variable."""
+        return not (option.startswith('export') or option in ONLY_CLI_ARGS)
+
+    @classmethod
+    def _merge_env_options(cls, _args: Namespace) -> None:
         """
         Set the `args` class instance variable and update args with any environment variable overrides.
         For each arg the environment will be checked for a variable with the same name, uppercased and
@@ -132,7 +170,7 @@ class YaralyzerConfig:
         """
         cls._args = _args
 
-        for option in cls._argparse_keys:
+        for option in cls._argparse_dests:
             arg_value = vars(_args).get(option)
             env_value = cls.get_env_value(option)
             default_value = cls._get_default_arg(option)
@@ -151,21 +189,23 @@ class YaralyzerConfig:
             else:
                 setattr(_args, option, arg_value or env_value)
 
-    @classmethod
-    def prefixed_env_var(cls, var: str) -> str:
-        """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
-        return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
+        cls.args.output_dir = (cls.args.output_dir or Path.cwd()).resolve()
+        cls.args.file_prefix = (cls.args.file_prefix + '__') if cls.args.file_prefix else ''
+        cls.args.file_suffix = ('_' + cls.args.file_suffix) if cls.args.file_suffix else ''
 
     @classmethod
-    def set_argument_parser(cls, parser: ArgumentParser) -> None:
-        """Sets the `_argument_parser` instance variable that will be used to parse command line args."""
-        cls._argument_parser = parser
-        cls._argparse_keys = sorted([action.dest for action in parser._actions])
-        cls._append_option_vars = [a.dest for a in parser._actions if isinstance(a, _AppendAction)]
+    def _set_default_args(cls) -> None:
+        """Set `self.args` to their defaults as if parsed from the command line."""
+        from yaralyzer.util.logging import log
+        log.warning(f"{type(cls).__name__}._set_default_args() called which shouldn't be happening any more.")
+        # print_stack()
+
+        with temporary_argv(DEFAULT_ARGV):
+            cls._merge_env_options(cls._parse_arguments(cls, None))
 
     @classmethod
-    def set_log_vars(cls) -> None:
-        """Should be called immediately to find any env vars related to logging and set them up."""
+    def _set_log_vars(cls) -> None:
+        """Check the environment for LOG_LEVEL and LOG_DIR so the log setter upper can use them."""
         if (log_dir := cls.get_env_value(LOG_DIR_ENV_VAR, Path)):
             cls.LOG_DIR = Path(log_dir).resolve()
 
@@ -174,23 +214,3 @@ class YaralyzerConfig:
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
             stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
-
-    @classmethod
-    def _get_default_arg(cls, arg: str) -> Any:
-        """Return the default value for `arg` as defined by a `DEFAULT_` style class variable."""
-        default_var = f"DEFAULT_{arg.upper()}"
-        return vars(cls).get(default_var)
-
-    @classmethod
-    def _is_configurable_by_env_var(cls, option: str) -> bool:
-        """Returns `True` if this option can be configured by a `YARALYZER_VAR_NAME` style environment variable."""
-        return not (option.startswith('export') or option in ONLY_CLI_ARGS)
-
-    @classmethod
-    def _set_default_args(cls) -> None:
-        """Set `self.args` to their defaults as if parsed from the command line."""
-        cls.merge_env_options(cls._parse_arguments(None, DEFAULT_ARGV))
-        cls.args.output_dir = Path(cls.args.output_dir or Path.cwd()).resolve()
-
-
-YaralyzerConfig.set_log_vars()

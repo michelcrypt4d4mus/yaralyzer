@@ -145,12 +145,12 @@ def log_bigly(msg: str, big_msg: object, level: int = logging.WARNING) -> None:
     log.log(level, f"{msg}\n\n {big_msg}\n")
 
 
-def log_current_config() -> None:
-    """Write current state of `YaralyzerConfig` object to the logs."""
-    msg = f"{YaralyzerConfig.__name__} current attributes:\n\n"
+def log_current_config(config: type[YaralyzerConfig]) -> None:
+    """Write current state of `YaralyzerConfig` object (including parsed args) to the logs."""
+    msg = f"{config.__name__} current attributes:\n\n"
 
     config_dict = {
-        k: v for k, v in vars(YaralyzerConfig).items()
+        k: v for k, v in vars(config).items()
         if not (k.startswith('_') or 'classmethod' in str(v))
     }
 
@@ -158,6 +158,7 @@ def log_current_config() -> None:
         msg += f"   {k: >35}  {config_dict[k]}\n"
 
     log.info(msg)
+    log_argparse_result(config.args, 'Parsed with env vars merged')
 
 
 @contextmanager

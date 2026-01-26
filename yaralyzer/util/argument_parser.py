@@ -313,7 +313,7 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
 
     if args.debug:
         set_log_level(logging.DEBUG)
-        log_argparse_result(args, 'RAW')
+        log_argparse_result(args, 'End of yaralyzer parse_arguments()')
     elif args.log_level:
         set_log_level(args.log_level)
 

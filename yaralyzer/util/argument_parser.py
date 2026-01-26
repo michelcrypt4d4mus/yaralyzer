@@ -239,10 +239,7 @@ export.add_argument(SUPPRESS_OUTPUT_OPTION, action='store_true',
 
 
 # Debugging
-debug = parser.add_argument_group(
-    'DEBUG',
-    'Debugging/interactive options.')
-
+debug = parser.add_argument_group('DEBUG', 'Debugging/interactive options.')
 level = debug.add_mutually_exclusive_group()
 
 level.add_argument('-D', '--debug', action='store_true',

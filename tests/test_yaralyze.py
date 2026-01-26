@@ -4,6 +4,7 @@ are over in test_yaralyzer.py)
 """
 import json
 import logging
+import os
 import re
 from math import isclose
 from pathlib import Path
@@ -84,6 +85,7 @@ def test_multi_export(binary_file_path, tulips_yara_path, tmp_dir):
     assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
+@pytest.mark.skipif(os.name != 'linux', reason="cairo executable doesn't come with cairosvg on macOS and windows")
 def test_png_export(il_tulipano_path, tmp_dir):
     regex = 'pregiatissimi'
     cmd = _yaralyze_shell_cmd(il_tulipano_path, '-re', regex, '-png')

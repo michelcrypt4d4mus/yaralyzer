@@ -10,6 +10,7 @@ from typing import Any, Callable, TypeVar
 
 from rich.style import Style
 
+from yaralyzer.output.theme import YARALYZER_THEME_DICT
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
@@ -57,6 +58,7 @@ class YaralyzerConfig:
     # Logging stuff
     LOG_DIR: Path | None = None
     LOG_LEVEL: int = logging.WARNING
+    COLOR_THEME = YARALYZER_THEME_DICT
 
     _append_option_vars: list[str] = []
     _argparse_dests: list[str] = []
@@ -83,11 +85,6 @@ class YaralyzerConfig:
     def log_dir_env_var(cls) -> str:
         """Environment variable name that can set the log output directory."""
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
-
-    @classmethod
-    def color_theme(cls) -> dict[str, str | Style]:
-        from .output.theme import THEME_DICT
-        return THEME_DICT
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:

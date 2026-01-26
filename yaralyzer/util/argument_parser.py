@@ -283,7 +283,7 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         elif ENV_VARS_OPTION in sys.argv:
             show_configurable_env_vars(config)
         elif '--show-colors' in sys.argv:
-            console.console.print(color_theme_grid(config.color_theme(), config.app_name))
+            console.console.print(color_theme_grid(config.COLOR_THEME, config.app_name))
 
         sys.exit()
 

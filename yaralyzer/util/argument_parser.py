@@ -24,7 +24,7 @@ from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import relative_path, timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import log, log_argparse_result, log_console, set_log_level
+from yaralyzer.util.logging import highlighter, log, log_argparse_result, log_console, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -317,26 +317,26 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     return args
 
 
-def show_configurable_env_vars(cls: type[YaralyzerConfig]) -> None:
+def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     """
     Show the environment variables that can be used to set command line options, either
     permanently in a `.yaralyzer` file or in other standard environment variable ways.
     """
-    panel = Panel(f"{cls.app_name} Environment Variables", style='honeydew2')
+    panel = Panel(f"{config.app_name} Environment Variables", style='honeydew2')
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
-    log_console.print(_env_var_cfg_msg(cls.ENV_VAR_PREFIX), style='grey54')
+    log_console.print(_env_var_cfg_msg(config.ENV_VAR_PREFIX), style='grey54')
 
-    for group in [g for g in cls._argument_parser._action_groups if 'positional' not in str(g.title)]:
+    for group in [g for g in config._argument_parser._action_groups if 'positional' not in str(g.title)]:
         log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
 
         for action in group._group_actions:
-            if not cls._is_configurable_by_env_var(action.dest):
+            if not config._is_configurable_by_env_var(action.dest):
                 continue
 
-            var = cls.env_var_for_command_line_option(action.dest)
-            _print_env_var_explanation(var, action)
+            var = config.env_var_for_command_line_option(action.dest)
+            _print_env_var_explanation(var, action, config)
 
-    _print_env_var_explanation(cls.log_dir_env_var, 'writing of logs to files')
+    _print_env_var_explanation(config.log_dir_env_var, 'writing of logs to files', config)
     log_console.line()
 
 
@@ -351,7 +351,7 @@ def _env_var_cfg_msg(app_name: str) -> Padding:
     return Padding(txt, (1, 1, 0, 2))
 
 
-def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
+def _print_env_var_explanation(env_var: str, action: str | Action, config: type[YaralyzerConfig]) -> None:
     """Print a line explaiing which command line option corresponds to this `env_var`."""
     env_var_style = RichHelpFormatterPlus.styles["argparse.args"].replace('italic', '')
     option = action.option_strings[-1] if isinstance(action, Action) else action
@@ -369,7 +369,18 @@ def _print_env_var_explanation(env_var: str, action: str | Action) -> None:
 
     # stderr_console.print(f"env_var={env_var}, acitoncls={type(action).__name__}, action.type={action.type}")
     comment = ' (comma separated for multiple)' if isinstance(action, _AppendAction) else ''
+    env_value = config.get_env_value(env_var)
     txt = Text('  ').append(f"{env_var:40}", style=env_var_style)
     txt.append(f' {option_type:8} ', style=CLI_OPTION_TYPE_STYLES.get(option_type, 'white') + ' dim italic')
-    txt.append(' sets ').append(option, style='honeydew2').append(comment, style='dim')
+    txt.append(' sets ').append(f"{option:{_max_arg_width()}}", style='honeydew2').append(comment, style='dim')
+
+    if (env_value := config.get_env_value(env_var)):
+        env_value = [str(e) for e in env_value] if isinstance(env_value, list) else env_value
+        txt.append(f" [env: ", style='wheat4').append(highlighter(str(env_value))).append(']', style='wheat4')
+
     log_console.print(txt)
+
+
+def _max_arg_width() -> int:
+    opts = [opt for opt in parser._actions if 'option_strings' in dir(opt)]
+    return max(len(o) for opt in opts for o in opt.option_strings)

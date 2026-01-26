@@ -15,6 +15,9 @@ INDENTED_JOINER = ',\n' + INDENT_SPACES
 NUMBER_REGEX = re.compile(r"^[\d.]+$")
 NON_WORD_CHAR_REGEX = re.compile(r"[^\w]")
 
+is_falsey = lambda s: str(s).lower() in ['', '0', 'false', 'no']
+is_truthy = lambda s: s.lower() in ['1', 'true', 'yes']
+
 
 def escape_yara_pattern(pattern: str) -> str:
     return pattern.replace('/', '\\/')

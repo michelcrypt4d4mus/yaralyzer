@@ -14,7 +14,7 @@ from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
 from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
      is_invoked_by_pytest, is_path_var, stderr_console, temporary_argv)
-from yaralyzer.util.helpers.string_helper import is_number, log_level_for
+from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -92,6 +92,7 @@ class YaralyzerConfig:
         """If called with `'output_dir'` it will check env value of `YARALYZER_OUTPUT_DIR`."""
         env_var = cls.env_var_for_command_line_option(var)
         env_value = environ.get(env_var)
+        var = var.removeprefix(f"{cls.ENV_VAR_PREFIX}_").lower()  # Accomodates being called with YARALYZER_OUTPUT_DIR
 
         # Override type for a few important situations
         if not env_value:
@@ -111,7 +112,12 @@ class YaralyzerConfig:
                     raise EnvironmentError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
 
         # print(f"Got value for var='{var}', env_var='{env_var}', value={env_value}")
-        return env_value
+        if is_falsey(str(env_value)):
+            return False
+        elif is_truthy(str(env_value)):
+            return True
+        else:
+            return env_value
 
     @classmethod
     def parse_args(cls) -> Namespace:

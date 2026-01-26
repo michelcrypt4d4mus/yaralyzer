@@ -141,6 +141,7 @@ def log_argparse_result(args: Namespace, label: str) -> None:
 
 
 def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
+    """Log something with newlines around it."""
     log.log(level, f"{msg}\n\n {big_msg}\n")
 
 

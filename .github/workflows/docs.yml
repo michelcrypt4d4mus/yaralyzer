@@ -28,18 +28,3 @@ jobs:
         run: poetry run lazydocs --help
       - name: Build and deploy documentation
         run: ./scripts/build_docs.sh
-#           poetry run lazydocs --output-path docs/api \
-#                   --overview-file="README.md" \
-#                   --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
-#                   --ignored-modules="yaralyzer.util.helpers" \
-#                   "$YARALYZER_PKG" \
-#                   "$YARALYZER_PKG/decoding" \
-#                   "$YARALYZER_PKG/encoding_detection" \
-#                   "$YARALYZER_PKG/output" \
-#                   "$YARALYZER_PKG/util" \
-#                   "$YARALYZER_PKG/yara"
-#           poetry run mkdocs build
-#           poetry run mkdocs gh-deploy --force
-
-
-# # source ./scripts/build_docs.sh

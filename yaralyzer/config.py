@@ -107,7 +107,7 @@ class YaralyzerConfig:
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:
-        """'output_dir' becomes `YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
+        """`output_dir' becomes``YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
 
     @classmethod
@@ -203,16 +203,6 @@ class YaralyzerConfig:
         cls.args.file_suffix = ('_' + cls.args.file_suffix) if cls.args.file_suffix else ''
 
     @classmethod
-    def _set_default_args(cls) -> None:
-        """Set `self.args` to their defaults as if parsed from the command line."""
-        from yaralyzer.util.logging import log
-        log.warning(f"{type(cls).__name__}._set_default_args() called which shouldn't be happening any more.")
-        # print_stack()
-
-        with temporary_argv(DEFAULT_ARGV):
-            cls._merge_env_options(cls._parse_arguments(cls, None))
-
-    @classmethod
     def _set_class_vars_from_env(cls) -> None:
         """Check the environment for LOG_LEVEL and LOG_DIR so the log setter upper can use them."""
         load_dotenv_file(cls.app_name.lower())
@@ -225,3 +215,13 @@ class YaralyzerConfig:
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
             stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
+
+    @classmethod
+    def _set_default_args(cls) -> None:
+        """Set `self.args` to their defaults as if parsed from the command line."""
+        from yaralyzer.util.logging import log
+        log.warning(f"{type(cls).__name__}._set_default_args() called which shouldn't be happening any more.")
+        # print_stack()
+
+        with temporary_argv(DEFAULT_ARGV):
+            cls._merge_env_options(cls._parse_arguments(cls, None))

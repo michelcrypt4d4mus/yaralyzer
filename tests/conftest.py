@@ -4,10 +4,16 @@ from pathlib import Path
 import pytest
 
 PYTESTS_DIR = Path(__file__).parent
+TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 PROJECT_DIR = PYTESTS_DIR.parent
 LOG_DIR = PROJECT_DIR.joinpath('log').resolve()
 
-# Some env vars that we need or are helpful for pytest
+for test_dir in [LOG_DIR, TMP_DIR]:
+    if not test_dir.exists():
+        print(f"Creating required dir '{LOG_DIR}'")
+        test_dir.mkdir(parents=True, exist_ok=True)
+
+# Must be set before importing yaralyzer.helper.env_helper
 environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
@@ -20,7 +26,6 @@ from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
-TMP_DIR = PYTESTS_DIR.joinpath('tmp')
 FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')

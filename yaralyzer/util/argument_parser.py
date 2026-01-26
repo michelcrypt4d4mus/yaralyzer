@@ -21,9 +21,9 @@ from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, O
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.file_helper import timestamp_for_filename
+from yaralyzer.util.helpers.file_helper import relative_path, timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
-from yaralyzer.util.helpers.string_helper import comma_join, props_string_indented
+from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.util.logging import log, log_argparse_result, log_console, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
@@ -297,6 +297,13 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
     if args.output_dir and not args._any_export_selected:
         log.warning('--output-dir provided but no export option was chosen')
 
+   # TODO: unclear why we need to do these imports this way to make the change happen?
+    if args.maximize_width:
+        console.console.width = max(env_helper.console_width_possibilities())
+
+    if args._any_export_selected:
+        console.console.record = True
+
     # SVG export is a necessary intermediate step for PNG export
     if args.export_png:
         args._keep_exported_svg = bool(args.export_svg)
@@ -311,10 +318,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
         EncodingDetector.force_decode_threshold = args.force_decode_threshold
     if args.force_display_threshold:
         EncodingDetector.force_display_threshold = args.force_display_threshold
-
-    if args.maximize_width:
-        # TODO: unclear if we need to do this import this way to make the change happen?
-        console.console.width = max(env_helper.console_width_possibilities())
 
     return args
 

@@ -134,7 +134,7 @@ class YaralyzerConfig:
             argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
             parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
-        cls._set_log_vars()
+        cls._set_class_vars_from_env()
         cls._argument_parser = argparser
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
@@ -204,7 +204,7 @@ class YaralyzerConfig:
             cls._merge_env_options(cls._parse_arguments(cls, None))
 
     @classmethod
-    def _set_log_vars(cls) -> None:
+    def _set_class_vars_from_env(cls) -> None:
         """Check the environment for LOG_LEVEL and LOG_DIR so the log setter upper can use them."""
         if (log_dir := cls.get_env_value(LOG_DIR_ENV_VAR, Path)):
             cls.LOG_DIR = Path(log_dir).resolve()

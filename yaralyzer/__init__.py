@@ -57,10 +57,6 @@ def yaralyze():
 
     args._export_basepath = yaralyzer.export_basepath()
 
-    if args._any_export_selected:
-        log.debug(f"export_basepath is '{relative_path(args._export_basepath)}'...")
-        console.record = True
-
     if args.echo_command:
         console.print(invocation_txt())
 

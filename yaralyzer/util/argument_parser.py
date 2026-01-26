@@ -255,7 +255,7 @@ level.add_argument('-D', '--debug', action='store_true',
 
 level.add_argument('-L', '--log-level',
                    help='set the log level',
-                   choices=[level for level in logging.getLevelNamesMapping().keys()])
+                   choices=[level for level in LOG_LEVELS.keys()])
 
 debug.add_argument('-I', '--interact', action='store_true',
                    help='drop into interactive python REPL when parsing is complete')

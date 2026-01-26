@@ -6,6 +6,8 @@ import re
 from functools import partial
 from typing import Any, Callable, List
 
+from yaralyzer.util.constants import LOG_LEVELS
+
 ANSI_COLOR_CODE_REGEX = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 INDENT_DEPTH = 4
 INDENT_SPACES = INDENT_DEPTH * ' '
@@ -50,8 +52,8 @@ def log_level_for(value: str | int) -> int:
         return value
     elif re.match(r"\d+", value):
         return int(value)
-    elif value in logging.getLevelNamesMapping():
-        return logging.getLevelNamesMapping()[value]
+    elif value in LOG_LEVELS:
+        return LOG_LEVELS[value]
     else:
         raise ValueError(f"'{value}' is not a valid log level!")
 

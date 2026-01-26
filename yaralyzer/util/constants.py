@@ -40,3 +40,16 @@ PDFALYZER_MSG_TXT = Text("\nIf you are analyzing a PDF you may be interested in 
 # Misc URLs etc.
 INKSCAPE = 'inkscape'
 INKSCAPE_URL = f'https://{INKSCAPE}.org/'
+
+
+# print(json.dumps(logging.getLevelNamesMapping(), indent=4))
+LOG_LEVELS = {
+    "CRITICAL": 50,
+    "FATAL": 50,
+    "ERROR": 40,
+    "WARN": 30,
+    "WARNING": 30,
+    "INFO": 20,
+    "DEBUG": 10,
+    "NOTSET": 0
+}

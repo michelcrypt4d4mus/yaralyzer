@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Avoid `logging.getLevelNamesMapping()` so python 3.10 still works (also it's deprecated / regarded as a mistake)
 
 ### 1.3.2
 * Use custom validators and exclusive argument groups so `argparse` can handle most validations

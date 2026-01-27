@@ -24,16 +24,6 @@ T = TypeVar('T')
 # For when we need to build a default config outside of CLI usage. TODO: kinda janky
 DEFAULT_ARGV = [YARALYZE, __file__, '--regex-pattern', 'foobar']
 
-# These options cannot be read from an environment variable
-ONLY_CLI_ARGS = [
-    'env_vars',
-    'extract_binary_streams',
-    'file_to_scan_path',
-    'help',
-    'interact',
-    'version',
-]
-
 
 class YaralyzerConfig:
     """Handles parsing of command line args and environment variables for Yaralyzer."""
@@ -59,6 +49,16 @@ class YaralyzerConfig:
     # Logging stuff
     LOG_DIR: Path | None = None
     LOG_LEVEL: int = logging.WARNING
+
+    # These options cannot be read from an environment variable
+    ONLY_CLI_ARGS = [
+        'env_vars',
+        'extract_binary_streams',
+        'file_to_scan_path',
+        'help',
+        'interact',
+        'version',
+    ]
 
     _append_option_vars: list[str] = []
     _argparse_dests: list[str] = []
@@ -162,7 +162,7 @@ class YaralyzerConfig:
     @classmethod
     def _is_configurable_by_env_var(cls, option: str) -> bool:
         """Returns `True` if this option can be configured by a `YARALYZER_VAR_NAME` style environment variable."""
-        return not (option.startswith('export') or option in ONLY_CLI_ARGS)
+        return not (option.startswith('export') or option in cls.ONLY_CLI_ARGS)
 
     @classmethod
     def _merge_env_options(cls, _args: Namespace) -> None:

@@ -1,5 +1,7 @@
 # NEXT RELEASE
 
+### 1.3.9
+
 ### 1.3.8
 * better handling of 'yaralyze.cmd' `argv` issue on windows
 

@@ -104,7 +104,13 @@ class YaralyzerConfig:
             parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
-        sys.argv = [cls.script_name if arg == f"{cls.script_name}.cmd" else arg for arg in sys.argv]
+        # TODO: remove:
+        if 'pdfalyze.cmd' in sys.argv or 'yaralyze.cmd' in sys.argv:
+            import json
+            stderr_console.print(f"config.py Found windows .cmd! before: {json.dumps(sys.argv, indent=4)}", style='cyan')
+            sys.argv = [cls.script_name if arg == f"{cls.script_name}.cmd" else arg for arg in sys.argv]
+            stderr_console.print(f"                               after: {json.dumps(sys.argv, indent=4)}", style='bright_green')
+
         cls._set_class_vars_from_env()
         cls._argument_parser = argparser
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])

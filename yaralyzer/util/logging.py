@@ -99,6 +99,12 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
     _argv = copy(_argv or sys.argv)
 
+    # TODO: remove:
+    if 'pdfalyze.cmd' in _argv or 'yaralyze.cmd' in _argv:
+        import json
+        log.warning(f"logging.py: Found windows .cmd!: {json.dumps(_argv, indent=4)}")
+        _argv = [arg.removesuffix('.cmd') if arg.endswith('.cmd') else arg for arg in _argv]
+
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
 

@@ -1,3 +1,8 @@
+Invoked with this command:
+
+[38;5;101m   yaralyze --output-dir tests/tmp -Y tests/fixtures/yara_rules/tulips.yara -html -json -svg -txt --echo-command --no-timestamps tests/fixtures/random_bytes.bin[0m
+
+
 
 
  [7;48;5;251m┌───────────────────────────────────────────────────────────────────────────────────┐[0m                                                                          

@@ -1,7 +1,6 @@
 import os
 from os import environ
 from pathlib import Path
-from subprocess import CalledProcessError
 from typing import Callable, Sequence
 
 import pytest
@@ -22,7 +21,7 @@ environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
 # from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
+from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, relative_path  # noqa: E402
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
@@ -33,9 +32,10 @@ from yaralyzer.yaralyzer import Yaralyzer                                 # noqa
 FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
-
-# Strings
 MAXDECODE_SUFFIX = '__maxdecode256'
+
+# Commands
+YARALYZE_BASE_CMD = [YARALYZE] + DEFAULT_PYTEST_CLI_ARGS
 
 
 @pytest.fixture(scope='session')
@@ -87,7 +87,7 @@ def tulips_yara_pattern() -> str:
 # A Yaralyzer
 @pytest.fixture
 def tulip_base_args(il_tulipano_path, tulips_yara_path) -> list[str]:
-    return safe_args([YARALYZE, il_tulipano_path, NO_TIMESTAMPS_OPTION, '-Y', tulips_yara_path])
+    return safe_args([YARALYZE, il_tulipano_path, '-Y', tulips_yara_path, *DEFAULT_PYTEST_CLI_ARGS])
 
 
 # A Yaralyzer

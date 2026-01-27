@@ -19,6 +19,8 @@ ECHO_COMMAND_OPTION = '--echo-command'
 ENV_VARS_OPTION = '--env-vars'
 NO_TIMESTAMPS_OPTION = '--no-timestamps'
 SUPPRESS_OUTPUT_OPTION = '--suppress-output'
+# Default args used when running the command line version in pytest
+DEFAULT_PYTEST_CLI_ARGS = [ECHO_COMMAND_OPTION, NO_TIMESTAMPS_OPTION]
 
 # Repos
 GITHUB_BASE_URL = 'https://github.com/michelcrypt4d4mus'

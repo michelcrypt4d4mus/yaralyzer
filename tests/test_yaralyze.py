@@ -12,19 +12,18 @@ from typing import Callable, Sequence
 import pytest
 
 from yaralyzer.output.console import console
-from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
+from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, is_windows
 from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
 
-from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR, TMP_DIR
+from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
-DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', relative_path(TMP_DIR)]
-EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
+EXPORT_TEXT_ARGS = DEFAULT_PYTEST_CLI_ARGS + ['-txt']
 
 
 @pytest.fixture
@@ -35,7 +34,7 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
         'fixture_name' arg should be used in cases where tests with different filename outputs
         can be compared against the same fixture file.
         """
-        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt', NO_TIMESTAMPS_OPTION])
+        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt'] + DEFAULT_PYTEST_CLI_ARGS)
         return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
 
     return _compare_exported_txt_to_fixture
@@ -101,7 +100,7 @@ def test_multi_export(binary_file_path, compare_to_fixture, tulips_yara_path):
 @pytest.mark.skipif(is_github_workflow() and not is_linux(), reason="cairo executable doesn't come w/pkg on macOS/windows")
 def test_png_export(il_tulipano_path, tmp_dir, yaralyze_file):
     regex = 'pregiatissimi'
-    result = yaralyze_file(il_tulipano_path, '-re', regex, '-png', NO_TIMESTAMPS_OPTION)
+    result = yaralyze_file(il_tulipano_path, '-re', regex, '-png', *DEFAULT_PYTEST_CLI_ARGS)
     expected_basepath = f'{il_tulipano_path.name}_scanned_with_{regex}{MAXDECODE_SUFFIX}'
     tmp_png_path = tmp_dir.joinpath(f'{expected_basepath}.png')
     assert result.last_exported_file_path().resolve() == tmp_png_path

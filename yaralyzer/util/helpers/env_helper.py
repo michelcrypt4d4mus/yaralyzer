@@ -141,7 +141,7 @@ else:
     CONSOLE_WIDTH = min(console_width_possibilities())
 
 DEFAULT_CONSOLE_KWARGS = {
-    'color_system': 'auto',
+    'color_system': '256',
     'width': CONSOLE_WIDTH,
 }
 

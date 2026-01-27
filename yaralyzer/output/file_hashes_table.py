@@ -2,7 +2,7 @@
 Methods for computing and displaying various file hashes.
 """
 import hashlib
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 # from typing import Self  # TODO: this requires python 3.11
 
@@ -34,6 +34,13 @@ class BytesInfo:
     @property
     def sha256(self) -> str:
         return hashlib.sha256(self._bytes).hexdigest().upper()
+
+    def hash_dict(self) -> dict[str, str]:
+        return {
+            'md5': self.md5,
+            'sha1': self.sha1,
+            'sha256': self.sha256,
+        }
 
     @classmethod
     def for_file(cls, file_path: str | Path) -> 'BytesInfo':

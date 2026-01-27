@@ -14,7 +14,7 @@ from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import encoding_width
 from yaralyzer.output.console import console, console_width
-from yaralyzer.output.theme import BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_HIGHLIGHT, GREY
+from yaralyzer.output.theme import BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_HIGHLIGHT, GREY_COLOR
 from yaralyzer.util.helpers.rich_helper import newline_join
 from yaralyzer.util.logging import log
 
@@ -172,7 +172,7 @@ def hex_text(_bytes: bytes) -> Text:
     Returns:
         Text: Rich Text object of the hex string.
     """
-    return Text(hex_string(_bytes), style=GREY)
+    return Text(hex_string(_bytes), style=GREY_COLOR)
 
 
 def hex_string(_bytes: bytes) -> str:
@@ -217,10 +217,10 @@ def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     highlighted_bytes_str_length = len(highlighted_bytes_str)
     highlight_idx = _find_str_rep_of_bytes(surrounding_bytes_str, highlighted_bytes_str, bytes_match)
 
-    txt = Text(surrounding_bytes_str[:highlight_idx], style=GREY)
+    txt = Text(surrounding_bytes_str[:highlight_idx], style=GREY_COLOR)
     matched_bytes_str = surrounding_bytes_str[highlight_idx:highlight_idx + highlighted_bytes_str_length]
     txt.append(matched_bytes_str, style=bytes_match.highlight_style)
-    txt.append(surrounding_bytes_str[highlight_idx + highlighted_bytes_str_length:], style=GREY)
+    txt.append(surrounding_bytes_str[highlight_idx + highlighted_bytes_str_length:], style=GREY_COLOR)
     return txt
 
 

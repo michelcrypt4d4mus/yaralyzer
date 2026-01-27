@@ -20,8 +20,9 @@ BYTES_BRIGHTEST = 'color(220)'
 BYTES_HIGHLIGHT = 'color(136)'
 ERROR_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 DARK_GREY = 'color(236)'
-GREY = 'color(241)'
+GREY = 'grey'
 GREY_ADDRESS = 'color(238)'
+GREY_COLOR = 'color(241)'
 OFF_WHITE = 'color(245)'
 PEACH = 'color(215)'
 
@@ -31,12 +32,12 @@ MAX_THEME_COL_SIZE = 35
 # Theme used by main console
 YARALYZER_THEME_DICT = {
     # colors
-    'grey': GREY,
-    'grey.dark': DARK_GREY,
-    'grey.dark_italic': f"{DARK_GREY} italic",
-    'grey.darker_italic': 'color(8) dim italic',
-    'grey.darkest': 'color(235) dim',
-    'grey.light': 'color(248)',
+    GREY: GREY_COLOR,
+    f'{GREY}.dark': DARK_GREY,
+    f'{GREY}.dark_italic': f"{DARK_GREY} italic",
+    f'{GREY}.darker_italic': 'color(8) dim italic',
+    f'{GREY}.darkest': 'color(235) dim',
+    f'{GREY}.light': 'color(248)',
     # bytes
     'bytes': BYTES,
     'bytes.decoded': BYTES_BRIGHTEST,

@@ -108,7 +108,7 @@ class YaralyzerConfig:
         if is_github_workflow():
             import json
             stderr_console.print(f"config.py Found windows .cmd! before: {json.dumps(sys.argv, indent=4)}", style='cyan')
-            sys.argv = [arg.removesuffix('.cmd') for arg in sys.argv]
+            sys.argv = [arg.removesuffix('.cmd').replace('\\', '/') for arg in sys.argv]
             stderr_console.print(f"                               after: {json.dumps(sys.argv, indent=4)}", style='bright_green')
 
         cls._set_class_vars_from_env()

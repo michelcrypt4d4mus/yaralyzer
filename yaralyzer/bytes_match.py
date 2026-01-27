@@ -10,9 +10,9 @@ from rich.text import Text
 from yara import StringMatch, StringMatchInstance
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.util.helpers.rich_helper import prefix_with_style
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
-from yaralyzer.output.theme import ERROR_STYLE, BYTES_BRIGHTER, GREY_ADDRESS
+from yaralyzer.output.theme import BYTES_BRIGHTER, ERROR_STYLE, GREY_ADDRESS, OFF_WHITE
+from yaralyzer.util.helpers.rich_helper import prefix_with_style
 
 
 @dataclass

@@ -55,14 +55,12 @@ def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path
 
 def load_binary_data(file_path: Path | str) -> bytes:
     """Load and return the raw `bytes` from a file."""
-    with open(file_path, 'rb') as f:
-        return f.read()
+    return Path(file_path).read_bytes()
 
 
 def load_file(file_path: Path | str) -> str:
     """Load and return the text contents of a file."""
-    with open(file_path, 'r') as f:
-        return f.read()
+    return Path(file_path).read_text()
 
 
 def relative_path(path: Path | str) -> Path:

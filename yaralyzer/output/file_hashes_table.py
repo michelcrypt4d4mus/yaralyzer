@@ -46,7 +46,7 @@ class BytesInfo:
     def for_file(cls, file_path: str | Path) -> 'BytesInfo':
         """Alternate constructor that reads the bytes from `file_path`."""
         with open(file_path, 'rb') as file:
-            return cls(file.read())
+            return cls(Path(file_path).read_bytes())
 
 
 def bytes_hashes_table(

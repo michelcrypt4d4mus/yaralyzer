@@ -23,9 +23,9 @@ PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 DOTFILE_DIRS = [Path.cwd(), Path.home()]
 
-is_linux = lambda: platform.system.lower() == 'linux'
-is_macos = lambda: platform.system.lower() == 'darwin'
-is_windows = lambda: platform.system.lower() == 'windows'
+is_linux = lambda: platform.system().lower() == 'linux'
+is_macos = lambda: platform.system().lower() == 'darwin'
+is_windows = lambda: platform.system().lower() == 'windows'
 
 
 def config_var_name(env_var: str) -> str:

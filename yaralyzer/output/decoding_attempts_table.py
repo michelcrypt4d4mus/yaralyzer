@@ -63,13 +63,13 @@ def _hex_preview_subtable(bytes_match: BytesMatch) -> Table:
         'hex',
         'ascii',
         border_style='grey.darkest',
-        header_style='decode.table_header',
         box=box.MINIMAL,
+        header_style='decode.table_header',
+        pad_edge=False,
+        padding=(0, 1, 0, 2),
         show_lines=True,
         show_header=True,
         show_edge=False,
-        padding=(0, 1, 0, 2),
-        pad_edge=False
     )
 
     hex_table.add_row(

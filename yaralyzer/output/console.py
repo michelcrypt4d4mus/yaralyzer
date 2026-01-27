@@ -6,12 +6,11 @@ from sys import argv
 
 from rich.console import Console
 from rich.errors import MarkupError
-from rich.style import Style
 from rich.text import Text
 
 from yaralyzer.util.constants import SUPPRESS_OUTPUT_OPTION
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, stderr_console
-from yaralyzer.output.theme import YARALYZER_THEME, color_theme_grid
+from yaralyzer.output.theme import YARALYZER_THEME
 
 
 console_kwargs = default_console_kwargs()

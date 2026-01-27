@@ -120,7 +120,7 @@ dmypy.json
 .DS_Store
 
 # mkdocs
-docs/api/
+doc/mkdocs/api/
 
 # Misc
 /log/

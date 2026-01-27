@@ -1,6 +1,8 @@
 import signal
 import functools
 
+from yaralyzer.util.helpers.env_helper import is_windows
+
 
 def timeout(seconds=5, default=None):
     """
@@ -19,10 +21,15 @@ def timeout(seconds=5, default=None):
             def handle_timeout(signum, frame):
                 raise TimeoutError()
 
-            signal.signal(signal.SIGALRM, handle_timeout)
-            signal.alarm(seconds)
+            # Windows doesn't support SIGALRM
+            if not is_windows():
+                signal.signal(signal.SIGALRM, handle_timeout)
+                signal.alarm(seconds)
+
             result = func(*args, **kwargs)
-            signal.alarm(0)
+
+            if not is_windows():
+                signal.alarm(0)
             return result
 
         return wrapper

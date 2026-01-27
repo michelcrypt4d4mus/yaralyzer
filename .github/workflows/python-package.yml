@@ -10,6 +10,7 @@ on:
     branches: ["master"]
 env:
   PYTHONIOENCODING: "utf-8"
+  PYTHONUTF8: 1
 jobs:
   build:
     runs-on: ${{ matrix.os }}

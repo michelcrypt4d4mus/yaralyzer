@@ -8,6 +8,8 @@ on:
     branches: ["master"]
   pull_request:
     branches: ["master"]
+env:
+  PYTHONIOENCODING: "utf-8"
 jobs:
   build:
     runs-on: ${{ matrix.os }}

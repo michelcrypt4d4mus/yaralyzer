@@ -103,7 +103,10 @@ def yaralyze_cmd(output_dir_args, script_cmd_prefix) -> Callable[[Sequence[str |
     """Shell command to run run yaralyze [whatever]."""
     def _shell_cmd(*args) -> list[str]:
         cmd = safe_args(script_cmd_prefix + [YARALYZE] + output_dir_args + [*args])
-        log.warning(f"is_windows: {is_windows()}\nos.name: {os.name}\ncurrent test: {environ.get('PYTEST_CURRENT_TEST')}\n         cmd: {cmd}")
+
+        if is_windows():
+            log.warning(f"current test: {environ.get('PYTEST_CURRENT_TEST')}\n         cmd: {cmd}")
+
         return safe_args(cmd)
 
     return _shell_cmd

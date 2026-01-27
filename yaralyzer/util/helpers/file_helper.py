@@ -60,7 +60,7 @@ def load_binary_data(file_path: Path | str) -> bytes:
 
 def load_file(file_path: Path | str) -> str:
     """Load and return the text contents of a file."""
-    return Path(file_path).read_text()
+    return Path(file_path).read_text(encoding='utf-8')  # Windows requires forcing the encoding
 
 
 def relative_path(path: Path | str) -> Path:

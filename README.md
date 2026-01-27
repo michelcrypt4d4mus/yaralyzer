@@ -18,7 +18,7 @@ pipx install yaralyzer
 yaralyze --yara-rules /secret/vault/sigmunds_malware_rules.yara lacan_buys_the_dip.pdf
 
 # Scan against an arbitrary regular expression:
-yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' the_crypto_archipelago.exe
+yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' --regex-modifier wide the_crypto_archipelago.exe
 
 # Scan against an arbitrary YARA hex pattern
 yaralyze --hex-pattern 'd0 93 d0 a3 d0 [-] 9b d0 90 d0 93' one_day_in_the_life_of_ivan_cryptosovich.bin
@@ -100,7 +100,7 @@ If you want to export `.png` images like the ones below directly from Yaralyzer 
 1. Install [Inkscape](https://inkscape.org/) (homebrew users can install it with `brew install --cask inkscape`)
 2. Ask for the `img` extra when installing Yaralyzer which will install [`cairosvg`](https://pypi.org/project/CairoSVG/): `pipx install yaralyzer[img]`. You'll also have to install the CairoSVG executable manually in different ways depending on your operating system, see [the CairoSVG docs](https://cairosvg.org/documentation/#installation) for the specifics.
 
-In our experience Inkscape and CairoSVG both work though we've seen some glitchiness in the rendered output using CairoSVG on the SVGs rendered by Pdfalyzer so Inkscape is the recommended option.
+In our experience Inkscape and CairoSVG both work though we've seen some glitchiness in the rendered output using CairoSVG on the SVGs rendered by Yaralyzer so Inkscape is the recommended option.
 
 
 #### Raw YARA match result:

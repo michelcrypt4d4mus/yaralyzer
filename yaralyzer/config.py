@@ -88,7 +88,7 @@ class YaralyzerConfig:
 
     @classproperty
     def script_name(cls) -> str:
-        return cls.app_name.removesuffix('r')
+        return cls.app_name.removesuffix('r').lower()
 
     @classmethod
     def init(
@@ -104,13 +104,7 @@ class YaralyzerConfig:
             parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
-        # TODO: remove:
-        if is_github_workflow():
-            import json
-            stderr_console.print(f"config.py Found windows .cmd! before: {json.dumps(sys.argv, indent=4)}", style='cyan')
-            sys.argv = [arg.removesuffix('.cmd').replace('\\', '/') for arg in sys.argv]
-            stderr_console.print(f"                               after: {json.dumps(sys.argv, indent=4)}", style='bright_green')
-
+        sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.script_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
         cls._argument_parser = argparser
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])

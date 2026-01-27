@@ -4,10 +4,10 @@
 * (tests) handle pdfalyzer.cmd / yaralyzer.cmd in strings on windows, `ONLY_CLI_ARGS` is class variable
 
 ### 1.3.6
-* Force `box.SQUARE` style in `pytest` context
+* (tests) Force `box.SQUARE` style in `pytest` context
 
 ### 1.3.5
-* Force UTF-8 mode encoding (required for Windows)
+* (tests) Force UTF-8 mode encoding (required for Windows)
 
 ### 1.3.4
 * Catch `OSError` when checking `cairosvg` and the python package is installed by the actual `cairo` executable is missing
@@ -20,7 +20,7 @@
 * Change shorthand for `--patterns-label` from `-rpl` to `-pl`
 * Drop the `yaralyzer_show_color_theme` script in favour of a `--show-colors` debug option
 
-### 1.3.
+### 1.3.1
 * Accomodate Python 3.10 for a little while longer
 
 # 1.3.0

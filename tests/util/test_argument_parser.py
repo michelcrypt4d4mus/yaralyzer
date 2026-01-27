@@ -67,15 +67,15 @@ def test_private_args(valid_argv):
             log.warning(f"Got InvalidArgumentError {e} but this is probably ok")
 
 
-def test_yaralyzer_show_colors_option():
-    result = ShellResult.from_cmd('yaralyze --show-colors', verify_success=True)
+def test_yaralyzer_show_colors_option(yaralyze_run):
+    result = yaralyze_run('--show-colors')
     assert 'bytes.decoded' in result.stdout_stripped
     assert YARALYZER in result.stdout_stripped.lower()
     assert 10 < len(result.stdout_lines) < 20
 
 
-def test_show_configurable_env_vars_option():
-    result = ShellResult.from_cmd([YARALYZE, ENV_VARS_OPTION], verify_success=True)
+def test_show_configurable_env_vars_option(yaralyze_run):
+    result = yaralyze_run(ENV_VARS_OPTION)
     assert 'YARALYZER_SURROUNDING_BYTES' in result.stderr_stripped
     assert '.yaralyzer' in result.stderr_stripped
     assert re.search(r"--yara-file.*comma", result.stderr_stripped)

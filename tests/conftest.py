@@ -92,10 +92,10 @@ def output_dir_args(tmp_dir) -> list[str]:
 
 
 @pytest.fixture
-def yaralyze_cmd(output_dir_args) -> Callable[[Sequence[str | Path]], list[str]]:
+def yaralyze_cmd(output_dir_args, script_cmd_prefix) -> Callable[[Sequence[str | Path]], list[str]]:
     """Run with poetry if it's windows.."""
     def _shell_cmd(*args) -> list[str]:
-        cmd = (['poetry', 'run'] if is_windows() else []) + [YARALYZE]
+        cmd = script_cmd_prefix + [YARALYZE]
         return safe_args(cmd + output_dir_args + [*args])
 
     return _shell_cmd
@@ -145,3 +145,8 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
         return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
 
     return _compare_exported_txt_to_fixture
+
+
+@pytest.fixture
+def script_cmd_prefix() -> list[str]:
+    return ['poetry', 'run'] if is_windows() else []

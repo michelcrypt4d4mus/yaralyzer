@@ -142,10 +142,15 @@ class ShellResult:
         cmd = invocation_str([arg for arg in self.result.args if arg not in (self.no_log_args or [])])
         msg = f"Return code {self.result.returncode} from shell command:\n\n{cmd}"
 
-        if with_streams:
+        if True or with_streams:
             for i, stream in enumerate([self.stdout, self.stderr]):
                 label = 'stdout' if i == 0 else 'stderr'
-                msg += f"\n\n\n\n[{label}]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
+                msg += f"\n\n[{label}"
+
+                if stream:
+                    msg += f"]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
+                else:
+                    msg += f" (empty)]"
 
         return msg + "\n"
 

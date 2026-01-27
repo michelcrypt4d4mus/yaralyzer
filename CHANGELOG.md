@@ -1,5 +1,8 @@
 # NEXT RELEASE
 
+### 1.3.5
+* Force UTF-8 mode encoding (required for Windows)
+
 ### 1.3.4
 * Catch `OSError` when checking `cairosvg` and the python package is installed by the actual `cairo` executable is missing
 

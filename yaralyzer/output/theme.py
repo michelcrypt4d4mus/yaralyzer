@@ -12,14 +12,12 @@ from rich.text import Text
 from rich.theme import Theme
 
 # Colors
-ALERT_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 BYTES = 'color(100) dim'
 BYTES_NO_DIM = 'color(100)'
-BYTES_BRIGHTEST = 'color(220)'
 BYTES_BRIGHTER = 'orange1'
+BYTES_BRIGHTEST = 'color(220)'
 BYTES_HIGHLIGHT = 'color(136)'
-DANGER_HEADER = 'color(88) on white'  # Red
-DEFAULT_HIGHLIGHT_STYLE = 'orange1'
+ERROR_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 DARK_GREY = 'color(236)'
 GREY = 'color(241)'
 GREY_ADDRESS = 'color(238)'
@@ -40,8 +38,9 @@ YARALYZER_THEME_DICT = {
     'off_white': 'color(245)',
     # bytes
     'bytes': BYTES,
-    'bytes.title': BYTES_BRIGHTER,
     'bytes.decoded': BYTES_BRIGHTEST,
+    'bytes.highlight': BYTES_HIGHLIGHT,
+    'bytes.title': BYTES_BRIGHTER,
     # data types
     'number': 'cyan',
     'regex': 'color(218) dim',
@@ -64,7 +63,7 @@ YARALYZER_THEME_DICT = {
     'yara.string': 'white',
     'yara.url': 'color(220)',
     # error log events
-    'error': 'bright_red',
+    ERROR_STYLE: 'bright_red',
     # override defaults
     'repr.path': 'orchid2',
     'repr.filename': 'orchid2',

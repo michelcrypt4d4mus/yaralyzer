@@ -16,7 +16,7 @@ from yaralyzer.decoding.bytes_decoder import BytesDecoder
 from yaralyzer.output.console import console
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
 from yaralyzer.output.regex_match_metrics import RegexMatchMetrics
-from yaralyzer.output.theme import DEFAULT_HIGHLIGHT_STYLE, YARALYZER_THEME
+from yaralyzer.output.theme import BYTES_BRIGHTER, YARALYZER_THEME
 from yaralyzer.util.constants import MAX_FILENAME_LENGTH, YARALYZE
 from yaralyzer.util.exceptions import print_fatal_error_and_exit
 from yaralyzer.util.helpers.file_helper import files_in_dir, to_paths
@@ -67,7 +67,7 @@ class Yaralyzer:
     rules_label: str
     scannable: str | bytes | Path
     scannable_label: str = ''
-    highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+    highlight_style: str = BYTES_BRIGHTER
     _bytes: bytes = field(init=False)
 
     # Outcome tracking variables

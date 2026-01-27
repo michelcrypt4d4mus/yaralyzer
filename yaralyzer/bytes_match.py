@@ -12,7 +12,7 @@ from yara import StringMatch, StringMatchInstance
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.helpers.rich_helper import prefix_with_style
 from yaralyzer.output.file_hashes_table import bytes_hashes_table
-from yaralyzer.output.theme import ALERT_STYLE, DEFAULT_HIGHLIGHT_STYLE, GREY_ADDRESS
+from yaralyzer.output.theme import ERROR_STYLE, BYTES_BRIGHTER, GREY_ADDRESS
 
 
 @dataclass
@@ -42,7 +42,7 @@ class BytesMatch:
     label: str
     ordinal: int
     match: re.Match | None = None   # It's rough to get the regex from yara :(
-    highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+    highlight_style: str = BYTES_BRIGHTER
     end_idx: int = field(init=False)
     match_grooups: tuple = field(init=False)
     highlight_start_idx: int = field(init=False)
@@ -70,7 +70,7 @@ class BytesMatch:
         matched_against: bytes,
         match: re.Match,
         ordinal: int,
-        highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+        highlight_style: str = BYTES_BRIGHTER
     ) -> 'BytesMatch':
         """
         Alternate constructor to build a `BytesMatch` from a regex match object.
@@ -94,7 +94,7 @@ class BytesMatch:
         yara_str_match: StringMatch,
         yara_str_match_instance: StringMatchInstance,
         ordinal: int,
-        highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+        highlight_style: str = BYTES_BRIGHTER
     ) -> 'BytesMatch':
         """
         Alternate constructor to build a `BytesMatch` from a YARA string match instance.
@@ -132,7 +132,7 @@ class BytesMatch:
         cls,
         matched_against: bytes,
         yara_match: dict,
-        highlight_style: str = DEFAULT_HIGHLIGHT_STYLE
+        highlight_style: str = BYTES_BRIGHTER
     ) -> Iterator['BytesMatch']:
         """
         Yield a `BytesMatch` for each string returned as part of a YARA match result dict.
@@ -264,7 +264,7 @@ class BytesMatch:
         """Get a rich `Text` representation of the match for display."""
         headline = prefix_with_style(str(self.match_length), style='number', root_style='decode.subheading')
         headline.append(f" bytes matching ")
-        headline.append(f"{self.label} ", style=ALERT_STYLE if self.highlight_style == ALERT_STYLE else 'regex')
+        headline.append(f"{self.label} ", style=ERROR_STYLE if self.highlight_style == ERROR_STYLE else 'regex')
         headline.append('at ')
         return headline + self.location()
 

@@ -141,7 +141,7 @@ else:
     CONSOLE_WIDTH = min(console_width_possibilities())
 
 DEFAULT_CONSOLE_KWARGS = {
-    'color_system': '256',
+    'color_system': 'auto',
     'width': CONSOLE_WIDTH,
 }
 
@@ -154,3 +154,4 @@ def default_console_kwargs() -> dict[str, str | int]:
 # For use when you need to write output before the main rich.console has managed to get set up.
 stderr_console = Console(stderr=True, **{**DEFAULT_CONSOLE_KWARGS, 'width': max(console_width_possibilities())})
 # stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
+# print(f"color_system: {stderr_console.color_system}")

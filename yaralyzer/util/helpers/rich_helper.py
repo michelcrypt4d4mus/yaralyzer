@@ -26,7 +26,7 @@ DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 
 # Global default Table options. Default is box.HEAVY_HEAD but that yields different results on windows.
 # DEFAULT_TABLE_OPTIONS = {'box': box.ROUNDED}
-DEFAULT_TABLE_OPTIONS = {'box': box.HEAVY_HEAD}
+DEFAULT_TABLE_OPTIONS = {'safe_box': False, 'box': box.HEAVY_HEAD}
 
 
 def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):

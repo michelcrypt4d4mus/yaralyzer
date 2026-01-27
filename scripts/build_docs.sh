@@ -11,7 +11,7 @@ YARALYZER_PKG="yaralyzer"
 
 # Generate documnentation markdown files using lazydocs
 # TODO: the --ignored-modules doesn't actually ignore the modules, it just doesn't error out if they fail
-poetry run lazydocs --output-path docs/api \
+poetry run lazydocs --output-path doc/mkdocs/api \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
          --ignored-modules="yaralyzer.util.helpers" \

@@ -14,7 +14,7 @@ from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
-from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false,
+from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false, is_github_workflow,
      is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
 
@@ -105,10 +105,10 @@ class YaralyzerConfig:
         """
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
         # TODO: remove:
-        if 'pdfalyze.cmd' in sys.argv or 'yaralyze.cmd' in sys.argv:
+        if is_github_workflow():
             import json
             stderr_console.print(f"config.py Found windows .cmd! before: {json.dumps(sys.argv, indent=4)}", style='cyan')
-            sys.argv = [cls.script_name if arg == f"{cls.script_name}.cmd" else arg for arg in sys.argv]
+            sys.argv = [arg.removesuffix('cmd') for arg in sys.argv]
             stderr_console.print(f"                               after: {json.dumps(sys.argv, indent=4)}", style='bright_green')
 
         cls._set_class_vars_from_env()

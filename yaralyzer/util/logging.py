@@ -47,7 +47,7 @@ from rich.text import Text
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import ECHO_COMMAND_OPTION, YARALYZER
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_invoked_by_pytest
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_workflow, is_invoked_by_pytest
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import log_level_for
 
@@ -100,10 +100,11 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     _argv = copy(_argv or sys.argv)
 
     # TODO: remove:
-    if 'pdfalyze.cmd' in _argv or 'yaralyze.cmd' in _argv:
+    if is_github_workflow():
         import json
-        log.warning(f"logging.py: Found windows .cmd!: {json.dumps(_argv, indent=4)}")
+        log.warning(f"logging.py: _argv before: {json.dumps(_argv, indent=4)}")
         _argv = [arg.removesuffix('.cmd') if arg.endswith('.cmd') else arg for arg in _argv]
+        log.warning(f"logging.py: _argv after: {json.dumps(_argv, indent=4)}")
 
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]

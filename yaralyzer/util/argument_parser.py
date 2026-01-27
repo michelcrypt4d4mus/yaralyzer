@@ -13,7 +13,7 @@ from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE
 from yaralyzer.output.console import console
-from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, color_theme_grid
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, argparse_style, color_theme_grid
 from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, OptionValidator,
      PatternsLabelValidator, YaraRegexValidator)
 from yaralyzer.util.constants import *
@@ -53,7 +53,6 @@ def epilog(config: type[YaralyzerConfig]) -> str:
 
 
 # Positional args, version, help, etc
-RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
 parser = ArgumentParser(formatter_class=RichHelpFormatterPlus, description=DESCRIPTION, epilog=epilog(YaralyzerConfig))
 
 parser.add_argument('file_to_scan_path', metavar='FILE', help='file to scan', type=PathValidator())
@@ -329,12 +328,12 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     Show the environment variables that can be used to set command line options, either
     permanently in a `.yaralyzer` file or in other standard environment variable ways.
     """
-    panel = Panel(f"{config.app_name.title()} Environment Variables", style='honeydew2')
+    panel = Panel(f"{config.app_name.title()} Environment Variables", style='light_steel_blue')
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
     log_console.print(_configurable_env_vars_header(config.ENV_VAR_PREFIX), style='grey54')
 
     for group in [g for g in config._argument_parser._action_groups if 'positional' not in str(g.title)]:
-        log_console.print(f"\n# {group.title}", style=RichHelpFormatterPlus.styles["argparse.groups"])
+        log_console.print(f"\n# {group.title}", style=argparse_style("groups"))
 
         for action in group._group_actions:
             if not config._is_configurable_by_env_var(action.dest):
@@ -361,7 +360,7 @@ def _configurable_env_vars_header(app_name: str) -> Padding:
 
 def _print_env_var_explanation(env_var: str, action: str | Action, config: type[YaralyzerConfig]) -> None:
     """Print a line explaiing which command line option corresponds to this `env_var`."""
-    env_var_style = RichHelpFormatterPlus.styles["argparse.args"].replace('italic', '')
+    env_var_style = argparse_style("args")
     option = action.option_strings[-1] if isinstance(action, Action) else action
 
     if isinstance(action, str):

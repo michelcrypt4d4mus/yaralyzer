@@ -10,6 +10,7 @@ from rich.style import Style
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text
 from rich.theme import Theme
+from rich_argparse_plus import RichHelpFormatterPlus, themes
 
 # Colors
 BYTES = 'color(100) dim'
@@ -118,9 +119,20 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
 )
 
 
+RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
+
+
+def argparse_style(caegory: str) -> str:
+    """
+    RichHelpFormatterPlus strings:
+      https://github.com/michelcrypt4d4mus/rich-argparse-plus/blob/rich_argparse_plus/rich_argparse_plus/themes.py
+    """
+    return RichHelpFormatterPlus.styles[themes.build_style_name(caegory)].replace('italic', '').strip()
+
+
 def color_theme_grid(styles: dict, app_name: str) -> Padding:
     """Lay out the colors in 'styles' in a grid with a header panel."""
-    panel = Panel(f'The {app_name.title()} Color Theme', style='honeydew2', width=60)
+    panel = Panel(f'The {app_name.title()} Color Theme', expand=False, style=argparse_style('args'))
 
     colors = [
         Text('', style='white').append(name[:MAX_THEME_COL_SIZE], style=styles[name]).append(' ')

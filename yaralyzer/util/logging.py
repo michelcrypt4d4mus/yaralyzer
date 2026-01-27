@@ -102,9 +102,9 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     # TODO: remove:
     if is_github_workflow():
         import json
-        log.warning(f"logging.py: _argv before: {json.dumps(_argv, indent=4)}")
-        _argv = [arg.removesuffix('.cmd') if arg.endswith('.cmd') else arg for arg in _argv]
-        log.warning(f"logging.py: _argv after: {json.dumps(_argv, indent=4)}")
+        log.warning(f"logging.py: _argv before:\n    " + ' '.join(_argv))
+        _argv = [arg.removesuffix('.cmd').replace('\\', '/') if arg.endswith('.cmd') else arg for arg in _argv]
+        log.warning(f"logging.py: _argv after:\n    " + ' '.join(_argv))
 
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]

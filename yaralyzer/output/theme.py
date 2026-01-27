@@ -31,7 +31,6 @@ MAX_THEME_COL_SIZE = 35
 # Theme used by main console
 YARALYZER_THEME_DICT = {
     # colors
-    'dark_orange': 'color(58)',
     'grey': GREY,
     'grey.dark': DARK_GREY,
     'grey.dark_italic': f"{DARK_GREY} italic",
@@ -39,38 +38,31 @@ YARALYZER_THEME_DICT = {
     'grey.darkest': 'color(235) dim',
     'grey.light': 'color(248)',
     'off_white': 'color(245)',
-    'zero_bytes': 'color(20)',
+    # bytes
+    'bytes': BYTES,
+    'bytes.title': BYTES_BRIGHTER,
+    'bytes.decoded': BYTES_BRIGHTEST,
     # data types
+    'number': 'cyan',
+    'regex': 'color(218) dim',
+    # Decoding attempts
+    'decode.no_attempt': "color(60) dim italic",
+    'decode.subheading': PEACH,
+    'decode.table_header': 'color(101) bold',
     'encoding': 'color(158) underline bold',
     'encoding.header': 'color(158) bold',
     'encoding.language': 'dark_green italic',
-    'number': 'cyan',
-    'regex': 'color(218) dim',
-    'no_attempt': "color(60) dim italic",
-    # design elements
-    'decode.section_header': 'color(100) reverse',
-    'decode.subheading': PEACH,
-    'decode.subheading_2': 'color(215) dim italic',
-    'decode.table_header': 'color(101) bold',
-    'headline': 'bold white underline',
-    # bytes
-    'ascii': 'color(58)',
-    'ascii_unprintable': 'color(131)',
-    'bytes': BYTES,
-    'bytes.title_dim': 'orange1 dim',
-    'bytes.title': BYTES_BRIGHTER,
-    'bytes.decoded': BYTES_BRIGHTEST,
     # yara
-    'matched_rule': 'on bright_black bold',
+    'yara.date': 'color(216)',
+    'yara.hex': 'color(98)',
+    'yara.int': 'color(45)',
     'yara.key': DARK_GREY,
     'yara.match_var': 'color(156) italic',
-    'yara.string': 'white',
-    'yara.date': 'color(216)',
-    'yara.url': 'color(220)',
-    'yara.int': 'color(45)',
-    'yara.hex': 'color(98)',
-    'yara.scanned': Style(color='yellow', underline=True, bold=True),
+    'yara.matched_rule': 'on bright_black bold',
     'yara.rules':  Style(color='color(135)', underline=True, bold=True),
+    'yara.scanned': Style(color='yellow', underline=True, bold=True),
+    'yara.string': 'white',
+    'yara.url': 'color(220)',
     # error log events
     'error': 'bright_red',
     # override defaults
@@ -132,12 +124,12 @@ def color_theme_grid(styles: dict, app_name: str) -> Padding:
     panel = Panel(f'The {app_name.title()} Color Theme', style='honeydew2', width=60)
 
     colors = [
-        Text('', style='white').append(name[:MAX_THEME_COL_SIZE], style=style).append(' ')
-        for name, style in styles.items()
+        Text('', style='white').append(name[:MAX_THEME_COL_SIZE], style=styles[name]).append(' ')
+        for name in sorted(styles.keys())
         if name not in ['reset', 'repr_url']
     ]
 
-    group = Group(panel, Text(''), Columns(colors, column_first=True, padding=(0, 5), equal=True))
+    group = Group(panel, Text(''), Columns(colors, column_first=True, equal=True, padding=(0, 5)))
     return Padding(group, (1, 2))
 
 

@@ -71,7 +71,7 @@ def test_yaralyzer_show_colors_option(yaralyze_run):
     result = yaralyze_run('--show-colors')
     assert 'bytes.decoded' in result.stdout_stripped
     assert YARALYZER in result.stdout_stripped.lower()
-    assert 10 < len(result.stdout_lines) < 20
+    assert 7 < len(result.stdout_lines) < 15
 
 
 def test_show_configurable_env_vars_option(yaralyze_run):

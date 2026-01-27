@@ -44,11 +44,11 @@ MATCHER_VAR_REGEX = re.compile('\\$[a-z_]+')
 URL_REGEX = re.compile('^https?:')
 
 YARA_STRING_STYLES: Dict[re.Pattern, str] = {
-    URL_REGEX: 'yara.url',
-    DIGITS_REGEX: 'yara.number',
     HEX_REGEX: 'yara.hex',
     DATE_REGEX: 'yara.date',
-    MATCHER_VAR_REGEX: 'yara.match_var'
+    DIGITS_REGEX: 'yara.number',
+    MATCHER_VAR_REGEX: 'yara.match_var',
+    URL_REGEX: 'yara.url',
 }
 
 RAW_YARA_THEME_COLORS = [color[len('yara') + 1:] for color in theme_colors_with_prefix('yara')]
@@ -67,7 +67,7 @@ class YaraMatch:
         """
         self.match = match
         self.rule_name = match['rule']
-        self.label = matched_against_bytes_label.copy().append(f" matched rule: '", style='matched_rule')
+        self.label = matched_against_bytes_label.copy().append(f" matched rule: '", style='yara.matched_rule')
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:

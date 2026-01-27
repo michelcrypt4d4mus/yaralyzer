@@ -59,7 +59,7 @@ class EncodingAssessment:
             encoding (str): The encoding to use for the dummy assessment.
         """
         assessment = cls(ResultDict(encoding=encoding, confidence=0.0, language=None))
-        assessment.confidence_text = Text('none', 'no_attempt')
+        assessment.confidence_text = Text('none', 'decode.no_attempt')
         return assessment
 
     def set_encoding_label(self, alt_text: str | None) -> None:

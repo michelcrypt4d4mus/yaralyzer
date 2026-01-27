@@ -82,7 +82,7 @@ def yara_rule_string(
         pattern_type (str): Either `"regex"` or `"hex"`. Default is `"regex"`.
         rule_name (str): The name of the YARA rule. Default is `"YARALYZE"`.
         pattern_label (Optional[str]): The label for the pattern in the YARA rule. Default is `"pattern"`.
-        modifier (Optional[str]): Optional regex modifier (e.g. 'nocase', 'ascii', 'wide', 'fullword').
+        modifier (Optional[str]): Optional regex modifier (e.g. 'fullword', 'nocase', 'ascii', 'wide').
             Only valid if `pattern_type` is `"regex"`.
 
     Returns:

@@ -7,6 +7,7 @@ from math import isclose
 from pathlib import Path
 from subprocess import CalledProcessError
 from sys import version_info
+from typing import Callable, Sequence
 
 import pytest
 
@@ -24,6 +25,20 @@ from .yara.test_yara_rule_builder import HEX_STRING
 
 DEFAULT_CLI_ARGS = [NO_TIMESTAMPS_OPTION, '--output-dir', relative_path(TMP_DIR)]
 EXPORT_TEXT_ARGS = DEFAULT_CLI_ARGS + ['-txt']
+
+
+@pytest.fixture
+def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
+    def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
+        """
+        Compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data.
+        'fixture_name' arg should be used in cases where tests with different filename outputs
+        can be compared against the same fixture file.
+        """
+        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt', NO_TIMESTAMPS_OPTION])
+        return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
+
+    return _compare_exported_txt_to_fixture
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.

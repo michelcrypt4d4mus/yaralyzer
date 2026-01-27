@@ -12,14 +12,16 @@ from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.encoding_detection.character_encodings import NEWLINE_BYTE, encoding_width
+from yaralyzer.encoding_detection.character_encodings import encoding_width
 from yaralyzer.output.console import console, console_width
 from yaralyzer.output.theme import BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_HIGHLIGHT, GREY
 from yaralyzer.util.helpers.rich_helper import newline_join
 from yaralyzer.util.logging import log
 
 HEX_CHARS_PER_GROUP = 8
+NEWLINE_BYTE = b"\n"
 SUBTABLE_MAX_WIDTH = console_width() - 35 - 5  # 35 for first 3 cols, 5 for in between hex and ascii
+
 HEX_UNIT_LENGTH = (HEX_CHARS_PER_GROUP * 3) + HEX_CHARS_PER_GROUP + 4  # 4 for padding between groups
 HEX_GROUPS_PER_LINE = divmod(SUBTABLE_MAX_WIDTH, HEX_UNIT_LENGTH)[0]
 HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE

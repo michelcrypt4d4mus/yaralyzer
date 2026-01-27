@@ -8,16 +8,13 @@ Helpful links:
 * UTF-8: [www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec](https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec)  # noqa: E501
 """
 
-# Bytes (TODO: why is this here?)
-NEWLINE_BYTE = b"\n"
-
 # String constants
-ENCODING = 'encoding'
 ASCII = 'ascii'
+ENCODING = 'encoding'
+ISO_8859_1 = 'iso-8859-1'
 UTF_8 = 'utf-8'
 UTF_16 = 'utf-16'
 UTF_32 = 'utf-32'
-ISO_8859_1 = 'iso-8859-1'
 WINDOWS_1252 = 'windows-1252'
 
 

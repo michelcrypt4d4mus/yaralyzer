@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Force `box.SQUARE` style in `pytest` context
 
 ### 1.3.5
 * Force UTF-8 mode encoding (required for Windows)

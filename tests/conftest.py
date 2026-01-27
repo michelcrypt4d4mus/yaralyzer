@@ -1,5 +1,7 @@
 from os import environ
 from pathlib import Path
+from subprocess import CalledProcessError
+from typing import Callable, Sequence
 
 import pytest
 
@@ -20,15 +22,16 @@ environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 # from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.env_helper import temporary_argv
-from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data  # noqa: E402
-from yaralyzer.util.helpers.shell_helper import safe_args
+from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
+from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, relative_path  # noqa: E402
+from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
 FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')
 YARA_FIXTURES_DIR = FIXTURES_DIR.joinpath('yara_rules')
 RENDERED_FIXTURES_DIR = FIXTURES_DIR.joinpath('rendered')
+
 # Strings
 MAXDECODE_SUFFIX = '__maxdecode256'
 
@@ -86,3 +89,59 @@ def tmp_dir() -> Path:
 @pytest.fixture
 def output_dir_args(tmp_dir) -> list[str]:
     return safe_args(['--output-dir', tmp_dir])
+
+
+@pytest.fixture
+def yaralyze_cmd(output_dir_args) -> Callable[[Sequence[str | Path]], list[str]]:
+    """Run with poetry if it's windows.."""
+    def _shell_cmd(*args) -> list[str]:
+        cmd = (['poetry', 'run'] if is_windows() else []) + [YARALYZE]
+        return safe_args(cmd + output_dir_args + [*args])
+
+    return _shell_cmd
+
+
+@pytest.fixture
+def yaralyze_file_cmd(yaralyze_cmd) -> Callable[[Path, Sequence[str | Path]], list[str]]:
+    def _shell_cmd(file_path: Path, *args) -> list[str]:
+        return safe_args(yaralyze_cmd(*args) + [file_path])
+
+    return _shell_cmd
+
+
+@pytest.fixture
+def yaralyze_run(yaralyze_cmd) -> Callable[[Sequence[str | Path]], ShellResult]:
+    def _run_yaralyze(*args) -> ShellResult:
+        return ShellResult.from_cmd(yaralyze_cmd(*args), verify_success=True)
+
+    return _run_yaralyze
+
+
+@pytest.fixture
+def yaralyze_file(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
+    def _run_yaralyze(file_to_scan: str | Path, *args) -> ShellResult:
+        cmd = yaralyze_file_cmd(file_to_scan, *args)
+        shell_result = ShellResult.from_cmd(cmd)
+
+        try:
+            shell_result.result.check_returncode()
+            return shell_result
+        except CalledProcessError as e:
+            cmd = ' '.join([str(e) for e in e.cmd])
+            raise CalledProcessError(e.returncode, shell_result.invocation_str, e.output, e.stderr)
+
+    return _run_yaralyze
+
+
+@pytest.fixture
+def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
+    def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
+        """
+        Compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data.
+        'fixture_name' arg should be used in cases where tests with different filename outputs
+        can be compared against the same fixture file.
+        """
+        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt', NO_TIMESTAMPS_OPTION])
+        return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
+
+    return _compare_exported_txt_to_fixture

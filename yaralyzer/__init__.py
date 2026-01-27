@@ -1,15 +1,13 @@
 import code
 import yara as python_yara
-from pathlib import Path
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
 from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.util.argument_parser import parser, parse_arguments
-from yaralyzer.util.constants import PDFALYZER_MSG_TXT, YARALYZER
+from yaralyzer.util.constants import PDFALYZER_MSG_TXT
 from yaralyzer.util.exceptions import print_fatal_error_and_exit
-from yaralyzer.util.helpers.env_helper import load_dotenv_file
-from yaralyzer.util.logging import invocation_txt, log, log_console, log_current_config
+from yaralyzer.util.logging import invocation_txt, log_console, log_current_config
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer

@@ -31,12 +31,12 @@ Python log levels for reference:
 ```
 """
 import logging
+import sys
 import time
 from argparse import Namespace
 from contextlib import contextmanager
 from copy import copy
 from pathlib import Path
-from sys import argv
 from typing import Any, Generator
 
 from rich.console import Console
@@ -97,8 +97,7 @@ def configure_logger(log_label: str) -> logging.Logger:
 
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
-    _argv = copy(_argv or argv)
-    _argv = [arg for arg in _argv if arg != ECHO_COMMAND_OPTION]
+    _argv = copy(_argv or sys.argv)
 
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]

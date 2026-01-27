@@ -96,8 +96,6 @@ class ShellResult:
             assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
             existing_path = relative_path(against_dir.joinpath(exported_path.name))
             exported_data = load_file(exported_path)
-            # TODO: somehow on windows workflow pdfalyzer ends up with pdfalyzer.cmd via --echo-command
-            exported_data = exported_data.replace('pdfalyze.cmd', 'pdfalyze').replace(f"{YARALYZE}.cmd", YARALYZE)
 
             if _should_rebuild_fixtures():
                 if getlogin() in strip_ansi_colors(exported_data):
@@ -160,7 +158,7 @@ class ShellResult:
         error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n"
         error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
         error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{existing_path}' '{export_path}'\n\n"  # noqa: E501
-        error_msg += f"Result of diff (note that pdfalyze.cmd will have been replaced in the pytest comparison!):\n\n"
+        error_msg += f"Result of diff:\n\n"
 
         try:
             diff_output = type(self).from_cmd(['diff', '-a', existing_path, export_path])

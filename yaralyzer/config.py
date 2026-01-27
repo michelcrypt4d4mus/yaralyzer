@@ -3,6 +3,7 @@ Configuration management for Yaralyzer.
 """
 import logging
 import re
+import sys
 from argparse import _AppendAction, ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
@@ -85,6 +86,10 @@ class YaralyzerConfig:
         """Environment variable name that can set the log output directory."""
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
 
+    @classproperty
+    def script_name(cls) -> str:
+        return cls.app_name.removesuffix('r')
+
     @classmethod
     def init(
         cls,
@@ -98,6 +103,8 @@ class YaralyzerConfig:
             argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
             parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
+        # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
+        sys.argv = [cls.script_name if arg == f"{cls.script_name}.cmd" else arg for arg in sys.argv]
         cls._set_class_vars_from_env()
         cls._argument_parser = argparser
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])

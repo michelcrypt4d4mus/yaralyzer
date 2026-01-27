@@ -26,9 +26,6 @@ GREY_COLOR = 'color(241)'
 OFF_WHITE = 'color(245)'
 PEACH = 'color(215)'
 
-# For the table shown by running --show-colors
-MAX_THEME_COL_SIZE = 35
-
 # Theme used by main console
 YARALYZER_THEME_DICT = {
     # colors
@@ -69,19 +66,20 @@ YARALYZER_THEME_DICT = {
     # error log events
     ERROR_STYLE: 'bright_red',
     # override defaults
-    'repr.path': 'orchid2',
     'repr.filename': 'orchid2',
+    'repr.path': 'orchid2',
 }
 
 LOG_THEME_DICT = {
-    'repr.path': 'dark_orange3',
     'repr.filename': 'dark_orange3',
+    'repr.path': 'dark_orange3',
     'repr.none': 'grey23 italic',
     **YARALYZER_THEME_DICT,
 }
 
-LOG_THEME = Theme(LOG_THEME_DICT)
 YARALYZER_THEME = Theme(YARALYZER_THEME_DICT)
+LOG_THEME = Theme(LOG_THEME_DICT)
+MAX_SHOW_COLORS_COL_SIZE = 35
 
 # Used by --env-vars option
 CLI_OPTION_TYPE_STYLES = {
@@ -93,7 +91,6 @@ CLI_OPTION_TYPE_STYLES = {
     'float': 'blue',
     'str': 'green',
 }
-
 
 # TerminalThemes are used when saving SVGS. This one just swaps white for black in DEFAULT_TERMINAL_THEME
 YARALYZER_TERMINAL_THEME = TerminalTheme(
@@ -121,8 +118,7 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
     ],
 )
 
-
-RichHelpFormatterPlus.choose_theme('prince')  # Check options: print(RichHelpFormatterPlus.styles)
+RichHelpFormatterPlus.choose_theme('prince')  # Set argparse theme
 
 
 def argparse_style(caegory: str) -> str:
@@ -130,7 +126,8 @@ def argparse_style(caegory: str) -> str:
     RichHelpFormatterPlus strings:
       https://github.com/michelcrypt4d4mus/rich-argparse-plus/blob/rich_argparse_plus/rich_argparse_plus/themes.py
     """
-    return RichHelpFormatterPlus.styles[themes.build_style_name(caegory)].replace('italic', '').strip()
+    theme_style_name = themes.build_style_name(caegory)
+    return RichHelpFormatterPlus.styles[theme_style_name].replace('italic', '').strip()
 
 
 def color_theme_grid(styles: dict, app_name: str) -> Padding:
@@ -138,7 +135,7 @@ def color_theme_grid(styles: dict, app_name: str) -> Padding:
     panel = Panel(f'The {app_name.title()} Color Theme', expand=False, style=argparse_style('args'))
 
     colors = [
-        Text('', style='white').append(name[:MAX_THEME_COL_SIZE], style=styles[name]).append(' ')
+        Text('', style='white').append(name[:MAX_SHOW_COLORS_COL_SIZE], style=styles[name]).append(' ')
         for name in sorted(styles.keys())
         if name not in ['reset', 'repr_url']
     ]

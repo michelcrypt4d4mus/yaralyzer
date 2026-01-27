@@ -10,7 +10,7 @@ from rich.console import JustifyMethod
 from rich.table import Column, Table
 
 from yaralyzer.output.theme import GREY
-from yaralyzer.util.helpers.rich_helper import size_text
+from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS, size_text
 
 
 @dataclass
@@ -73,7 +73,8 @@ def bytes_hashes_table(
         Column(size_text(bytes_info.size)),
         title=f" {title} Bytes Info" if title else None,
         title_style=GREY,
-        title_justify=title_justify
+        title_justify=title_justify,
+        **DEFAULT_TABLE_OPTIONS,
     )
 
     table.columns[1].style = 'orange3'

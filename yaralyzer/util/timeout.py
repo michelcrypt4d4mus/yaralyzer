@@ -1,5 +1,5 @@
-import signal
 import functools
+import signal
 
 from yaralyzer.util.helpers.env_helper import is_windows
 
@@ -10,8 +10,8 @@ def timeout(seconds=5, default=None):
 
     Example:
         @timeout(seconds=5, default=None)
-            def function():
-                pass
+        def function():
+            sleep(6000)
     """
     def decorator(func):
 
@@ -19,7 +19,7 @@ def timeout(seconds=5, default=None):
         def wrapper(*args, **kwargs):
 
             def handle_timeout(signum, frame):
-                raise TimeoutError()
+                raise TimeoutError(f"Timed out after {seconds} seconds.")
 
             # Windows doesn't support SIGALRM
             if not is_windows():
@@ -35,12 +35,3 @@ def timeout(seconds=5, default=None):
         return wrapper
 
     return decorator
-
-
-# import time
-# from yaralyzer.util.timeout import timeout
-
-# @timeout(seconds=3, default=None)
-# def foo():
-#     while True:
-#         time.sleep(200)

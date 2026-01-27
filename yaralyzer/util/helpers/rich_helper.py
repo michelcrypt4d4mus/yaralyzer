@@ -24,6 +24,10 @@ DIM_COUNTRY_THRESHOLD = 25
 NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
 DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 
+# Global default Table options. Default is box.HEAVY_HEAD but that yields different results on windows.
+# DEFAULT_TABLE_OPTIONS = {'box': box.ROUNDED}
+DEFAULT_TABLE_OPTIONS = {'box': box.HEAVY_HEAD}
+
 
 def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):
     """Apply 'dim' style if 'is_dim'. 'style' overrides for Text and applies for strings."""

@@ -23,7 +23,7 @@ from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.util.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
-from yaralyzer.util.helpers.rich_helper import na_txt
+from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS, na_txt
 
 HEX = Text('HEX', style='bytes.title')
 RAW_BYTES = Text('Raw', style=f"bytes")
@@ -31,7 +31,7 @@ RAW_BYTES = Text('Raw', style=f"bytes")
 
 def new_decoding_attempts_table(bytes_match: BytesMatch) -> Table:
     """Build a new rich `Table` with two rows, the raw and hex views of the `bytes_match` data."""
-    table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header')
+    table = Table(show_lines=True, border_style='bytes', header_style='decode.table_header', **DEFAULT_TABLE_OPTIONS)
 
     def add_col(title, **kwargs):
         kwargs['justify'] = kwargs.get('justify', 'center')

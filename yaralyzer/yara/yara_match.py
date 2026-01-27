@@ -31,6 +31,7 @@ from yara import StringMatch
 from yaralyzer.output.console import console_width
 from yaralyzer.output.theme import theme_colors_with_prefix
 from yaralyzer.util.helpers.bytes_helper import clean_byte_string
+from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, DEFAULT_TABLE_OPTIONS
 from yaralyzer.util.helpers.string_helper import INDENT_SPACES
 from yaralyzer.util.logging import log
 
@@ -72,9 +73,9 @@ class YaraMatch:
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
         """Renders a rich `Panel` showing the color highlighted raw YARA match info."""
         yield Text("\n")
-        yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse"), MATCH_PADDING)
+        yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse", **DEFAULT_TABLE_OPTIONS), MATCH_PADDING)
         yield RAW_YARA_THEME_TXT
-        yield Padding(Panel(_rich_yara_match(self.match)), MATCH_PADDING)
+        yield Padding(Panel(_rich_yara_match(self.match), **DEFAULT_TABLE_OPTIONS), MATCH_PADDING)
 
 
 def _rich_yara_match(element: Any, depth: int = 0) -> Text:

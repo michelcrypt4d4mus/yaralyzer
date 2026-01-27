@@ -80,7 +80,13 @@ def print_header_panel(headline: str, style: str, expand: bool = True, padding: 
         expand (bool, optional): Whether the panel should expand to the full console width. Defaults to `True`.
         padding (tuple, optional): Padding around the panel content (top/bottom, left/right). Defaults to `(0, 2)`.
     """
-    console.print(Panel(headline, box=box.DOUBLE_EDGE, expand=expand, padding=padding or (0, 2), style=style))
+    console.print(Panel(
+        headline,
+        expand=expand,
+        padding=padding or (0, 2),
+        style=style,
+        **DEFAULT_TABLE_OPTIONS
+    ))
 
 
 def reverse_color(style: Style) -> Style:

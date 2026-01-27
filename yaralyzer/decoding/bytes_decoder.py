@@ -19,7 +19,7 @@ from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.util.helpers.collections_helper import get_dict_key_by_value
-from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, NO_DECODING_ERRORS_MSG
+from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, DEFAULT_TABLE_OPTIONS, NO_DECODING_ERRORS_MSG
 from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
 from yaralyzer.output.decoding_table_row import DecodingTableRow
 from yaralyzer.util.logging import log
@@ -123,7 +123,7 @@ class BytesDecoder:
     def _decode_attempt_subheading(self) -> Panel:
         """Generate a rich.Panel for displaying decode attempts."""
         headline = Text(f"Found ", style='decode.subheading') + self.bytes_match.__rich__()
-        return Panel(headline, style='decode.subheading', expand=False)
+        return Panel(headline, style='decode.subheading', expand=False, **DEFAULT_TABLE_OPTIONS)
 
     def _track_decode_stats(self) -> None:
         """Track stats about successful vs. forced vs. failed decode attempts."""

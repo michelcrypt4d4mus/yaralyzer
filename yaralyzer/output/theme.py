@@ -129,7 +129,7 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
 
 def color_theme_grid(styles: dict, app_name: str) -> Padding:
     """Lay out the colors in 'styles' in a grid with a header panel."""
-    panel = Panel(f'The {app_name.title()} Color Theme',  style='honeydew2', width=60)
+    panel = Panel(f'The {app_name.title()} Color Theme', style='honeydew2', width=60)
 
     colors = [
         Text('', style='white').append(name[:MAX_THEME_COL_SIZE], style=style).append(' ')

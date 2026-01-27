@@ -60,7 +60,7 @@ class EncodingDetector:
 
     def __post_init__(self) -> None:
         # Skip chardet if there's not enough bytes available
-        if not self.has_enough_bytes():
+        if not self._has_enough_bytes():
             log.debug(f"{self.bytes_len} is not enough bytes to run chardet.detect()")
             return
 
@@ -75,8 +75,8 @@ class EncodingDetector:
         self.has_any_idea = True
         self.assessments = [EncodingAssessment(a) for a in self.raw_chardet_assessments]
         self._uniquify_results_and_build_table()
-        self.force_decode_assessments = self.assessments_above_confidence(YaralyzerConfig.args.force_decode_threshold)
-        self.force_display_assessments = self.assessments_above_confidence(YaralyzerConfig.args.force_display_threshold)
+        self.force_decode_assessments = self._assessments_above_confidence(YaralyzerConfig.args.force_decode_threshold)
+        self.force_display_assessments = self._assessments_above_confidence(YaralyzerConfig.args.force_display_threshold)
 
     def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
         """
@@ -91,16 +91,13 @@ class EncodingDetector:
         assessment = next((r for r in self.unique_assessments if r.encoding == encoding), None)
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)
 
-    def has_enough_bytes(self) -> bool:
-        """Return `True` if we have enough bytes to run `chardet.detect()`."""
-        return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
-
-    def assessments_above_confidence(self, cutoff: float) -> list[EncodingAssessment]:
+    def _assessments_above_confidence(self, cutoff: float) -> list[EncodingAssessment]:
         """Return the assessments above the given confidence cutoff."""
         return [a for a in self.unique_assessments if a.confidence >= cutoff]
 
-    def __rich__(self) -> Padding:
-        return Padding(self.table, (0, 0, 0, 0))
+    def _has_enough_bytes(self) -> bool:
+        """Return `True` if we have enough bytes to run `chardet.detect()`."""
+        return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
 
     def _uniquify_results_and_build_table(self) -> None:
         """Keep the highest result per encoding, ignoring the language `chardet` has indicated."""
@@ -121,6 +118,9 @@ class EncodingDetector:
                 log.debug(f"Skipping chardet result {result} (already saw {already_seen_encodings[result.encoding]})")
 
         self.unique_assessments.sort(key=attrgetter('confidence'), reverse=True)
+
+    def __rich__(self) -> Padding:
+        return Padding(self.table, (0, 0, 0, 0))
 
 
 def _empty_chardet_results_table() -> Table:

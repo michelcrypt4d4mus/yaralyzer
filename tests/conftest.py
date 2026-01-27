@@ -25,6 +25,7 @@ from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
 from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, relative_path  # noqa: E402
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
+from yaralyzer.util.logging import log
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
 
 # Dirs
@@ -100,7 +101,9 @@ def tulip_yaralyzer(il_tulipano_path, tulip_base_args, tulips_yara_path) -> Yara
 def yaralyze_cmd(output_dir_args, script_cmd_prefix) -> Callable[[Sequence[str | Path]], list[str]]:
     """Shell command to run run yaralyze [whatever]."""
     def _shell_cmd(*args) -> list[str]:
-        return safe_args(script_cmd_prefix + [YARALYZE] + output_dir_args + [*args])
+        cmd = safe_args(script_cmd_prefix + [YARALYZE] + output_dir_args + [*args])
+        log.warning(f"current test: {environ.get('PYTEST_CURRENT_TEST')}\n       cmd: {cmd}")
+        return safe_args(cmd)
 
     return _shell_cmd
 

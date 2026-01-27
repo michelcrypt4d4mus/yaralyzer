@@ -99,15 +99,15 @@ def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
     _argv = copy(_argv or sys.argv)
 
+    if not raw:
+        _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
+
     # TODO: remove:
     if is_github_workflow():
         import json
         log.warning(f"logging.py: _argv before:\n    " + ' '.join(_argv))
         _argv = [(arg if arg.endswith('.cmd') else arg).removesuffix('.cmd').replace('\\', '/') for arg in _argv]
         log.warning(f"logging.py: _argv after:\n    " + ' '.join(_argv))
-
-    if not raw:
-        _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
 
     return "   " + ' '.join(_argv)
 

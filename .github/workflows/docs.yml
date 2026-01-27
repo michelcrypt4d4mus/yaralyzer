@@ -18,7 +18,7 @@ jobs:
       - name: Set up poetry
         uses: abatilo/actions-poetry@v3
         with:
-          poetry-version: 1.6.1
+          poetry-version: 1.8.5
       - name: View poetry --help
         run: poetry --help
       - name: Install dependencies

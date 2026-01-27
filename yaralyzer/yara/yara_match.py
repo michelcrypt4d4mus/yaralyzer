@@ -31,7 +31,7 @@ from yara import StringMatch
 from yaralyzer.output.console import console_width
 from yaralyzer.output.theme import theme_colors_with_prefix
 from yaralyzer.util.helpers.bytes_helper import clean_byte_string
-from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, DEFAULT_TABLE_OPTIONS
+from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS
 from yaralyzer.util.helpers.string_helper import INDENT_SPACES
 from yaralyzer.util.logging import log
 

@@ -21,13 +21,9 @@ UNDERLINE_CONFIDENCE_THRESHOLD = 90
 BOLD_CONFIDENCE_THRESHOLD = 60
 DIM_COUNTRY_THRESHOLD = 25
 
-# Text object defaults mostly for table entries
-NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
-DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
-
 # Global default Table options. Default is box.HEAVY_HEAD but that yields different results on windows.
 if is_invoked_by_pytest():
-    DEFAULT_TABLE_OPTIONS = {'safe_box': False, 'box': box.SQUARE}
+    DEFAULT_TABLE_OPTIONS = {'safe_box': True, 'box': box.SQUARE}
 else:
     DEFAULT_TABLE_OPTIONS = {'safe_box': True, 'box': box.HEAVY_HEAD}
 

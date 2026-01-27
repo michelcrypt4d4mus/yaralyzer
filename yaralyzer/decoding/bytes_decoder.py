@@ -19,15 +19,18 @@ from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
 from yaralyzer.util.helpers.collections_helper import get_dict_key_by_value
-from yaralyzer.util.helpers.rich_helper import DECODING_ERRORS_MSG, DEFAULT_TABLE_OPTIONS, NO_DECODING_ERRORS_MSG
+from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS
 from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
 from yaralyzer.output.decoding_table_row import DecodingTableRow
 from yaralyzer.util.logging import log
 
-# A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
-WAS_DECODABLE_YES_NO = [NO_DECODING_ERRORS_MSG, DECODING_ERRORS_MSG]
 # Multiply chardet scores by 100 (again) to make sorting the table easy
 SCORE_SCALER = 100.0
+# Text object defaults mostly for table entries
+DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
+NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
+# A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
+WAS_DECODABLE_YES_NO = [NO_DECODING_ERRORS_MSG, DECODING_ERRORS_MSG]
 
 
 @dataclass

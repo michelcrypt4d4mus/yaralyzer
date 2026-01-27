@@ -3,10 +3,8 @@ Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
 """
 import logging
 import sys
-import argparse
 from argparse import _AppendAction, _StoreFalseAction, _StoreTrueAction, Action, ArgumentParser, Namespace
 from importlib.metadata import version
-from pathlib import Path
 
 from rich.padding import Padding
 from rich.panel import Panel
@@ -21,7 +19,7 @@ from yaralyzer.util.cli_option_validators import (DirValidator, PathValidator, O
 from yaralyzer.util.constants import *
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.file_helper import relative_path, timestamp_for_filename
+from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
 from yaralyzer.util.logging import highlighter, log, log_argparse_result, log_console, set_log_level

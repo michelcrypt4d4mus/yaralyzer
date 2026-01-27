@@ -1,7 +1,4 @@
-import logging
-
 from rich.text import Text
-from typing import Literal
 
 
 # App Strings

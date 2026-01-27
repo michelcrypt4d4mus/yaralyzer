@@ -23,15 +23,16 @@ from yaralyzer.util.constants import YARALYZE
 from yaralyzer.util.logging import log
 
 PatternType = Literal['hex', 'regex']
-YaraModifierType = Literal['ascii', 'fullword', 'nocase', 'wide']
-
 HEX = 'hex'
-PATTERN = 'pattern'
 REGEX = 'regex'
+PATTERN_TYPES: list[PatternType] = ['hex', 'regex']
+
+YaraModifierType = Literal['ascii', 'fullword', 'nocase', 'wide']
+YARA_REGEX_MODIFIERS = ['ascii', 'fullword', 'nocase', 'wide']
+
+PATTERN = 'pattern'
 RULE = 'rule'
 UNDERSCORE = '_'
-YARA_REGEX_MODIFIERS = ['nocase', 'ascii', 'wide', 'fullword']
-PATTERN_TYPES: list[PatternType] = ['hex', 'regex']
 
 SAFE_LABEL_REPLACEMENTS = {
     '/': 'frontslash',

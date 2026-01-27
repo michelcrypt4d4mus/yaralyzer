@@ -1,6 +1,5 @@
 import re
 from argparse import ArgumentParser
-from os import getlogin
 
 from yaralyzer.util.helpers.env_helper import stderr_console
 from yaralyzer.util.helpers.string_helper import indented, props_string_indented

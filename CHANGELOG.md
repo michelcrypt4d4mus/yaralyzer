@@ -1,5 +1,7 @@
 # NEXT RELEASE
 
+### 1.3.7
+
 ### 1.3.6
 * Force `box.SQUARE` style in `pytest` context
 

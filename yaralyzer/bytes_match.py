@@ -184,14 +184,14 @@ class BytesMatch:
         """
         location_txt = prefix_with_style(
             f"(start idx: ",
-            style='off_white',
+            style=OFF_WHITE,
             root_style='decode.subheading'
         )
 
         location_txt.append(str(self.start_idx), style='number')
-        location_txt.append(', end idx: ', style='off_white')
+        location_txt.append(', end idx: ', style=OFF_WHITE)
         location_txt.append(str(self.end_idx), style='number')
-        location_txt.append(')', style='off_white')
+        location_txt.append(')', style=OFF_WHITE)
         return location_txt
 
     def is_decodable(self) -> bool:

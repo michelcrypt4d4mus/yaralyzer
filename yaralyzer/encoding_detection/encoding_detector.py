@@ -3,7 +3,6 @@
 """
 from dataclasses import dataclass, field
 from operator import attrgetter
-from typing import ClassVar, List
 
 import chardet
 from chardet.resultdict import ResultDict
@@ -13,6 +12,7 @@ from rich.table import Table
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_assessment import ENCODING, EncodingAssessment
+from yaralyzer.output.theme import OFF_WHITE
 from yaralyzer.util.logging import log
 
 CONFIDENCE_SCORE_RANGE = range(0, 101)
@@ -29,11 +29,11 @@ class EncodingDetector:
         bytes (bytes): The bytes to analyze.
         bytes_len (int): The length of the bytes.
         table (Table): A rich `Table` object summarizing the chardet results.
-        assessments (List[EncodingAssessment]): List of `EncodingAssessment` objects from `chardet` results.
-        unique_assessments (List[EncodingAssessment]): Unique assessments by encoding, highest confidence only.
-        raw_chardet_assessments (List[dict]): Raw list of dicts returned by `chardet.detect_all()`.
-        force_decode_assessments (List[EncodingAssessment]): Assessments above force decode threshold.
-        force_display_assessments (List[EncodingAssessment]): Assessments above force display threshold.
+        assessments (list[EncodingAssessment]): List of `EncodingAssessment` objects from `chardet` results.
+        unique_assessments (list[EncodingAssessment]): Unique assessments by encoding, highest confidence only.
+        raw_chardet_assessments (list[dict]): Raw list of dicts returned by `chardet.detect_all()`.
+        force_decode_assessments (list[EncodingAssessment]): Assessments above force decode threshold.
+        force_display_assessments (list[EncodingAssessment]): Assessments above force display threshold.
         has_any_idea (bool | None): `True` if `chardet` had any idea what the encoding might be,
             `False` if not, `None` if `chardet` wasn't run yet.
         force_display_threshold (float): `[class variable]` Default confidence threshold for forcing display
@@ -95,7 +95,7 @@ class EncodingDetector:
         """Return `True` if we have enough bytes to run `chardet.detect()`."""
         return self.bytes_len >= YaralyzerConfig.args.min_chardet_bytes
 
-    def assessments_above_confidence(self, cutoff: float) -> List[EncodingAssessment]:
+    def assessments_above_confidence(self, cutoff: float) -> list[EncodingAssessment]:
         """Return the assessments above the given confidence cutoff."""
         return [a for a in self.unique_assessments if a.confidence >= cutoff]
 
@@ -129,7 +129,7 @@ def _empty_chardet_results_table() -> Table:
         'Rank', 'Encoding', 'Confidence',
         title='chardet.detect results',
         title_style='color(153) italic dim',
-        header_style='off_white',
+        header_style=OFF_WHITE,
         style='dim',
         box=box.SIMPLE,
         show_edge=False,

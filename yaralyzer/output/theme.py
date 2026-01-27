@@ -21,6 +21,7 @@ ERROR_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of byt
 DARK_GREY = 'color(236)'
 GREY = 'color(241)'
 GREY_ADDRESS = 'color(238)'
+OFF_WHITE = 'color(245)'
 PEACH = 'color(215)'
 
 # For the table shown by running --show-colors
@@ -35,7 +36,6 @@ YARALYZER_THEME_DICT = {
     'grey.darker_italic': 'color(8) dim italic',
     'grey.darkest': 'color(235) dim',
     'grey.light': 'color(248)',
-    'off_white': 'color(245)',
     # bytes
     'bytes': BYTES,
     'bytes.decoded': BYTES_BRIGHTEST,

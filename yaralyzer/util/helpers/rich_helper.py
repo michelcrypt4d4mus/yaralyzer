@@ -10,6 +10,7 @@ from rich.text import Text
 
 from yaralyzer.output.theme import BYTES_BRIGHTEST, BYTES_HIGHLIGHT
 from yaralyzer.output.console import console
+from yaralyzer.util.helpers.env_helper import is_invoked_by_pytest
 from yaralyzer.util.logging import highlighter, log, log_console
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
@@ -25,8 +26,10 @@ NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
 DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 
 # Global default Table options. Default is box.HEAVY_HEAD but that yields different results on windows.
-# DEFAULT_TABLE_OPTIONS = {'box': box.ROUNDED}
-DEFAULT_TABLE_OPTIONS = {'safe_box': False, 'box': box.SQUARE}
+if is_invoked_by_pytest():
+    DEFAULT_TABLE_OPTIONS = {'safe_box': False, 'box': box.SQUARE}
+else:
+    DEFAULT_TABLE_OPTIONS = {'safe_box': True, 'box': box.HEAVY_HEAD}
 
 
 def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):

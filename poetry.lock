@@ -1738,4 +1738,4 @@ img = ["cairosvg"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "adadf20c40d2efa0d2824a6019e2de196dcdb03c619ea5bae4df5707410381dc"
+content-hash = "704f8a0d6f7d92c80a1d883d390eeb30bd1574e20852f31dd65709a3659f88a0"

@@ -27,18 +27,14 @@ class EncodingDetector:
 
     Attributes:
         bytes (bytes): The bytes to analyze.
-        bytes_len (int): The length of the bytes.
-        table (Table): A rich `Table` object summarizing the chardet results.
         assessments (list[EncodingAssessment]): List of `EncodingAssessment` objects from `chardet` results.
-        unique_assessments (list[EncodingAssessment]): Unique assessments by encoding, highest confidence only.
-        raw_chardet_assessments (list[dict]): Raw list of dicts returned by `chardet.detect_all()`.
         force_decode_assessments (list[EncodingAssessment]): Assessments above force decode threshold.
         force_display_assessments (list[EncodingAssessment]): Assessments above force display threshold.
         has_any_idea (bool | None): `True` if `chardet` had any idea what the encoding might be,
             `False` if not, `None` if `chardet` wasn't run yet.
-        force_display_threshold (float): `[class variable]` Default confidence threshold for forcing display
-            in decoded table.
-        force_decode_threshold (float): `[class variable]` Default confidence threshold for forcing a decode attempt.
+        raw_chardet_assessments (list[dict]): Raw list of dicts returned by `chardet.detect_all()`.
+        table (Table): A rich `Table` object summarizing the chardet results.
+        unique_assessments (list[EncodingAssessment]): Unique assessments by encoding, highest confidence only.
     """
 
     _bytes: bytes
@@ -86,7 +82,7 @@ class EncodingDetector:
             encoding (str): The encoding to look for.
 
         Returns:
-            EncodingAssessment: Assessment for the given encoding if it exists, otherwise a dummy with 0 confidence.
+            EncodingAssessment: Assessment for the encoding if it exists, otherwise a dummy with 0 confidence.
         """
         assessment = next((r for r in self.unique_assessments if r.encoding == encoding), None)
         return assessment or EncodingAssessment.dummy_encoding_assessment(encoding)

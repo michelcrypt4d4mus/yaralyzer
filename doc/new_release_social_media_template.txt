@@ -1,0 +1,12 @@
+Released v1.3.3. of #Yaralyzer, my surprisingly popular tool for visualizing YARA rule matches with colors (a lot of colors).
+
+(RELEASE NOTES HERE)
+
+You can try it on the web here: https://yaratoolkit.securitybreak.io/
+(I didn't build that site - Thomas Roccia integrated Yaralyzer into his existing web app)
+
+- Github: https://github.com/michelcrypt4d4mus/yaralyzer
+- Pypi: https://pypi.org/project/yaralyzer/
+- on macOS you can also get it with #Homebrew by installing Pdfalyzer: brew install pdfalyzer
+
+#ascii #asciiArt #blueteam #cybersecurity #detectionEngineering #DFIR #forensics #FOSS #GPL #hacking #infosec #KaliLinux #maldoc #malware #malwareAnalysis #malwareDetection #openSource #pypi #python #redteam #reverseEngineering #reversing #Threatassessment #threathunting #YARA #YARArule #YARArules

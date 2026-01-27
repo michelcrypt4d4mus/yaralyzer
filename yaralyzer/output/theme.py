@@ -12,6 +12,8 @@ from rich.text import Text
 from rich.theme import Theme
 from rich_argparse_plus import RichHelpFormatterPlus, themes
 
+RichHelpFormatterPlus.choose_theme('prince')  # Set argparse theme
+
 # Colors
 BYTES = 'color(100) dim'
 BYTES_BRIGHTER = 'orange1'
@@ -117,8 +119,6 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
         (255, 255, 255),
     ],
 )
-
-RichHelpFormatterPlus.choose_theme('prince')  # Set argparse theme
 
 
 def argparse_style(caegory: str) -> str:

@@ -14,10 +14,10 @@ from rich_argparse_plus import RichHelpFormatterPlus, themes
 
 # Colors
 BYTES = 'color(100) dim'
-BYTES_NO_DIM = 'color(100)'
 BYTES_BRIGHTER = 'orange1'
-BYTES_BRIGHTEST = 'color(220)'
+BYTES_DECODED = 'color(220)'
 BYTES_HIGHLIGHT = 'color(136)'
+BYTES_NO_DIM = 'color(100)'
 ERROR_STYLE = 'error'  # Regex Capture used when extracting quoted chunks of bytes
 DARK_GREY = 'color(236)'
 GREY = 'grey'
@@ -40,8 +40,10 @@ YARALYZER_THEME_DICT = {
     f'{GREY}.light': 'color(248)',
     # bytes
     'bytes': BYTES,
-    'bytes.decoded': BYTES_BRIGHTEST,
+    'bytes.brighter': BYTES_BRIGHTER,
+    'bytes.decoded': BYTES_DECODED,
     'bytes.highlight': BYTES_HIGHLIGHT,
+    'bytes.no_dim': BYTES_NO_DIM,
     'bytes.title': BYTES_BRIGHTER,
     # data types
     'number': 'cyan',

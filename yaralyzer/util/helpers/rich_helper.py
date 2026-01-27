@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.style import Style
 from rich.text import Text
 
-from yaralyzer.output.theme import BYTES_BRIGHTEST, BYTES_HIGHLIGHT
+from yaralyzer.output.theme import BYTES_DECODED, BYTES_HIGHLIGHT
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import is_invoked_by_pytest
 from yaralyzer.util.logging import highlighter, log, log_console
@@ -107,7 +107,7 @@ def size_text(num_bytes: int) -> Text:
 
 def unprintable_byte_to_text(code: str, style: str = '') -> Text:
     """Used with ASCII escape codes and the like, gives colored results like '[NBSP]'."""
-    style = BYTES_HIGHLIGHT if style == BYTES_BRIGHTEST else style
+    style = BYTES_HIGHLIGHT if style == BYTES_DECODED else style
     txt = Text('[', style=style)
     txt.append(code.upper(), style=f"{style} italic dim")
     txt.append(Text(']', style=style))

@@ -14,7 +14,7 @@ from yaralyzer.bytes_match import BytesMatch
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.character_encodings import encoding_width
 from yaralyzer.output.console import console, console_width
-from yaralyzer.output.theme import BYTES, BYTES_BRIGHTER, BYTES_BRIGHTEST, BYTES_HIGHLIGHT, GREY_COLOR
+from yaralyzer.output.theme import BYTES, BYTES_BRIGHTER, BYTES_DECODED, BYTES_HIGHLIGHT, GREY_COLOR
 from yaralyzer.util.helpers.rich_helper import newline_join
 from yaralyzer.util.logging import log
 
@@ -53,7 +53,7 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
         if b < 32:
             txt.append('*', style=style2 or BYTES_BRIGHTER)
         elif b < 127:
-            txt.append(_byte.decode('UTF-8'), style1 or BYTES_BRIGHTEST)
+            txt.append(_byte.decode('UTF-8'), style1 or BYTES_DECODED)
         elif b <= 160:
             txt.append('*', style=style2 or BYTES_HIGHLIGHT)
         else:

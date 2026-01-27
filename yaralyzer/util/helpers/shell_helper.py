@@ -44,8 +44,8 @@ class ShellResult:
         return self.result.stderr.decode() if isinstance(self.result.stderr, bytes) else self.result.stderr
 
     @property
-    def stderr_stripped(self) -> str:
-        return strip_ansi_colors(self.stderr)
+    def stderr_stripped(self) -> str | None:
+        return strip_ansi_colors(self.stderr) if self.stderr is not None else None
 
     @property
     def stdout(self) -> str:
@@ -53,11 +53,11 @@ class ShellResult:
 
     @property
     def stdout_lines(self) -> list[str]:
-        return self.stdout_stripped.split('\n')
+        return [] if self.stdout_stripped is None else self.stdout_stripped.split('\n')
 
     @property
-    def stdout_stripped(self) -> str:
-        return strip_ansi_colors(self.stdout)
+    def stdout_stripped(self) -> str | None:
+        return strip_ansi_colors(self.stdout) if self.stdout is not None else None
 
     @classmethod
     def from_cmd(cls, cmd: str | list, verify_success: bool = False, no_log_args: list[str] | None = None) -> 'ShellResult':
@@ -124,7 +124,11 @@ class ShellResult:
 
     def exported_file_paths(self) -> list[Path]:
         """Finds the last match."""
-        written_paths = [relative_path(Path(m.group(1))) for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped)]
+        written_paths = [
+            relative_path(Path(m.group(1)))
+            for m in WROTE_TO_FILE_REGEX.finditer(self.stderr_stripped or '')
+        ]
+
         assert len(written_paths) > 0, f"Could not find 'wrote to file' msg in stderr:\n\n{self.stderr}"
         log_bigly(f"Found {len(written_paths)} written files in the logs", self.output_logs())
         return written_paths

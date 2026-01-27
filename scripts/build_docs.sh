@@ -4,6 +4,7 @@
 # Some docs on docstrings: https://www.geeksforgeeks.org/python/python-docstrings/
 
 YARALYZER_PKG="yaralyzer"
+export DOCS_DIR=doc/mkdocs
 
 
 # Manually validate docstrings because lazydocs --validate doesn't correctly read pyproject.toml options
@@ -11,7 +12,7 @@ YARALYZER_PKG="yaralyzer"
 
 # Generate documnentation markdown files using lazydocs
 # TODO: the --ignored-modules doesn't actually ignore the modules, it just doesn't error out if they fail
-poetry run lazydocs --output-path doc/mkdocs/api \
+poetry run lazydocs --output-path "$DOCS_DIR/api" \
          --overview-file="README.md" \
          --src-base-url="https://github.com/michelcrypt4d4mus/$YARALYZER_PKG/blob/main/" \
          --ignored-modules="yaralyzer.util.helpers" \

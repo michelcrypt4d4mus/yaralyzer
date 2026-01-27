@@ -1,4 +1,4 @@
-docs_dir: doc/mkdocs
+docs_dir: !ENV DOCS_DIR
 edit_uri: edit/master/docs
 plugins:
   - awesome-nav

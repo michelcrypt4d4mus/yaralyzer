@@ -11,7 +11,7 @@ from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run
 # from typing import Self  # TODO: this requires python 3.11
 
-from yaralyzer.util.constants import INKSCAPE
+from yaralyzer.util.constants import INKSCAPE, YARALYZE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
@@ -96,6 +96,8 @@ class ShellResult:
             assert exported_path.exists(), f"'{exported_path}' does not exist, {self.output_logs()}"
             existing_path = relative_path(against_dir.joinpath(exported_path.name))
             exported_data = load_file(exported_path)
+            # TODO: somehow on windows workflow pdfalyzer ends up with pdfalyzer.cmd via --echo-command
+            exported_data = exported_data.replace('pdfalyze.cmd', 'pdfalyze').replace(f"{YARALYZE}.cmd", YARALYZE)
 
             if _should_rebuild_fixtures():
                 if getlogin() in strip_ansi_colors(exported_data):

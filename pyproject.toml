@@ -82,6 +82,9 @@ cairosvg = {version = "^2.8.2", optional = true}
 [tool.poetry.extras]
 img = ["cairosvg"]
 
+[tool.poetry.scripts]
+yaralyze = 'yaralyzer:yaralyze'
+
 
 # Dev
 [tool.poetry.group.dev]
@@ -104,10 +107,6 @@ mkdocs-awesome-nav = "^3.1.2"
 mkdocs-include-markdown-plugin = "^7.1.7"
 mkdocs-material = "^9.6.19"
 pydocstyle = "^6.3.0"
-
-
-[tool.poetry.scripts]
-yaralyze = 'yaralyzer:yaralyze'
 
 
 #################

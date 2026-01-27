@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* better handling of 'yaralyze.cmd' `argv` issue on windows
 
 ### 1.3.7
 * (tests) handle pdfalyzer.cmd / yaralyzer.cmd in strings, `ONLY_CLI_ARGS` is class variable

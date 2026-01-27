@@ -27,111 +27,6 @@ HEX_GROUPS_PER_LINE = divmod(SUBTABLE_MAX_WIDTH, HEX_UNIT_LENGTH)[0]
 HEX_CHARS_PER_LINE = HEX_CHARS_PER_GROUP * HEX_GROUPS_PER_LINE
 
 
-def get_bytes_before_and_after_match(_bytes: bytes, match: re.Match, num_before=None, num_after=None) -> bytes:
-    """
-    Get bytes before and after a regex match within a byte sequence.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        match (re.Match): The regex `Match` object.
-        num_before (int, optional): Number of bytes before the match to include. Defaults to configured value.
-        num_after (int, optional): Number of bytes after the match to include. Defaults to either configured value
-            or the `num_before` arg value.
-
-    Returns:
-        bytes: The surrounding bytes including the match.
-    """
-    return get_bytes_surrounding_range(_bytes, match.start(), match.end(), num_before, num_after)
-
-
-def get_bytes_surrounding_range(_bytes: bytes, start_idx: int, end_idx: int, num_before=None, num_after=None) -> bytes:
-    """
-    Get bytes surrounding a specified range in a byte sequence.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        start_idx (int): Start index of the range.
-        end_idx (int): End index of the range.
-        num_before (int, optional): Number of bytes before the range. Defaults to configured value.
-        num_after (int, optional): Number of bytes after the range. Defaults to configured value.
-
-    Returns:
-        bytes: The surrounding bytes including the range.
-    """
-    num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
-    num_before = num_before or YaralyzerConfig.args.surrounding_bytes
-    start_idx = max(start_idx - num_before, 0)
-    end_idx = min(end_idx + num_after, len(_bytes))
-    return _bytes[start_idx:end_idx]
-
-
-def clean_byte_string(bytes_array: bytes) -> str:
-    r"""
-    Return a clean string representation of bytes, without Python's b'' or b"" wrappers.
-    e.g. '\x80\nx44' instead of "b'\x80\nx44'".
-
-    Args:
-        bytes_array (bytes): The bytes to convert.
-
-    Returns:
-        str: Clean string representation of the bytes.
-    """
-    byte_printer = Console(file=StringIO())
-    byte_printer.out(bytes_array, end='')
-    bytestr = byte_printer.file.getvalue()
-
-    if bytestr.startswith("b'"):
-        bytestr = bytestr.removeprefix("b'").removesuffix("'")
-    elif bytestr.startswith('b"'):
-        bytestr = bytestr.removeprefix('b"').removesuffix('"')
-    else:
-        raise RuntimeError(f"Unexpected byte string {bytestr}")
-
-    return bytestr
-
-
-def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """
-    Return a rich `Text` object of raw bytes, highlighting the matched bytes.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
-
-    Returns:
-        Text: Rich Text object with highlighted match.
-    """
-    surrounding_bytes_str = clean_byte_string(_bytes)
-    highlighted_bytes_str = clean_byte_string(bytes_match.bytes)
-    highlighted_bytes_str_length = len(highlighted_bytes_str)
-    highlight_idx = _find_str_rep_of_bytes(surrounding_bytes_str, highlighted_bytes_str, bytes_match)
-
-    txt = Text(surrounding_bytes_str[:highlight_idx], style=GREY)
-    matched_bytes_str = surrounding_bytes_str[highlight_idx:highlight_idx + highlighted_bytes_str_length]
-    txt.append(matched_bytes_str, style=bytes_match.highlight_style)
-    txt.append(surrounding_bytes_str[highlight_idx + highlighted_bytes_str_length:], style=GREY)
-    return txt
-
-
-def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
-    """
-    Return a hexadecimal view of raw bytes, highlighting the matched bytes.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
-
-    Returns:
-        Text: Rich Text object with highlighted match in hex view.
-    """
-    hex_str = hex_text(_bytes)
-    highlight_start_idx = bytes_match.highlight_start_idx * 3
-    highlight_end_idx = bytes_match.highlight_end_idx * 3
-    hex_str.stylize(bytes_match.highlight_style, highlight_start_idx, highlight_end_idx)
-    lines = hex_str.wrap(console, HEX_CHARS_PER_LINE * 3)
-    return newline_join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
-
-
 def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     """
     Return an ASCII view of raw bytes, highlighting the matched bytes.
@@ -174,6 +69,99 @@ def ascii_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     return newline_join(lines)
 
 
+def clean_byte_string(bytes_array: bytes) -> str:
+    r"""
+    Return a clean string representation of bytes, without Python's b'' or b"" wrappers.
+    e.g. '\x80\nx44' instead of "b'\x80\nx44'".
+
+    Args:
+        bytes_array (bytes): The bytes to convert.
+
+    Returns:
+        str: Clean string representation of the bytes.
+    """
+    byte_printer = Console(file=StringIO())
+    byte_printer.out(bytes_array, end='')
+    bytestr = byte_printer.file.getvalue()
+
+    if bytestr.startswith("b'"):
+        bytestr = bytestr.removeprefix("b'").removesuffix("'")
+    elif bytestr.startswith('b"'):
+        bytestr = bytestr.removeprefix('b"').removesuffix('"')
+    else:
+        raise RuntimeError(f"Unexpected byte string {bytestr}")
+
+    return bytestr
+
+
+def get_bytes_before_and_after_match(
+        _bytes: bytes,
+        match: re.Match,
+        num_before: int | None = None,
+        num_after: int | None = None
+    ) -> bytes:
+    """
+    Get bytes before and after a regex match within a byte sequence.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        match (re.Match): The regex `Match` object.
+        num_before (int, optional): Number of bytes before the match to include. Defaults to configured value.
+        num_after (int, optional): Number of bytes after the match to include. Defaults to either configured value
+            or the `num_before` arg value.
+
+    Returns:
+        bytes: The surrounding bytes including the match.
+    """
+    return get_bytes_surrounding_range(_bytes, match.start(), match.end(), num_before, num_after)
+
+
+def get_bytes_surrounding_range(
+        _bytes: bytes,
+        start_idx: int,
+        end_idx: int,
+        num_before: int | None = None,
+        num_after: int | None = None
+    ) -> bytes:
+    """
+    Get bytes surrounding a specified range in a byte sequence.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        start_idx (int): Start index of the range.
+        end_idx (int): End index of the range.
+        num_before (int, optional): Number of bytes before the range. Defaults to configured value.
+        num_after (int, optional): Number of bytes after the range. Defaults to configured value.
+
+    Returns:
+        bytes: The surrounding bytes including the range.
+    """
+    num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
+    num_before = num_before or YaralyzerConfig.args.surrounding_bytes
+    start_idx = max(start_idx - num_before, 0)
+    end_idx = min(end_idx + num_after, len(_bytes))
+    return _bytes[start_idx:end_idx]
+
+
+def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
+    """
+    Return a hexadecimal view of raw bytes, highlighting the matched bytes.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
+
+    Returns:
+        Text: Rich Text object with highlighted match in hex view.
+    """
+    hex_str = hex_text(_bytes)
+    highlight_start_idx = bytes_match.highlight_start_idx * 3
+    highlight_end_idx = bytes_match.highlight_end_idx * 3
+    hex_str.stylize(bytes_match.highlight_style, highlight_start_idx, highlight_end_idx)
+    lines = hex_str.wrap(console, HEX_CHARS_PER_LINE * 3)
+    return newline_join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
+
+
 def hex_text(_bytes: bytes) -> Text:
     """
     Return a rich Text object of the hex string for the given bytes.
@@ -211,6 +199,29 @@ def print_bytes(bytes_array: bytes, style: str | None = None, indent: int = 0) -
     for line in bytes_array.split(NEWLINE_BYTE):
         padded_bytes = Padding(escape(clean_byte_string(line)), (0, 0, 0, indent))
         console.print(padded_bytes, style=style or 'bytes')
+
+
+def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
+    """
+    Return a rich `Text` object of raw bytes, highlighting the matched bytes.
+
+    Args:
+        _bytes (bytes): The full byte sequence.
+        bytes_match (BytesMatch): The BytesMatch object indicating which bytes to highlight.
+
+    Returns:
+        Text: Rich Text object with highlighted match.
+    """
+    surrounding_bytes_str = clean_byte_string(_bytes)
+    highlighted_bytes_str = clean_byte_string(bytes_match.bytes)
+    highlighted_bytes_str_length = len(highlighted_bytes_str)
+    highlight_idx = _find_str_rep_of_bytes(surrounding_bytes_str, highlighted_bytes_str, bytes_match)
+
+    txt = Text(surrounding_bytes_str[:highlight_idx], style=GREY)
+    matched_bytes_str = surrounding_bytes_str[highlight_idx:highlight_idx + highlighted_bytes_str_length]
+    txt.append(matched_bytes_str, style=bytes_match.highlight_style)
+    txt.append(surrounding_bytes_str[highlight_idx + highlighted_bytes_str_length:], style=GREY)
+    return txt
 
 
 def truncate_for_encoding(_bytes: bytes, encoding: str) -> bytes:

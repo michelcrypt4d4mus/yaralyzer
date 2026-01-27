@@ -1,6 +1,7 @@
 # NEXT RELEASE
 
 ### 1.3.7
+* (tests) handle pdfalyzer.cmd / yaralyzer.cmd in strings, `ONLY_CLI_ARGS` is class variable
 
 ### 1.3.6
 * Force `box.SQUARE` style in `pytest` context

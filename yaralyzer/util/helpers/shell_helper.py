@@ -11,12 +11,11 @@ from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run
 # from typing import Self  # TODO: this requires python 3.11
 
-from yaralyzer.util.constants import INKSCAPE, YARALYZE
+from yaralyzer.util.constants import INKSCAPE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 from yaralyzer.util.logging import LOG_SEPARATOR, invocation_str, log, log_bigly, log_console
-from yaralyzer.util.timeout import timeout
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 
@@ -107,19 +106,8 @@ class ShellResult:
 
             assert existing_path.exists(), f"Existing file we want to compare against '{existing_path}' doesn't exist!"
             existing_data = load_file(existing_path)
-
-            # # Sometimes pytests diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
-            @timeout(seconds=5)
-            def compare_files():
-                assert exported_data == existing_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
-
-            try:
-                compare_files()
-            except TimeoutError:
-                log.error(f"Got timeout error when comparing '{existing_path}' to '{exported_path}'!")
-                is_output_same_as_fixture = exported_data == existing_data
-                assert is_output_same_as_fixture, self._fixture_mismatch_log_msg(existing_path, exported_path)
-
+            # # Sometimes pytest's diff is very, very slow, so we put a timer on it and fall back to showing diff cmd.
+            assert exported_data == existing_data, self._fixture_mismatch_log_msg(existing_path, exported_path)
             log.debug(f"Validated '{exported_path}' as matching the exiting file...")
 
     def exported_file_paths(self) -> list[Path]:
@@ -155,16 +143,14 @@ class ShellResult:
         return msg + "\n"
 
     def _fixture_mismatch_log_msg(self, existing_path: Path, export_path: Path) -> str:
-        error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n"
-        error_msg += f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest tests/test_file_export.py'\n\n"  # noqa: E501
-        error_msg += f"pytest diffs can be slow, here's the manual diff cmd:\n\n   diff '{existing_path}' '{export_path}'\n\n"  # noqa: E501
-        error_msg += f"Result of diff:\n\n"
+        error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n" \
+                    f'{self.invocation_str}' \
+                    f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest'\n\n" \
 
         try:
-            diff_output = type(self).from_cmd(['diff', '-a', existing_path, export_path])
-            print(f"Result of diff '{existing_path}'\n       against '{export_path}'\n\n")
-            print(diff_output.output_logs(True))
-            print(f"\n\n\nRaw diff stdout:\n\n", diff_output.stdout)
+            diff_result = type(self).from_cmd(['diff', '-a', existing_path, export_path])
+            print(f"{error_msg}Result of diff '{existing_path}'\n       against '{export_path}'\n")
+            print(diff_result.output_logs(True))
         except Exception as e:
             log_console.print(f"Failed to print diff of '{existing_path}'\n        against '{export_path}'!", style='bright_red bold')
 

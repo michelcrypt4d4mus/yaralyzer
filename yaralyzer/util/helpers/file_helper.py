@@ -53,11 +53,6 @@ def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path
     return [f for f in dir.glob(glob_pattern) if not (f.name.startswith('.') or f.is_dir())]
 
 
-def load_binary_data(file_path: Path | str) -> bytes:
-    """Load and return the raw `bytes` from a file."""
-    return Path(file_path).read_bytes()
-
-
 def load_file(file_path: Path | str) -> str:
     """Load and return the text contents of a file."""
     return Path(file_path).read_text(encoding='utf-8')  # Windows requires forcing the encoding

@@ -23,7 +23,7 @@ environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
-from yaralyzer.util.helpers.file_helper import files_in_dir, load_binary_data, relative_path  # noqa: E402
+from yaralyzer.util.helpers.file_helper import files_in_dir
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.logging import log
 from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
@@ -45,7 +45,7 @@ def binary_file_path() -> Path:
 
 @pytest.fixture(scope='session')
 def binary_file_bytes(binary_file_path) -> bytes:
-    return load_binary_data(binary_file_path)
+    return binary_file_path.read_bytes()
 
 
 @pytest.fixture(scope='session')

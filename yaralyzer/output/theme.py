@@ -74,8 +74,8 @@ YARALYZER_THEME_DICT = {
 
 LOG_THEME_DICT = {
     'repr.filename': 'dark_orange3',
-    'repr.path': 'dark_orange3',
     'repr.none': 'grey23 italic',
+    'repr.path': 'dark_orange3',
     **YARALYZER_THEME_DICT,
 }
 

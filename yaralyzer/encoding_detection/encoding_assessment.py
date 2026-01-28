@@ -2,14 +2,15 @@
 Helps with `chardet` library.
 """
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from chardet.resultdict import ResultDict
 from rich.text import Text
 
 from yaralyzer.encoding_detection.character_encodings import ENCODING
-from yaralyzer.util.helpers.rich_helper import DIM_COUNTRY_THRESHOLD, meter_style, prefix_with_style
+from yaralyzer.util.helpers.rich_helper import meter_style, prefix_with_style
 
+DIM_COUNTRY_THRESHOLD = 25
 CONFIDENCE = 'confidence'
 LANGUAGE = 'language'
 

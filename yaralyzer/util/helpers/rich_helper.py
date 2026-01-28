@@ -11,26 +11,25 @@ from rich.text import Text
 from yaralyzer.output.theme import BYTES_DECODED, BYTES_HIGHLIGHT
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import is_invoked_by_pytest
-from yaralyzer.util.logging import highlighter, log, log_console
+from yaralyzer.util.logging import log, log_console
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))
 METER_INTERVAL = (100 / float(len(METER_COLORS))) + 0.1
 # Color meter extra style thresholds (these are assuming a scale of 0-100)
-UNDERLINE_CONFIDENCE_THRESHOLD = 90
 BOLD_CONFIDENCE_THRESHOLD = 60
-DIM_COUNTRY_THRESHOLD = 25
+UNDERLINE_CONFIDENCE_THRESHOLD = 90
 
 # Global default Table options. Default is box.HEAVY_HEAD but that yields different results on windows.
 if is_invoked_by_pytest():
-    DEFAULT_TABLE_OPTIONS = {'safe_box': True, 'box': box.SQUARE}
+    DEFAULT_TABLE_OPTIONS = {'box': box.SQUARE}
 else:
-    DEFAULT_TABLE_OPTIONS = {'safe_box': True, 'box': box.HEAVY_HEAD}
+    DEFAULT_TABLE_OPTIONS = {'box': box.HEAVY_HEAD}
 
 
-def dim_if(txt: Union[str, Text], is_dim: bool, style: Union[str, None] = None):
+def dim_if(txt: Union[str, Text], is_dim: bool):
     """Apply 'dim' style if 'is_dim'. 'style' overrides for Text and applies for strings."""
-    txt = txt.copy() if isinstance(txt, Text) else Text(txt, style=style or '')
+    txt = txt.copy() if isinstance(txt, Text) else Text(txt)
 
     if is_dim:
         txt.stylize('dim')

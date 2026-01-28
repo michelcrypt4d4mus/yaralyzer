@@ -35,16 +35,16 @@ class EncodingAssessment:
 
     @property
     def encoding(self) -> str:
-        return self.assessment[ENCODING].lower()
+        return (self.assessment.get(ENCODING) or '???').lower()
 
     @property
     def confidence(self) -> float:
         """Shift confidence from 0-1.0 scale to 0-100.0 scale"""
-        return 100.0 * (self._get_dict_empty_value_as_None(CONFIDENCE) or 0.0)
+        return 100.0 * (self._get_empty_value_as_None(CONFIDENCE) or 0.0)
 
     @property
     def language(self) -> str | None:
-        return self._get_dict_empty_value_as_None(LANGUAGE)
+        return self._get_empty_value_as_None(LANGUAGE)
 
     def __post_init__(self) -> None:
         self.confidence_text = prefix_with_style(f"{round(self.confidence, 1)}%", style=meter_style(self.confidence))
@@ -82,7 +82,7 @@ class EncodingAssessment:
     def __str__(self) -> str:
         return self.__rich__().plain
 
-    def _get_dict_empty_value_as_None(self, key: str) -> Any:
+    def _get_empty_value_as_None(self, key: str) -> Any:
         """Return `None` if the value at `key` is an empty string, empty list, etc."""
         value = self.assessment.get(key)
 

@@ -144,7 +144,7 @@ class ShellResult:
     def _fixture_mismatch_log_msg(self, existing_path: Path, export_path: Path) -> str:
         """Sometimes pytest's diff is very, very slow, so we handle showing our own diff."""
         error_msg = f"Contents of '{export_path}' does not match fixture: '{existing_path}'\n\n" \
-                    f'{self.invocation_str}' \
+                    f'{self.invocation_str}\n\n' \
                     f"Fixtures can be updated by running '{PYTEST_REBUILD_FIXTURES_ENV_VAR}=True pytest'\n\n" \
 
         try:

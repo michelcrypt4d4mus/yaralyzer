@@ -124,14 +124,6 @@ def temporary_env(env_vars: Mapping[str, str | Path]) -> Generator[Any, Any, Any
         environ.update(old_environ)
 
 
-def _should_rebuild_fixtures() -> bool:
-    """
-    True if pytest should overwrite fixture data with new output instead of comparing.
-    It's here so that pdfalyzer can also use it.
-    """
-    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)
-
-
 # Maximize output width if YARALYZER_MAXIMIZE_WIDTH is set (also can changed with --maximize-width option)
 if is_invoked_by_pytest():
     CONSOLE_WIDTH = DEFAULT_CONSOLE_WIDTH
@@ -154,4 +146,12 @@ def default_console_kwargs() -> dict[str, str | int]:
 # For use when you need to write output before the main rich.console has managed to get set up.
 stderr_console = Console(stderr=True, **{**DEFAULT_CONSOLE_KWARGS, 'width': max(console_width_possibilities())})
 # stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
-# print(f"color_system: {stderr_console.color_system}")
+
+
+# Pytest method, here only so Pdfalyzer can also access it.
+def _should_rebuild_fixtures() -> bool:
+    """
+    True if pytest should overwrite fixture data with new output instead of comparing.
+    It's here so that pdfalyzer can also use it.
+    """
+    return is_env_var_set_and_not_false(PYTEST_REBUILD_FIXTURES_ENV_VAR)

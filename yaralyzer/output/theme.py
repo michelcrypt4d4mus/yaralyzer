@@ -4,8 +4,8 @@ TODO: interesting colors # row_styles[0] = 'reverse bold on color(144)' <-
 """
 from rich.columns import Columns
 from rich.console import Group
-from rich.panel import Panel
 from rich.padding import Padding
+from rich.panel import Panel
 from rich.style import Style
 from rich.terminal_theme import TerminalTheme
 from rich.text import Text

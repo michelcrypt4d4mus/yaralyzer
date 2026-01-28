@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.11
 * Improve diff output for failed fixture comparisons
 
 ### 1.3.7 - 1.3.10

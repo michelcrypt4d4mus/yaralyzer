@@ -55,12 +55,12 @@ YARALYZER_THEME_DICT = {
     'encoding.header': 'color(158) bold',
     'encoding.language': 'dark_green italic',
     # yara
+    'matched_rule': 'on bright_black bold',
     'yara.date': 'color(216)',
     'yara.hex': 'color(98)',
     'yara.int': 'color(45)',
     'yara.key': DARK_GREY,
     'yara.match_var': 'color(156) italic',
-    'yara.matched_rule': 'on bright_black bold',
     'yara.rules':  Style(color='color(135)', underline=True, bold=True),
     'yara.scanned': Style(color='yellow', underline=True, bold=True),
     'yara.string': 'white',

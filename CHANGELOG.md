@@ -1,13 +1,15 @@
 # NEXT RELEASE
+* Improve diff output for failed fixture comparisons
 
 ### 1.3.7 - 1.3.10
-* (tests) handle pdfalyzer.cmd / yaralyzer.cmd in strings on windows, `ONLY_CLI_ARGS` is class variable
+* Make `ONLY_CLI_ARGS` a class variable of `YaralyzerConfig`.
+* (pytest) Handle "pdfalyzer.cmd" / "yaralyzer.cmd" in `argv` strings on Windows.
 
 ### 1.3.6
-* (tests) Force `box.SQUARE` style in `pytest` context
+* (pytest) Force `box.SQUARE` style in `pytest` context
 
 ### 1.3.5
-* (tests) Force UTF-8 mode encoding (required for Windows)
+* (pytest) Force UTF-8 mode encoding (required for Windows)
 
 ### 1.3.4
 * Catch `OSError` when checking `cairosvg` and the python package is installed by the actual `cairo` executable is missing

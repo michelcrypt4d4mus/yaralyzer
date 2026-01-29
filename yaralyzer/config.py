@@ -179,8 +179,9 @@ class YaralyzerConfig:
     def _log_argparse_result(cls) -> None:
         """Logs the current state of `cls.args` after merge of env vars."""
         args_dict = vars(cls.args)
-        log_msg = f'{cls.__name__}._args:\n\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
-        log_msg += f"{ARGPARSE_LOG_FORMAT.format('------', '----', '-----')}"
+        log_msg = f'{cls.__name__}._args:\n\n'
+        log_msg += ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+        log_msg += ARGPARSE_LOG_FORMAT.format('------', '----', '-----')
 
         for arg_var in sorted(args_dict.keys()):
             arg_val = args_dict[arg_var]

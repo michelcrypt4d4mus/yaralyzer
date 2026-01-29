@@ -22,7 +22,7 @@ from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import highlighter, log, log_argparse_result, log_console, set_log_level
+from yaralyzer.util.logging import highlighter, log, log_console, set_log_level
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -316,7 +316,6 @@ def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = Non
 
     if args.debug:
         set_log_level(logging.DEBUG)
-        log_argparse_result(args, 'End of yaralyzer parse_arguments()')
     elif args.log_level:
         set_log_level(args.log_level)
 

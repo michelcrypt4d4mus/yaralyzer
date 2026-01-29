@@ -51,7 +51,6 @@ from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import log_level_for
 
-ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
 WRITE_STYLE = 'grey46'
@@ -126,41 +125,9 @@ def log_and_print(msg: str, log_level: str = 'INFO', style: str = '') -> None:
     log_console.print(msg, style=style)
 
 
-def log_argparse_result(args: Namespace, label: str) -> None:
-    """Logs the result of `argparse`."""
-    args_dict = vars(args)
-    log_msg = f'{label} argparse results:\n\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
-    log_msg += f"{ARGPARSE_LOG_FORMAT.format('------', '----', '-----')}"
-
-    for arg_var in sorted(args_dict.keys()):
-        arg_val = args_dict[arg_var]
-        row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
-        log_msg += row
-
-    log_msg += "\n"
-    invocation_log.debug(log_msg)
-    log.debug(log_msg)
-
-
 def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
     """Log something with newlines around it."""
     log.log(level, f"{msg}\n\n {big_msg}\n")
-
-
-def log_current_config(config: type[YaralyzerConfig]) -> None:
-    """Write current state of `YaralyzerConfig` object (including parsed args) to the logs."""
-    msg = f"{config.__name__} current attributes:\n\n"
-
-    config_dict = {
-        k: v for k, v in vars(config).items()
-        if not (k.startswith('_') or 'classmethod' in str(v))
-    }
-
-    for k in sorted(config_dict.keys()):
-        msg += f"   {k: >35}  {config_dict[k]}\n"
-
-    log.info(msg)
-    log_argparse_result(config.args, 'Parsed with env vars merged')
 
 
 @contextmanager

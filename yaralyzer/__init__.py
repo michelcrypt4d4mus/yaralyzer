@@ -7,7 +7,7 @@ from yaralyzer.output.file_export import export_json, invoke_rich_export
 from yaralyzer.util.argument_parser import parser, parse_arguments
 from yaralyzer.util.constants import PDFALYZER_MSG_TXT
 from yaralyzer.util.exceptions import print_fatal_error_and_exit
-from yaralyzer.util.logging import invocation_txt, log_console, log_current_config
+from yaralyzer.util.logging import invocation_txt, log_console
 from yaralyzer.yara.error import yara_error_msg
 from yaralyzer.yara.yara_rule_builder import HEX, REGEX
 from yaralyzer.yaralyzer import Yaralyzer
@@ -21,9 +21,6 @@ def yaralyze():
     and environment variables. See `yaralyze --help` for details.
     """
     args = YaralyzerConfig.parse_args()
-
-    if args._standalone_mode:
-        log_current_config(YaralyzerConfig)
 
     if args.yara_rules_files:
         yaralyzer = Yaralyzer.for_rules_files(args.yara_rules_files, args.file_to_scan_path)

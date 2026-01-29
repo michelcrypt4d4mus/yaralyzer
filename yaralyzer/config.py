@@ -14,10 +14,11 @@ from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
-from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false, is_github_workflow,
-     is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
+from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false, is_invoked_by_pytest,
+     is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
 
+ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
 T = TypeVar('T')
@@ -153,6 +154,10 @@ class YaralyzerConfig:
         """Parse `sys.argv` and merge the result with any options set in the environment variables."""
         args = cls._parse_arguments(cls, None)
         cls._merge_env_options(args)
+
+        if cls.args.debug:
+            cls._log_argparse_result()
+
         return args
 
     @classmethod
@@ -169,6 +174,21 @@ class YaralyzerConfig:
     def _is_configurable_by_env_var(cls, option: str) -> bool:
         """Returns `True` if this option can be configured by a `YARALYZER_VAR_NAME` style environment variable."""
         return not (option.startswith('export') or option in cls.ONLY_CLI_ARGS)
+
+    @classmethod
+    def _log_argparse_result(cls) -> None:
+        """Logs the current state of `cls.args` after merge of env vars."""
+        args_dict = vars(cls.args)
+        log_msg = f'{cls.__name__} parse_args() result:\n\n' + ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
+        log_msg += f"{ARGPARSE_LOG_FORMAT.format('------', '----', '-----')}"
+
+        for arg_var in sorted(args_dict.keys()):
+            arg_val = args_dict[arg_var]
+            row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
+            log_msg += row
+
+        log_msg += "\n"
+        stderr_console.print(log_msg)
 
     @classmethod
     def _merge_env_options(cls, _args: Namespace) -> None:

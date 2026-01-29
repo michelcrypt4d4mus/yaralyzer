@@ -98,7 +98,7 @@ class YaralyzerConfig:
         parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
     ) -> None:
         """
-        Should be called immediately upon package load.
+        Should be called immediately upon package load to provide the Config with the means to set itself up.
 
         Args:
             argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.

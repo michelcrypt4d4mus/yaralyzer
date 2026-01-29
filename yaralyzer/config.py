@@ -185,11 +185,9 @@ class YaralyzerConfig:
 
         for arg_var in sorted(args_dict.keys()):
             arg_val = args_dict[arg_var]
-            row = ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
-            log_msg += row
+            log_msg += ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
 
-        log_msg += "\n"
-        stderr_console.print(log_msg)
+        stderr_console.print(f"{log_msg}\n")
 
     @classmethod
     def _merge_env_options(cls, _args: Namespace) -> None:

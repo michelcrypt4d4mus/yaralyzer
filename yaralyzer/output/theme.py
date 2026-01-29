@@ -32,11 +32,11 @@ PEACH = 'color(215)'
 YARALYZER_THEME_DICT = {
     # colors
     GREY: GREY_COLOR,
-    f'{GREY}.dark': DARK_GREY,
-    f'{GREY}.dark_italic': f"{DARK_GREY} italic",
-    f'{GREY}.darker_italic': 'color(8) dim italic',
-    f'{GREY}.darkest': 'color(235) dim',
-    f'{GREY}.light': 'color(248)',
+    'grey.dark': DARK_GREY,
+    'grey.dark_italic': f"{DARK_GREY} italic",
+    'grey.darker_italic': 'color(8) dim italic',
+    'grey.darkest': 'color(235) dim',
+    'grey.light': 'color(248)',
     # bytes
     'bytes': BYTES,
     'bytes.brighter': BYTES_BRIGHTER,

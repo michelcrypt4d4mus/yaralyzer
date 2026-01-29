@@ -12,10 +12,10 @@ from typing import Callable, Sequence
 import pytest
 
 from yaralyzer.output.console import console
-from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
-from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, is_windows
+from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS
+from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux
 from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
-from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
+from yaralyzer.util.helpers.shell_helper import ShellResult
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.util.logging import log, log_bigly
 

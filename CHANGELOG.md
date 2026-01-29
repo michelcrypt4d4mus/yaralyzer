@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix logging of number of vars loaded from `.yaralyzer` file
 
 ### 1.3.12
 * Handle parsing arguments inside `YaralyzerConfig.parse_args()`

@@ -156,7 +156,7 @@ class YaralyzerConfig:
         cls._merge_env_options(args)
 
         if cls.args.debug:
-            cls._log_argparse_result()
+            cls._log_args_state()
 
         return args
 
@@ -176,7 +176,7 @@ class YaralyzerConfig:
         return not (option.startswith('export') or option in cls.ONLY_CLI_ARGS)
 
     @classmethod
-    def _log_argparse_result(cls) -> None:
+    def _log_args_state(cls) -> None:
         """Logs the current state of `cls.args` after merge of env vars."""
         args_dict = vars(cls.args)
         log_msg = f'{cls.__name__}._args:\n\n'

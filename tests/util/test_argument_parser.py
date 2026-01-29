@@ -4,7 +4,6 @@ import re
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util import cli_option_validators
-from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import InvalidArgumentError
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env

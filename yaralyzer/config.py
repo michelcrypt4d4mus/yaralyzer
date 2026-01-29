@@ -5,18 +5,24 @@ import logging
 import re
 import sys
 from argparse import _AppendAction, ArgumentParser, Namespace
+from importlib.metadata import version
 from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
-from yaralyzer.output.theme import YARALYZER_THEME_DICT
+from yaralyzer.output.console import console
+from yaralyzer.output.theme import YARALYZER_THEME_DICT, color_theme_grid
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import KILOBYTE, YARALYZE, YARALYZER_UPPER
+from yaralyzer.util.constants import EARLY_EXIT_ARGS, ENV_VARS_OPTION, KILOBYTE, PNG_EXPORT_WARNING, YARALYZE, YARALYZER_UPPER
+from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
-from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false, is_invoked_by_pytest,
+from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed, is_env_var_set_and_not_false, is_invoked_by_pytest,
      is_path_var, load_dotenv_file, stderr_console, temporary_argv)
+from yaralyzer.util.helpers.file_helper import timestamp_for_filename
+from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
+from yaralyzer.util.logging import configure_logger, log, log_console, set_log_level
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -61,9 +67,9 @@ class YaralyzerConfig:
         'version',
     ]
 
+    _argparser: ArgumentParser
     _append_option_vars: list[str] = []
     _argparse_dests: list[str] = []
-    _parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
 
     @classproperty
     def app_name(cls) -> str:
@@ -92,23 +98,18 @@ class YaralyzerConfig:
         return cls.app_name.removesuffix('r').lower()
 
     @classmethod
-    def init(
-        cls,
-        argparser: ArgumentParser,
-        parse_arguments: Callable[[type['YaralyzerConfig'], Namespace | None], Namespace]
-    ) -> None:
+    def init(cls, argparser: ArgumentParser) -> None:
         """
         Should be called immediately upon package load to provide the Config with the means to set itself up.
 
         Args:
             argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
-            parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
-        cls._argument_parser = argparser
-        cls._parse_arguments = parse_arguments
+        cls._argparser = argparser
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
         sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.script_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
+        configure_logger(cls)
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
 
@@ -151,13 +152,57 @@ class YaralyzerConfig:
 
     @classmethod
     def parse_args(cls) -> Namespace:
-        """Parse `sys.argv` and merge the result with any options set in the environment variables."""
-        args = cls._parse_arguments(cls, None)
-        cls._merge_env_options(args)
+        cls._args = cls._parse_arguments()
+        cls._merge_env_options()
+        cls._log_args_state()
+        return cls._args
 
-        if cls.args.debug:
-            cls._log_args_state()
+    @classmethod
+    def _parse_arguments(cls) -> Namespace:
+        """
+        Parse `sys.argv` and merge the result with any options set in the environment variables.
+        Run with `--env-vars` option for more info on how that works.
+        "Private" args injected outside of user selection will be prefixed with underscore.
 
+        Raises:
+            InvalidArgumentError: If args are invalid.
+        """
+        if any(arg in EARLY_EXIT_ARGS for arg in sys.argv):
+            if '--version' in sys.argv:
+                print(f"{cls.app_name} {version(cls.app_name)}")
+            elif ENV_VARS_OPTION in sys.argv:
+                from yaralyzer.util.argument_parser import show_configurable_env_vars
+                show_configurable_env_vars(cls)
+            elif '--show-colors' in sys.argv:
+                console.print(color_theme_grid(cls.COLOR_THEME, cls.app_name))
+
+            sys.exit()
+
+        # Parse args and set a few private variables we want that are unrelated to user input
+        args = cls._argparser.parse_args()
+        args._invoked_at_str = timestamp_for_filename()
+        args._standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
+        args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
+
+        if args.maximize_width:
+            console.width = max(console_width_possibilities())
+            log_console.width = max(console_width_possibilities())
+
+        if args._any_export_selected:
+            console.record = True
+        elif args.output_dir:
+            log.warning('--output-dir provided but no export option was chosen')
+
+        # SVG export is a necessary intermediate step for PNG export
+        if args.export_png:
+            args._keep_exported_svg = bool(args.export_svg)
+
+            if not (is_cairosvg_installed() or get_inkscape_version()):
+                handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._standalone_mode)
+            elif not args.export_svg:
+                args.export_svg = 'svg'
+
+        set_log_level(logging.DEBUG if args.debug else (args.log_level or cls.LOG_LEVEL))
         return args
 
     @classmethod
@@ -178,6 +223,9 @@ class YaralyzerConfig:
     @classmethod
     def _log_args_state(cls) -> None:
         """Logs the current state of `cls.args` after merge of env vars."""
+        if not cls.args.debug:
+            return
+
         args_dict = vars(cls.args)
         log_msg = f'{cls.__name__}._args:\n\n'
         log_msg += ARGPARSE_LOG_FORMAT.format('OPTION', 'TYPE', 'VALUE')
@@ -190,7 +238,7 @@ class YaralyzerConfig:
         stderr_console.print(f"{log_msg}\n")
 
     @classmethod
-    def _merge_env_options(cls, _args: Namespace) -> None:
+    def _merge_env_options(cls) -> None:
         """
         Set the `args` class instance variable and update args with any environment variable overrides.
         For each arg the environment will be checked for a variable with the same name, uppercased and
@@ -198,14 +246,9 @@ class YaralyzerConfig:
 
         Example:
             For the argument `--output-dir` the environment will be checked for `YARALYZER_OUTPUT_DIR`.
-
-        Args:
-            _args (Namespace): Object returned by `ArgumentParser.parse_args()`
         """
-        cls._args = _args
-
         for option in cls._argparse_dests:
-            arg_value = vars(_args).get(option)
+            arg_value = vars(cls.args).get(option)
             env_value = cls.get_env_value(option)
             default_value = cls._get_default_arg(option)
             # print(f"option: {option}, arg_value: {arg_value}, env_var: {env_var}, env_value: {env_value}, default: {default_value}", file=stderr)  # noqa: E501
@@ -213,15 +256,15 @@ class YaralyzerConfig:
             # TODO: as is you can't override env vars with CLI args
             if isinstance(arg_value, bool):
                 env_var = cls.prefixed_env_var(option)
-                setattr(_args, option, arg_value or is_env_var_set_and_not_false(env_var))
+                setattr(cls.args, option, arg_value or is_env_var_set_and_not_false(env_var))
             elif isinstance(arg_value, (int, float)):
                 # Check against defaults to avoid overriding env var configured options
                 if arg_value == default_value and env_value is not None:
-                    setattr(_args, option, type(arg_value)(env_value) or arg_value)
+                    setattr(cls.args, option, type(arg_value)(env_value) or arg_value)
             elif arg_value in ['', [], {}]:
-                setattr(_args, option, env_value if env_value else arg_value)
+                setattr(cls.args, option, env_value if env_value else arg_value)
             else:
-                setattr(_args, option, arg_value or env_value)
+                setattr(cls.args, option, arg_value or env_value)
 
         cls.args.output_dir = (cls.args.output_dir or Path.cwd()).resolve()
         cls.args.file_prefix = (cls.args.file_prefix + '__') if cls.args.file_prefix else ''
@@ -249,4 +292,4 @@ class YaralyzerConfig:
         # print_stack()
 
         with temporary_argv(DEFAULT_ARGV):
-            cls._merge_env_options(cls._parse_arguments(cls, None))
+            cls.parse_args()

@@ -12,7 +12,6 @@ import pytest
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
-from yaralyzer.util.argument_parser import parse_arguments
 from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
 from yaralyzer.util.helpers.string_helper import line_count

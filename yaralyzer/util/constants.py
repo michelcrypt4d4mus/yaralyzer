@@ -19,6 +19,13 @@ ECHO_COMMAND_OPTION = '--echo-command'
 ENV_VARS_OPTION = '--env-vars'
 NO_TIMESTAMPS_OPTION = '--no-timestamps'
 SUPPRESS_OUTPUT_OPTION = '--suppress-output'
+
+EARLY_EXIT_ARGS = [
+    '--show-colors',
+    ENV_VARS_OPTION,
+    '--version',
+]
+
 # Default args used when running the command line version in pytest
 DEFAULT_PYTEST_CLI_ARGS = [ECHO_COMMAND_OPTION, NO_TIMESTAMPS_OPTION]
 
@@ -32,9 +39,6 @@ PDFALYZER_REPO_URL = repo_url('pdfalyzer')
 YARALYZER_REPO_URL = repo_url(YARALYZER)
 YARALYZER_API_DOCS_URL = f"https://michelcrypt4d4mus.github.io/{YARALYZER}"
 
-PDFALYZER_MSG_TXT = Text("\nIf you are analyzing a PDF you may be interested in Pdfalyzer, ", style='bright_white bold') \
-                 .append("birthplace of the Yaralyzer:\n -> ").append('') \
-                 .append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
 
 # Misc URLs etc.
 INKSCAPE = 'inkscape'
@@ -52,3 +56,12 @@ LOG_LEVELS = {
     "DEBUG": 10,
     "NOTSET": 0
 }
+
+
+# User messaging
+PDFALYZER_MSG_TXT = Text("\nIf you are analyzing a PDF you may be interested in Pdfalyzer, ", style='bright_white bold') \
+                 .append("birthplace of the Yaralyzer:\n -> ").append('') \
+                 .append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
+
+PNG_EXPORT_WARNING = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
+                     f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"

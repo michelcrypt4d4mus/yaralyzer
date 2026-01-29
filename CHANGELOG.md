@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Handle parsing arguments inside `YaralyzerConfig.parse_args()`
 
 ### 1.3.11
 * Improve diff output for failed fixture comparisons

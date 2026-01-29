@@ -1,16 +1,6 @@
 """
 Handle logging for `yaralyzer`.
 
-There's two possible log sinks other than `STDOUT`:
-
-  1. 'log' - the application log (standard log, what goes to `STDOUT` with `-D` option)
-  2. 'invocation_log' - tracks the exact command yaralyzer was invoked with, similar to a history file
-
-The regular log file at `APPLICATION_LOG_PATH` is where the quite verbose application logs
-will be written if things ever need to get that formal. For now those logs are only accessible
-on `STDOUT` with the `-D` flag but the infrastructure for persistent logging exists if someone
-needs/wants that sort of thing.
-
 Logs are not normally ephemeral/not written to files but can be configured to do so by setting
 the `YARALYZER_LOG_DIR` env var. See `.yaralyzer.example` for documentation about the side effects
 of setting `YARALYZER_LOG_DIR` to a value.
@@ -44,7 +34,6 @@ from rich.highlighter import ReprHighlighter
 from rich.logging import RichHandler
 from rich.text import Text
 
-from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import YARALYZER
 from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_workflow, is_invoked_by_pytest
@@ -64,33 +53,31 @@ DEFAULT_LOG_HANDLER_KWARGS = {
 }
 
 
-def configure_logger(log_label: str) -> logging.Logger:
+def configure_logger(config: type['YaralyzerConfig']) -> logging.Logger:  # noqa: F821
     """
     Set up a file or stream `logger` depending on the configuration.
 
     Args:
-        log_label (str): The label for the `logger`, e.g. "run" or "invocation".
-            Actual name will be `"yaralyzer.{log_label}"`.
+        config (YaralyzerConfig): Has LOG_DIR and LOG_LEVEL props
 
     Returns:
         logging.Logger: The configured `logger`.
     """
-    log_name = f"{YARALYZER}.{log_label}"
-    logger = logging.getLogger(log_name)
+    logger = logging.getLogger(config.app_name.lower())
     rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
 
-    if YaralyzerConfig.LOG_DIR:
-        if not (YaralyzerConfig.LOG_DIR.is_dir() and YaralyzerConfig.LOG_DIR.is_absolute()):
-            raise FileNotFoundError(f"Log dir '{YaralyzerConfig.LOG_DIR}' doesn't exist or is not absolute")
+    if config.LOG_DIR:
+        if not (config.LOG_DIR.is_dir() and config.LOG_DIR.is_absolute()):
+            raise FileNotFoundError(f"Log dir '{config.LOG_DIR}' doesn't exist or is not absolute")
 
-        log_file_path = YaralyzerConfig.LOG_DIR.joinpath(f"{log_name}.log")
+        log_file_path = config.LOG_DIR.joinpath(f"{config.app_name}.log")
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
         logger.addHandler(log_file_handler)
         rich_stream_handler.setLevel('WARN') # Rich handler is only for warnings when writing to log file
 
     logger.addHandler(rich_stream_handler)
-    logger.setLevel(YaralyzerConfig.LOG_LEVEL)
+    logger.setLevel(config.LOG_LEVEL)
     return logger
 
 
@@ -161,13 +148,8 @@ def set_log_level(level: str | int) -> None:
 
 # See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
 log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
-log = configure_logger('run')
-invocation_log = configure_logger('invocation')
+log = logging.getLogger(YARALYZER)
 highlighter = ReprHighlighter()
-
-# If we're logging to files make sure invocation_log has the right level
-if YaralyzerConfig.LOG_DIR:
-    invocation_log.setLevel('INFO')
 
 # Suppress annoying chardet library logs
 for submodule in ['universaldetector', 'charsetprober', 'codingstatemachine']:

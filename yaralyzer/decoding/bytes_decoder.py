@@ -184,7 +184,7 @@ class BytesDecoder:
             yield Align(self.encoding_detector, 'center')
             yield NewLine()
 
-        # In standalone mode we always print the hex/raw bytes
+        # In standalone mode we always print the hex/raw bytes # TODO this sucks
         if self.bytes_match.is_decodable():
             yield self._build_decodings_table()
         elif YaralyzerConfig.args._standalone_mode:

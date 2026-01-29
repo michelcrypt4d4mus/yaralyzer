@@ -1,10 +1,8 @@
 """
 Argument parsing for yaralyze command line tool (also used by the pdfalyzer).
 """
-import logging
 import sys
-from argparse import _AppendAction, _StoreFalseAction, _StoreTrueAction, Action, ArgumentParser, Namespace
-from importlib.metadata import version
+from argparse import _AppendAction, _StoreFalseAction, _StoreTrueAction, Action, ArgumentParser
 
 from rich.padding import Padding
 from rich.panel import Panel
@@ -12,29 +10,17 @@ from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE
-from yaralyzer.output.console import console
-from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, argparse_style, color_theme_grid
+from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, argparse_style
 from yaralyzer.util.cli_option_validators import (DirValidator, OptionValidator, PathValidator,
      PatternsLabelValidator, YaraRegexValidator)
 from yaralyzer.util.constants import *
-from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers import env_helper
-from yaralyzer.util.helpers.file_helper import timestamp_for_filename
-from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import highlighter, log, log_console, set_log_level
+from yaralyzer.util.logging import highlighter, log, log_console
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
 
-PNG_EXPORT_WARNING = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \
-                     f"Maybe try pip install {YARALYZER}[img] or {INKSCAPE_URL}"
-
-EARLY_EXIT_ARGS = [
-    '--show-colors',
-    ENV_VARS_OPTION,
-    '--version',
-]
 
 def epilog(config: type[YaralyzerConfig]) -> str:
     """Returns a string with some rich text tags for color to be used as the --help footer."""
@@ -261,65 +247,8 @@ debug.add_argument('--show-colors', action='store_true',
                    help='show the color theme and exit')
 
 
-# Preliminaty sys.argv processing
-should_exit_early = any(arg in EARLY_EXIT_ARGS for arg in sys.argv)
 # TODO: replacing -rpl with to avoid breaking existing users. Delete on version bump.
 sys.argv = ['-pl' if arg == '-rpl' else arg for arg in sys.argv]
-
-
-def parse_arguments(config: type[YaralyzerConfig], _args: Namespace | None = None):
-    """
-    Parse command line args. Most arguments can also also be chosen by setting env vars,
-    run with `--env-vars` option for more info on how that works.
-    "Private" args injected outside of user selection will be prefixed with underscore.
-
-    Args:
-        config (type[YaralyzerConfig]): Either YarlyzeerConfig or PdfalyzerConfig.
-        args (Namespace, optional): Use these `args` instead of parsing from `sys.argv`.
-            Must come from an `ArgumentParser` that inherits from Yaralyzer's.
-
-    Raises:
-        InvalidArgumentError: If args are invalid.
-    """
-    if should_exit_early:
-        if '--version' in sys.argv:
-            print(f"{config.app_name} {version(config.app_name)}")
-        elif ENV_VARS_OPTION in sys.argv:
-            show_configurable_env_vars(config)
-        elif '--show-colors' in sys.argv:
-            console.print(color_theme_grid(config.COLOR_THEME, config.app_name))
-
-        sys.exit()
-
-    # Parse args and set a few private variables we want that are unrelated to user input
-    args = _args or parser.parse_args()
-    args._invoked_at_str = timestamp_for_filename()
-    args._standalone_mode = _args is None
-    args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
-
-    if args.maximize_width:
-        console.width = max(env_helper.console_width_possibilities())
-
-    if args._any_export_selected:
-        console.record = True
-    elif args.output_dir:
-        log.warning('--output-dir provided but no export option was chosen')
-
-    # SVG export is a necessary intermediate step for PNG export
-    if args.export_png:
-        args._keep_exported_svg = bool(args.export_svg)
-
-        if not (env_helper.is_cairosvg_installed() or get_inkscape_version()):
-            handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._standalone_mode)
-        elif not args.export_svg:
-            args.export_svg = 'svg'
-
-    if args.debug:
-        set_log_level(logging.DEBUG)
-    elif args.log_level:
-        set_log_level(args.log_level)
-
-    return args
 
 
 def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
@@ -331,7 +260,7 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
     log_console.print(Padding(panel, (1, 0, 0, 0)), justify='center', width=int(env_helper.CONSOLE_WIDTH / 2))
     log_console.print(_configurable_env_vars_header(config.ENV_VAR_PREFIX), style='grey54')
 
-    for group in [g for g in config._argument_parser._action_groups if 'positional' not in str(g.title)]:
+    for group in [g for g in config._argparser._action_groups if 'positional' not in str(g.title)]:
         log_console.print(f"\n# {group.title}", style=argparse_style("groups"))
 
         for action in group._group_actions:

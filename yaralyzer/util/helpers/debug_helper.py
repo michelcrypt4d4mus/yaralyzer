@@ -5,7 +5,7 @@ from yaralyzer.util.helpers.env_helper import stderr_console
 from yaralyzer.util.helpers.string_helper import indented, props_string_indented
 
 SKIP_OPTIONS = ['deprecated', 'help', 'option_strings']
-STACK_STRIPPER_REGEX = re.compile(fr"/.*?pypoetry/virtualenvs/")
+STACK_STRIPPER_REGEX = re.compile(fr"/.*pypoetry/virtualenvs/")
 
 
 def debug_argparser(parser: ArgumentParser):

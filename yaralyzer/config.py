@@ -104,13 +104,13 @@ class YaralyzerConfig:
             argparser (ArgumentParser): An ArgumentParser that can parse the args this app needs.
             parse_arguments (Callable): Function that can fill in and error check what `argparser.parse_args()` returns.
         """
+        cls._argument_parser = argparser
+        cls._parse_arguments = parse_arguments
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
         sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.script_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
-        cls._argument_parser = argparser
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
-        cls._parse_arguments = parse_arguments
 
     @classmethod
     def env_var_for_command_line_option(cls, option: str) -> str:

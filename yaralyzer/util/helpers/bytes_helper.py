@@ -162,19 +162,6 @@ def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     return newline_join([Text('  ').join(line.wrap(console, HEX_CHARS_PER_GROUP * 3)) for line in lines])
 
 
-def hex_text(_bytes: bytes) -> Text:
-    """
-    Return a rich Text object of the hex string for the given bytes.
-
-    Args:
-        _bytes (bytes): The bytes to convert.
-
-    Returns:
-        Text: Rich Text object of the hex string.
-    """
-    return Text(hex_string(_bytes), style=GREY_COLOR)
-
-
 def hex_string(_bytes: bytes) -> str:
     """
     Return a hex string representation of the given bytes.
@@ -186,6 +173,19 @@ def hex_string(_bytes: bytes) -> str:
         str: Hex string representation of the bytes.
     """
     return ' '.join([hex(b).removeprefix('0x').rjust(2, '0') for i, b in enumerate(_bytes)])
+
+
+def hex_text(_bytes: bytes) -> Text:
+    """
+    Return a rich Text object of the hex string for the given bytes.
+
+    Args:
+        _bytes (bytes): The bytes to convert.
+
+    Returns:
+        Text: Rich Text object of the hex string.
+    """
+    return Text(hex_string(_bytes), style=GREY_COLOR)
 
 
 def print_bytes(bytes_array: bytes, style: str | None = None, indent: int = 0) -> None:

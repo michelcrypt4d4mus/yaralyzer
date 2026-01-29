@@ -33,7 +33,7 @@ def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> Non
         txt.append(highlighter(msg))
 
     if e:
-        txt.append(f" (caused by {type(e).__name__}: {e})", style='dim')
+        txt.append(f"\n(Caused by {type(e).__name__}: {e})", style='dim')
 
     log_console.print(Padding(txt, (1, 0, 0, 0)))
 

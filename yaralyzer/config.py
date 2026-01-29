@@ -13,12 +13,13 @@ from typing import Any, Callable, TypeVar
 from yaralyzer.output.console import console
 from yaralyzer.output.theme import YARALYZER_THEME_DICT, color_theme_grid
 from yaralyzer.util.classproperty import classproperty
-from yaralyzer.util.constants import EARLY_EXIT_ARGS, ENV_VARS_OPTION, KILOBYTE, PNG_EXPORT_WARNING, YARALYZE, YARALYZER_UPPER
+from yaralyzer.util.constants import (EARLY_EXIT_ARGS, ENV_VARS_OPTION, KILOBYTE, PNG_EXPORT_WARNING,
+     YARALYZE, YARALYZER_UPPER, dotfile_name)
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack
-from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed, is_env_var_set_and_not_false, is_invoked_by_pytest,
-     is_path_var, load_dotenv_file, stderr_console, temporary_argv)
+from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed,
+     is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
@@ -82,6 +83,11 @@ class YaralyzerConfig:
             cls._set_default_args()
 
         return cls._args
+
+    @classproperty
+    def dotfile_name(cls) -> str:
+        """Returns '.yaralyzer'."""
+        return dotfile_name(cls.app_name)
 
     @classproperty
     def executable_name(cls) -> str:

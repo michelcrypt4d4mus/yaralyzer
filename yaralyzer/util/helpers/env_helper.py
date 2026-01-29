@@ -22,7 +22,6 @@ DEFAULT_CONSOLE_WIDTH = 160
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
 DOTFILE_DIRS = [Path.cwd(), Path.home()]
-STARTUP_MSG_STYLE = 'dim italic'
 
 is_linux = lambda: platform.system().lower() == 'linux'
 is_macos = lambda: platform.system().lower() == 'darwin'
@@ -89,9 +88,13 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
         if dotenv_file.exists():
             load_dotenv(dotenv_path=dotenv_file)
             lines = [l for l in dotenv_file.read_text().split('\n') if l and not l.startswith('#')]
-            loaded_env_vars_msg = f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}..."
-            stderr_console.print(loaded_env_vars_msg, style=STARTUP_MSG_STYLE)
+            startup_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
             return
+
+
+def startup_notification(msg: str) -> None:
+    """Log a message at startup, before everything is setup."""
+    stderr_console.print(msg, style='dim')
 
 
 @contextmanager

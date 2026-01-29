@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.12
 * Handle parsing arguments inside `YaralyzerConfig.parse_args()`
 
 ### 1.3.11

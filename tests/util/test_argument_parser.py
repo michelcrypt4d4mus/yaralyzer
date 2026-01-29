@@ -50,7 +50,7 @@ def test_private_args(valid_argv):
     with temporary_argv(valid_argv):
         args = YaralyzerConfig.parse_args()
         assert len(YaralyzerConfig.args._invoked_at_str) == 19
-        assert args._standalone_mode is True
+        assert args._yaralyzer_standalone_mode is True
         assert args._any_export_selected is False
 
     with temporary_argv(valid_argv + ['-txt']):

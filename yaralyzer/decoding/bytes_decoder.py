@@ -187,7 +187,7 @@ class BytesDecoder:
         # In standalone mode we always print the hex/raw bytes # TODO this sucks
         if self.bytes_match.is_decodable():
             yield self._build_decodings_table()
-        elif YaralyzerConfig.args._standalone_mode:
+        elif YaralyzerConfig.args._yaralyzer_standalone_mode:
             yield self._build_decodings_table(True)
 
         yield NewLine()

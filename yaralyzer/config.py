@@ -181,7 +181,7 @@ class YaralyzerConfig:
         # Parse args and set a few private variables we want that are unrelated to user input
         args = cls._argparser.parse_args()
         args._invoked_at_str = timestamp_for_filename()
-        args._standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
+        args._yaralyzer_standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
         args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
 
         if args.maximize_width:
@@ -198,7 +198,7 @@ class YaralyzerConfig:
             args._keep_exported_svg = bool(args.export_svg)
 
             if not (is_cairosvg_installed() or get_inkscape_version()):
-                handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._standalone_mode)
+                handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._yaralyzer_standalone_mode)
             elif not args.export_svg:
                 args.export_svg = 'svg'
 

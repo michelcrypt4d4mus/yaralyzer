@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Script to turn the official list of error codes into a python dict string."""
+"""
+Script to turn the official list of error codes into a python dict string, theoretically
+to update YARA_ERROR_CODES in case the list ever changes.
+"""
 import requests
 
 from yaralyzer.yara.error import YARA_ERRORS_RAW_URL

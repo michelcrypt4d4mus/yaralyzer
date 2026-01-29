@@ -18,9 +18,9 @@ from yaralyzer.util.helpers.env_helper import (is_env_var_set_and_not_false, is_
      is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
 
-ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
+ARGPARSE_LOG_FORMAT = '{0: >29}    {1: <11} {2: <}\n'
 T = TypeVar('T')
 
 # For when we need to build a default config outside of CLI usage. TODO: kinda janky

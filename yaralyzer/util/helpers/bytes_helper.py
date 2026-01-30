@@ -94,55 +94,6 @@ def clean_byte_string(bytes_array: bytes) -> str:
     return bytestr
 
 
-def get_bytes_before_and_after_match(
-    _bytes: bytes,
-    match: re.Match,
-    num_before: int | None = None,
-    num_after: int | None = None
-) -> bytes:
-    """
-    Get bytes before and after a regex match within a byte sequence.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        match (re.Match): The regex `Match` object.
-        num_before (int, optional): Number of bytes before the match to include. Defaults to configured value.
-        num_after (int, optional): Number of bytes after the match to include. Defaults to either configured value
-            or the `num_before` arg value.
-
-    Returns:
-        bytes: The surrounding bytes including the match.
-    """
-    return get_bytes_surrounding_range(_bytes, match.start(), match.end(), num_before, num_after)
-
-
-def get_bytes_surrounding_range(
-    _bytes: bytes,
-    start_idx: int,
-    end_idx: int,
-    num_before: int | None = None,
-    num_after: int | None = None
-) -> bytes:
-    """
-    Get bytes surrounding a specified range in a byte sequence.
-
-    Args:
-        _bytes (bytes): The full byte sequence.
-        start_idx (int): Start index of the range.
-        end_idx (int): End index of the range.
-        num_before (int, optional): Number of bytes before the range. Defaults to configured value.
-        num_after (int, optional): Number of bytes after the range. Defaults to configured value.
-
-    Returns:
-        bytes: The surrounding bytes including the range.
-    """
-    num_after = num_after or num_before or YaralyzerConfig.args.surrounding_bytes
-    num_before = num_before or YaralyzerConfig.args.surrounding_bytes
-    start_idx = max(start_idx - num_before, 0)
-    end_idx = min(end_idx + num_after, len(_bytes))
-    return _bytes[start_idx:end_idx]
-
-
 def hex_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
     """
     Return a hexadecimal view of raw bytes, highlighting the matched bytes.
@@ -177,13 +128,11 @@ def hex_string(_bytes: bytes) -> str:
 
 def hex_text(_bytes: bytes) -> Text:
     """
-    Return a rich Text object of the hex string for the given bytes.
-
     Args:
         _bytes (bytes): The bytes to convert.
 
     Returns:
-        Text: Rich Text object of the hex string.
+        Text: Rich Text object of the hex string for the given bytes.
     """
     return Text(hex_string(_bytes), style=GREY_COLOR)
 

@@ -119,14 +119,14 @@ class YaralyzerConfig:
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
 
     @classmethod
-    def env_var_for_command_line_option(cls, option: str) -> str:
+    def env_var_for_option_dest(cls, option: str) -> str:
         """`output_dir' becomes``YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
 
     @classmethod
     def get_env_value(cls, var: str, var_type: Callable[[str], T] = str) -> T | None:
         """If called with `'output_dir'` it will check env value of `YARALYZER_OUTPUT_DIR`."""
-        env_var = cls.env_var_for_command_line_option(var)
+        env_var = cls.env_var_for_option_dest(var)
         env_value = environ.get(env_var)
         var = var.removeprefix(f"{cls.ENV_VAR_PREFIX}_").lower()  # Accomodates being called with YARALYZER_OUTPUT_DIR
 
@@ -159,6 +159,7 @@ class YaralyzerConfig:
     def parse_args(cls) -> Namespace:
         cls._args = cls._parse_arguments()
         cls._merge_env_options()
+        configure_logger(cls)
         cls._log_args_state()
         return cls._args
 

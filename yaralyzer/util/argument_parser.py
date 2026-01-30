@@ -268,7 +268,7 @@ def show_configurable_env_vars(config: type[YaralyzerConfig]) -> None:
             if not config._is_configurable_by_env_var(action.dest):
                 continue
 
-            var = config.env_var_for_command_line_option(action.dest)
+            var = config.env_var_for_option_dest(action.dest)
             _print_env_var_explanation(var, action, config)
 
     _print_env_var_explanation(config.log_dir_env_var, 'writing of logs to files', config)

@@ -73,7 +73,7 @@ class YaralyzerConfig:
 
     @classproperty
     def app_name(cls) -> str:
-        return cls.ENV_VAR_PREFIX.strip('_').title()
+        return cls.ENV_VAR_PREFIX.strip('_').lower()
 
     @classproperty
     def args(cls) -> Namespace:
@@ -91,7 +91,7 @@ class YaralyzerConfig:
     @classproperty
     def executable_name(cls) -> str:
         """The command used to run this app, e.g. `'yaralyze'`."""
-        return cls.app_name.lower().removesuffix('r')
+        return cls.app_name.removesuffix('r')
 
     @classproperty
     def log_dir_env_var(cls) -> str:
@@ -99,8 +99,14 @@ class YaralyzerConfig:
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
 
     @classproperty
-    def script_name(cls) -> str:
-        return cls.app_name.removesuffix('r').lower()
+    def log_level(cls) -> int | str:
+        """Returns the `Logger` for this app."""
+        return logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL)
+
+    @classproperty
+    def log(cls) -> logging.Logger:
+        """Returns the `Logger` for this app."""
+        return logging.getLogger(cls.app_name)
 
     @classmethod
     def init(cls, argparser: ArgumentParser) -> None:
@@ -112,7 +118,7 @@ class YaralyzerConfig:
         """
         cls._argparser = argparser
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
-        sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.script_name + '.cmd') else a for a in sys.argv]
+        sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.executable_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
         configure_logger(cls)
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
@@ -208,7 +214,6 @@ class YaralyzerConfig:
             elif not args.export_svg:
                 args.export_svg = 'svg'
 
-        set_log_level(logging.DEBUG if args.debug else (args.log_level or cls.LOG_LEVEL))
         return args
 
     @classmethod

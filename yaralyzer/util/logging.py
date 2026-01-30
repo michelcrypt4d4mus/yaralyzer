@@ -56,36 +56,6 @@ log = logging.getLogger(YARALYZER)
 highlighter = ReprHighlighter()
 
 
-def configure_logger(config: type['YaralyzerConfig']) -> None:  # noqa: F821
-    """
-    Set up a file or stream `logger` depending on the configuration.
-
-    Args:
-        config (YaralyzerConfig): Has LOG_DIR and LOG_LEVEL props
-
-    Returns:
-        logging.Logger: The configured `logger`.
-    """
-    # print(f"Logger current handlers: {config.log.handlers}")
-    config.log.handlers = []
-    rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
-    rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
-
-    if config.LOG_DIR:
-        if not (config.LOG_DIR.is_dir() and config.LOG_DIR.is_absolute()):
-            raise FileNotFoundError(f"Log dir '{config.LOG_DIR}' doesn't exist or is not absolute")
-
-        log_file_path = config.LOG_DIR.joinpath(f"{config.app_name}.log")
-        log_file_handler = logging.FileHandler(log_file_path)
-        log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
-        config.log.addHandler(log_file_handler)
-        rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
-
-    config.log.addHandler(rich_stream_handler)
-    set_log_level(config.log_level, config.log)
-    # print(f"Logger handlers after configure_logger(): {config.log.handlers}")
-
-
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
     _argv = copy(_argv or sys.argv)

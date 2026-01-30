@@ -9,6 +9,8 @@ from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
+from rich.logging import RichHandler
+
 from yaralyzer.output.console import console
 from yaralyzer.output.theme import YARALYZER_THEME_DICT, color_theme_grid
 from yaralyzer.util.classproperty import classproperty
@@ -22,7 +24,7 @@ from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_c
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
-from yaralyzer.util.logging import configure_logger, log, log_console
+from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log, log_console, set_log_level
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -108,6 +110,11 @@ class YaralyzerConfig:
         """Returns the `Logger` for this app."""
         return logging.getLogger(cls.app_name)
 
+    @classproperty
+    def loggers(cls) -> list[logging.Logger]:
+        """Returns the `Logger` objects for this app."""
+        return [cls.log]
+
     @classmethod
     def init(cls, argparser: ArgumentParser) -> None:
         """
@@ -120,7 +127,7 @@ class YaralyzerConfig:
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
         sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.executable_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
-        configure_logger(cls)
+        cls._configure_logger()
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
 
@@ -165,7 +172,7 @@ class YaralyzerConfig:
     def parse_args(cls) -> Namespace:
         cls._args = cls._parse_arguments()
         cls._merge_env_options()
-        configure_logger(cls)
+        cls._configure_logger()
         cls._log_args_state()
         return cls._args
 
@@ -220,6 +227,38 @@ class YaralyzerConfig:
     def prefixed_env_var(cls, var: str) -> str:
         """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
         return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
+
+    @classmethod
+    def _configure_logger(cls) -> None:  # noqa: F821
+        """
+        Set up a file or stream `logger` depending on the configuration.
+
+        Args:
+            config (YaralyzerConfig): Has LOG_DIR and LOG_LEVEL props
+
+        Returns:
+            logging.Logger: The configured `logger`.
+        """
+        # print(f"Logger current handlers: {config.log.handlers}")
+        for log in cls.loggers:
+            log.handlers = []
+            rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
+            rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
+
+            if cls.LOG_DIR:
+                if not (cls.LOG_DIR.is_dir() and cls.LOG_DIR.is_absolute()):
+                    raise FileNotFoundError(f"Log dir '{cls.LOG_DIR}' doesn't exist or is not absolute")
+
+                log_file_path = cls.LOG_DIR.joinpath(f"{cls.app_name}.log")
+                log_file_handler = logging.FileHandler(log_file_path)
+                log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
+                log.addHandler(log_file_handler)
+                rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
+
+            log.addHandler(rich_stream_handler)
+            set_log_level(cls.log_level, log)
+            print(f"Configured logger: '{log.name}'")
+        # print(f"Logger handlers after configure_logger(): {config.log.handlers}")
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:

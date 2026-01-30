@@ -27,7 +27,7 @@ class EncodingAssessment:
     """
 
     assessment: ResultDict
-    confidence_text: Text = field(init=False)
+    confidence_text: Text = field(default_factory=lambda: Text('none', 'decode.no_attempt'))
     encoding_label: Text = field(init=False)
 
     @property
@@ -46,21 +46,21 @@ class EncodingAssessment:
         return self._get_empty_value_as_None(LANGUAGE)
 
     def __post_init__(self) -> None:
-        self.confidence_text = prefix_with_style(f"{round(self.confidence, 1)}%", style=meter_style(self.confidence))
+        if self.confidence:
+            self.confidence_text = prefix_with_style(f"{round(self.confidence, 1)}%", meter_style(self.confidence))
+
         # Add detected language info and label if any language was detected
         self.set_encoding_label(self.language.title() if self.language else None)
 
     @classmethod
     def dummy_encoding_assessment(cls, encoding: str) -> 'EncodingAssessment':
         """
-        Construct an empty `EncodingAssessment` to use as a dummy when `chardet` gives us nothing.
+        Alternate constructor for an empty `EncodingAssessment` to use as a dummy when `chardet` gives us nothing.
 
         Args:
             encoding (str): The encoding to use for the dummy assessment.
         """
-        assessment = cls(ResultDict(encoding=encoding, confidence=0.0, language=None))
-        assessment.confidence_text = Text('none', 'decode.no_attempt')
-        return assessment
+        return cls(ResultDict(encoding=encoding, confidence=0.0, language=None))
 
     def set_encoding_label(self, alt_text: str | None) -> None:
         """

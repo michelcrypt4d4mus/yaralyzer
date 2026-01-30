@@ -10,11 +10,12 @@ DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='decode.no_attem
 
 @dataclass(kw_only=True)
 class DecodingTableRow:
+    """Simple `dataclass` to hold a single row of a table of decoding attempts."""
     encoding_label: Text
     confidence_text: Text
     was_forced_txt: Text
     decoded_txt: Text
-    # Properties below here are not displayed in the table but are used for sorting etc.
+    # These properties are not displayed in the table but are used for sorting etc.
     confidence: float
     encoding: str
     sort_score: float

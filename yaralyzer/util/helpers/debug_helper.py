@@ -1,7 +1,7 @@
 import re
 from argparse import ArgumentParser
 
-from yaralyzer.util.helpers.env_helper import stderr_console
+from yaralyzer.util.helpers.env_helper import log_console
 from yaralyzer.util.helpers.string_helper import indented, props_string_indented
 
 SKIP_OPTIONS = ['deprecated', 'help', 'option_strings']
@@ -26,4 +26,4 @@ def print_stack():
 
     for i, stack_obj in enumerate(traceback.extract_stack()):
         line = STACK_STRIPPER_REGEX.sub('', str(stack_obj), 1)
-        stderr_console.print(indented(line, i))
+        log_console.print(indented(line, i))

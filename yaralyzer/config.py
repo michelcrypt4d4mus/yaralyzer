@@ -20,7 +20,7 @@ from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack  # noqa: F401
 from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed,
-     is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
+     is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, log_console, temporary_argv)
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
@@ -327,7 +327,7 @@ class YaralyzerConfig:
             cls.LOG_LEVEL = log_level_for(log_level)
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
-            stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
+            log_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     @classmethod
     def _set_default_args(cls) -> None:

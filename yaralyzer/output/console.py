@@ -1,6 +1,7 @@
 """
 Holds the rich.Console instance that controls the stdout printing and file export.
 """
+from copy import deepcopy
 from os import devnull
 from sys import argv
 
@@ -9,14 +10,14 @@ from rich.errors import MarkupError
 from rich.text import Text
 
 from yaralyzer.util.constants import SUPPRESS_OUTPUT_OPTION
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, stderr_console
+from yaralyzer.util.helpers.env_helper import DEFAULT_CONSOLE_KWARGS, log_console
 from yaralyzer.output.theme import YARALYZER_THEME
 
 
-console_kwargs = default_console_kwargs()
+console_kwargs = deepcopy(DEFAULT_CONSOLE_KWARGS)
 
 if SUPPRESS_OUTPUT_OPTION in argv:
-    stderr_console.print(f"Suppressing terminal output because {SUPPRESS_OUTPUT_OPTION} is enabled...", style='dim')
+    log_console.print(f"Suppressing terminal output because {SUPPRESS_OUTPUT_OPTION} is enabled...", style='dim')
     console_kwargs.update({'file': open(devnull, "wt")})
 
 # This is the global stdout manager

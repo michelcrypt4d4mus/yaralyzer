@@ -14,6 +14,7 @@ from typing import Any, Generator, Literal, Mapping, Sequence
 from dotenv import load_dotenv
 from rich.console import Console
 
+from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, dotfile_name
 from yaralyzer.util.helpers.file_helper import relative_path
 
@@ -81,7 +82,7 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
 
 def stderr_notification(msg: str) -> None:
     """Show a message (usually at startup, before everything is setup)."""
-    stderr_console.print(msg, style=NOTIFICATION_STYLE)
+    log_console.print(msg, style=NOTIFICATION_STYLE)
 
 
 @contextmanager
@@ -129,14 +130,12 @@ DEFAULT_CONSOLE_KWARGS = {
     'width': CONSOLE_WIDTH,
 }
 
-
-def default_console_kwargs() -> dict[str, str | int]:
-    """Returns a fresh copy of DEFAULT_CONSOLE_KWARGS."""
-    return deepcopy(DEFAULT_CONSOLE_KWARGS)
-
-
-# For use when you need to write output before the main rich.console has managed to get set up.
-stderr_console = Console(stderr=True, **{**DEFAULT_CONSOLE_KWARGS, 'width': max(console_width_possibilities())})
+log_console = Console(
+    color_system = DEFAULT_CONSOLE_KWARGS['color_system'],
+    stderr=True,
+    theme=LOG_THEME,
+    width=max(console_width_possibilities())
+)
 # stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
 
 

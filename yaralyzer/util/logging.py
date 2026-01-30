@@ -26,28 +26,25 @@ from copy import copy
 from pathlib import Path
 from typing import Generator
 
-from rich.console import Console
 from rich.highlighter import ReprHighlighter
 from rich.text import Text
 
-from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import YARALYZER
-from yaralyzer.util.helpers.env_helper import (NOTIFICATION_STYLE, default_console_kwargs, is_github_workflow,
-     is_invoked_by_pytest, stderr_notification)
+from yaralyzer.util.helpers.env_helper import (NOTIFICATION_STYLE, is_github_workflow,
+     is_invoked_by_pytest, log_console, stderr_notification)
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
 
 DEFAULT_LOG_HANDLER_KWARGS = {
-    'console': Console(stderr=True, theme=LOG_THEME, **default_console_kwargs()),
+    'console': log_console,
     'omit_repeated_times': False,
     'rich_tracebacks': True,
     'show_path': not is_invoked_by_pytest(),
     'show_time': not is_invoked_by_pytest(),
 }
 
-log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
 log = logging.getLogger(YARALYZER)
 highlighter = ReprHighlighter()
 

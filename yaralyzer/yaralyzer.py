@@ -283,12 +283,12 @@ class Yaralyzer:
         txt = Text('').append(self.scannable_label, style=byte_style or 'yara.scanned')
         return txt.append(' scanned with <').append(self.rules_label, style=rule_style or 'yara.rules').append('>')
 
-    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+    def __rich_console__(self, console: Console, options: ConsoleOptions) -> RenderResult:
         """Does the stuff. TODO: not the best place to put the core logic."""
         yield bytes_hashes_table(self._bytes, self.scannable_label)
 
         for _bytes_match, bytes_decoder in self.match_iterator():
-            for attempt in bytes_decoder.__rich_console__(_console, options):
+            for attempt in bytes_decoder.__rich_console__(console, options):
                 yield attempt
 
     def __str__(self) -> str:

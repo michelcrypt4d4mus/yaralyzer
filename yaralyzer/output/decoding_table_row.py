@@ -38,7 +38,7 @@ class DecodingTableRow:
         Args:
             assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
             was_forced_txt (Text): Text indicating if the decode was forced.
-            decoded_txt (Text): The decoded string as a rich `Text` object (with highlighting).
+            decoded_txt (Text): The decoded string as rich `Text` with color highlighting.
             score (float): The score to use for sorting this row in the table.
         """
         return cls(

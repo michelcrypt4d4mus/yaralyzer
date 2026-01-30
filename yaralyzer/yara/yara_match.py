@@ -70,7 +70,7 @@ class YaraMatch:
         self.label = matched_against_bytes_label.copy().append(f" matched rule: '", style='yara.matched_rule')
         self.label.append(self.rule_name, style='on bright_red bold').append("'!", style='siren')
 
-    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+    def __rich_console__(self, console: Console, options: ConsoleOptions) -> RenderResult:
         """Renders a rich `Panel` showing the color highlighted raw YARA match info."""
         yield Text("\n")
         label_panel = Panel(self.label, expand=False, style=f"on color(251) reverse", **DEFAULT_TABLE_OPTIONS)

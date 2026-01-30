@@ -72,6 +72,7 @@ class YaralyzerConfig:
     _argparser: ArgumentParser
     _append_option_vars: list[str] = []
     _argparse_dests: list[str] = []
+    _log_handler_kwargs = dict(DEFAULT_LOG_HANDLER_KWARGS)
 
     @classproperty
     def app_name(cls) -> str:
@@ -237,7 +238,7 @@ class YaralyzerConfig:
         """Set up a file and/or stream `Logger` depending on the configuration."""
         for log in cls.loggers:
             log.handlers = []
-            rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
+            rich_stream_handler = RichHandler(**cls._log_handler_kwargs)
             log.addHandler(rich_stream_handler)
             #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 

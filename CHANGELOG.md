@@ -1,5 +1,7 @@
 # NEXT RELEASE
+* Set up loggers correctly so pdfalyzer can redirect as needed
 * Fix logging of number of vars loaded from `.yaralyzer` file
+* Fix logging to file
 
 ### 1.3.12
 * Handle parsing arguments inside `YaralyzerConfig.parse_args()`

@@ -13,6 +13,7 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS
+from yaralyzer.encoding_detection.character_encodings import WINDOWS_1252
 from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, temporary_env
 from yaralyzer.util.helpers.file_helper import file_size, load_file
 from yaralyzer.util.helpers.shell_helper import ShellResult
@@ -65,6 +66,11 @@ def test_no_rule_args(il_tulipano_path, yaralyze_file):
         yaralyze_file(il_tulipano_path)
 
 
+def test_suppress_decodes(compare_to_fixture, il_tulipano_path, tulips_yara_path):
+    result = compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path, '--suppress-decodes')
+    assert WINDOWS_1252 not in result.stdout_stripped
+
+
 def test_too_many_rule_args(il_tulipano_path, tulips_yara_path, yaralyze_file):
     with pytest.raises(CalledProcessError):
         yaralyze_file(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
@@ -79,7 +85,8 @@ def test_too_many_rule_args(il_tulipano_path, tulips_yara_path, yaralyze_file):
 @pytest.mark.skipif(version_info < (3, 11), reason="currently failing on python 3.10 (slight UTF-16 decode mismatch)")
 def test_yaralyze_with_rule_files(compare_to_fixture, il_tulipano_path, tulips_yara_path):
     # yaralyze -Y tests/fixtures/yara_rules/tulips.yara tests/fixtures/il_tulipano_nero.txt
-    compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
+    result = compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
+    assert WINDOWS_1252 in result.stdout_stripped
     # yaralyze -dir tests/fixtures/ tests/fixtures/il_tulipano_nero.txt
     compare_to_fixture(il_tulipano_path, '-dir', tulips_yara_path.parent)
 

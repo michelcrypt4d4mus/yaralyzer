@@ -206,6 +206,10 @@ class Yaralyzer:
         args = YaralyzerConfig.args
         filename_str = INVALID_FOR_FILENAME_REGEX.sub('', str(self).replace(', ', ',').replace(' ', '_'))
         export_basename  = f"{args.file_prefix}{filename_str}"  # noqa: E221
+
+        if args.suppress_decodes_table:
+            export_basename += f"__suppress_decodes"
+
         export_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
         export_basename += args.file_suffix
 

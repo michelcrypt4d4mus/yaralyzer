@@ -18,18 +18,18 @@ from yaralyzer.decoding.decoding_attempt import DecodingAttempt
 from yaralyzer.encoding_detection.character_encodings import ENCODING, ENCODINGS_TO_ATTEMPT
 from yaralyzer.encoding_detection.encoding_assessment import EncodingAssessment
 from yaralyzer.encoding_detection.encoding_detector import EncodingDetector
-from yaralyzer.util.helpers.collections_helper import get_dict_key_by_value
-from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS
 from yaralyzer.output.decoding_attempts_table import new_decoding_attempts_table
 from yaralyzer.output.decoding_table_row import DecodingTableRow
+from yaralyzer.util.helpers.collections_helper import get_dict_key_by_value
+from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS
 from yaralyzer.util.logging import log
 
 # Multiply chardet scores by 100 (again) to make sorting the table easy
 SCORE_SCALER = 100.0
-# Text object defaults mostly for table entries
+
+# Create a 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
 DECODING_ERRORS_MSG = Text('Yes', style='dark_red dim')
 NO_DECODING_ERRORS_MSG = Text('No', style='green4 dim')
-# A 2-tuple that can be indexed by booleans of messages used in the table to show true vs. false
 WAS_DECODABLE_YES_NO = [NO_DECODING_ERRORS_MSG, DECODING_ERRORS_MSG]
 
 
@@ -73,7 +73,12 @@ class BytesDecoder:
         # Note we instantiate EncodingDetector both the match and surrounding bytes
         self.encoding_detector = EncodingDetector(self.bytes)
         self.label = self.label or self.bytes_match.label
-        self.table = new_decoding_attempts_table(self.bytes_match)
+
+        if self.bytes_match.is_decodable():
+            self.table = self._build_decodings_table()
+        elif YaralyzerConfig.args._yaralyzer_standalone_mode:
+            # In standalone mode we always print the hex/raw bytes # TODO this sucks
+            self.table = self._build_decodings_table(suppress_decodes=True)
 
     def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
         """
@@ -82,6 +87,8 @@ class BytesDecoder:
         Args:
             suppress_decodes (bool, optional): If `True` don't add decoding attempts to the table. Defaults to `False`.
         """
+        table = new_decoding_attempts_table(self.bytes_match)
+
         # Add the encoding rows to the table if not suppressed
         if not (YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes):
             self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT]
@@ -107,9 +114,9 @@ class BytesDecoder:
             self._track_decode_stats()
 
             for row in sorted(rows, key=attrgetter('sort_score', 'encoding_label_plain'), reverse=True):
-                self.table.add_row(*row.to_row_list())
+                table.add_row(*row.to_row_list())
 
-        return self.table
+        return table
 
     # TODO: rename this to something that makes more sense, maybe assessments_over_display_threshold()?
     def _forced_displays(self) -> list[EncodingAssessment]:
@@ -175,7 +182,7 @@ class BytesDecoder:
         was_forced = WAS_DECODABLE_YES_NO[int(decoding.was_force_decoded)]
         return DecodingTableRow.from_decoded_assessment(assessment, was_forced, display_text, sort_score)
 
-    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+    def __rich_console__(self, console: Console, options: ConsoleOptions) -> RenderResult:
         """Rich object generator (see Rich console docs)."""
         yield NewLine(2)
         yield Align(self._decode_attempt_subheading(), 'center')
@@ -185,12 +192,7 @@ class BytesDecoder:
             yield Align(self.encoding_detector, 'center')
             yield NewLine()
 
-        # In standalone mode we always print the hex/raw bytes # TODO this sucks
-        if self.bytes_match.is_decodable():
-            yield self._build_decodings_table()
-        elif YaralyzerConfig.args._yaralyzer_standalone_mode:
-            yield self._build_decodings_table(True)
-
+        yield self.table
         yield NewLine()
         yield Align(self.bytes_match.bytes_hashes_table(), 'center', style='dim')
 

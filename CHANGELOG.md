@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.13
 * Set up loggers correctly so pdfalyzer can redirect as needed
 * Fix logging of number of vars loaded from `.yaralyzer` file
 * Fix logging to file

@@ -27,12 +27,8 @@ EXPORT_TEXT_ARGS = DEFAULT_PYTEST_CLI_ARGS + ['-txt']
 
 @pytest.fixture
 def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
+    """Fxn to compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data."""
     def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
-        """
-        Compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data.
-        'fixture_name' arg should be used in cases where tests with different filename outputs
-        can be compared against the same fixture file.
-        """
         cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt'] + DEFAULT_PYTEST_CLI_ARGS)
         return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)
 

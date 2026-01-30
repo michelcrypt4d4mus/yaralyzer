@@ -12,26 +12,26 @@ DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='decode.no_attem
 class DecodingTableRow:
     encoding_label: Text
     confidence_text: Text
-    errors_while_decoded: Text  # This is really "is_forced"?
+    was_forced_txt: Text
     decoded_string: Text
     # Properties below here are not displayed in the table but are used for sorting etc.
     confidence: float
     encoding: str
     sort_score: float
-    encoding_label_plain: str = field(init=False)
 
-    def __post_init__(self):
-        self.encoding_label_plain = self.encoding_label.plain
+    @property
+    def encoding_label_plain(self) -> str:
+        return self.encoding_label.plain
 
     def to_row_list(self) -> list[Text]:
         """Returns a row for the decoding attempts table."""
-        return [self.encoding_label, self.confidence_text, self.errors_while_decoded, self.decoded_string]
+        return [self.encoding_label, self.confidence_text, self.was_forced_txt, self.decoded_string]
 
     @classmethod
     def from_decoded_assessment(
         cls,
         assessment: EncodingAssessment,
-        is_forced: Text,
+        was_forced_txt: Text,
         txt: Text,
         score: float
     ) -> 'DecodingTableRow':
@@ -40,14 +40,14 @@ class DecodingTableRow:
 
         Args:
             assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
-            is_forced (Text): Text indicating if the decode was forced.
+            was_forced_txt (Text): Text indicating if the decode was forced.
             txt (Text): The decoded string as a rich `Text` object (with highlighting).
             score (float): The score to use for sorting this row in the table.
         """
         return cls(
             encoding_label=assessment.encoding_label,
             confidence_text=assessment.confidence_text,
-            errors_while_decoded=is_forced,
+            was_forced_txt=was_forced_txt,
             decoded_string=txt,
             confidence=assessment.confidence,
             encoding=assessment.encoding,

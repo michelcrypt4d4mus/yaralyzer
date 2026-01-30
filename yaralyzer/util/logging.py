@@ -66,6 +66,8 @@ def configure_logger(config: type['YaralyzerConfig']) -> None:  # noqa: F821
     Returns:
         logging.Logger: The configured `logger`.
     """
+    # print(f"Logger current handlers: {config.log.handlers}")
+    config.log.handlers = []
     rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
 
     if config.LOG_DIR:
@@ -80,6 +82,7 @@ def configure_logger(config: type['YaralyzerConfig']) -> None:  # noqa: F821
 
     config.log.addHandler(rich_stream_handler)
     set_log_level(config.log_level, config.log)
+    # print(f"Logger handlers after configure_logger(): {config.log.handlers}")
 
 
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:

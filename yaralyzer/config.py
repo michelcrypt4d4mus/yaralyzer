@@ -233,15 +233,7 @@ class YaralyzerConfig:
 
     @classmethod
     def _configure_loggers(cls) -> None:  # noqa: F821
-        """
-        Set up a file or stream `logger` depending on the configuration.
-
-        Args:
-            config (YaralyzerConfig): Has LOG_DIR and LOG_LEVEL props
-
-        Returns:
-            logging.Logger: The configured `logger`.
-        """
+        """Set up a file and/or stream `Logger` depending on the configuration."""
         for log in cls.loggers:
             log.handlers = []
             rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)

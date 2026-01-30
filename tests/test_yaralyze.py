@@ -13,11 +13,10 @@ import pytest
 
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS
-from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux
+from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, temporary_env
 from yaralyzer.util.helpers.file_helper import file_size, load_file
 from yaralyzer.util.helpers.shell_helper import ShellResult
 from yaralyzer.util.helpers.string_helper import line_count
-from yaralyzer.util.logging import log, log_bigly  # noqa: F401
 
 from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
@@ -40,11 +39,21 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
     return _compare_exported_txt_to_fixture
 
 
-# TODO: test log writes
-def test_debug_option(il_tulipano_path, yaralyze_run, tulips_yara_path):
+def test_debug_option(il_tulipano_path, yaralyze_run, tmp_dir, tulips_yara_path):
     log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
     assert 50_000 < len(log_output) < 100_000
     assert 'Skipping chardet result' in log_output
+
+    with open(tmp_dir.joinpath('stderr_output.log'), 'wt') as f:
+        f.write(log_output)
+
+    with temporary_env({'YARALYZER_LOG_DIR': tmp_dir}):
+        log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
+        log_file = tmp_dir.joinpath('yaralyzer.log')
+        assert log_file.exists()
+        logfile_contents = log_file.read_text()
+        # assert logfile_contents == log_output
+        assert 30_000 < len(logfile_contents) < 70_000
 
 
 # Asking for help screen is a good canary test... proves code compiles, at least.

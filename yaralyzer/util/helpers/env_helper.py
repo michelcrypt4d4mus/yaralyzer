@@ -18,9 +18,10 @@ from yaralyzer.util.constants import INVOKED_BY_PYTEST, dotfile_name
 from yaralyzer.util.helpers.file_helper import relative_path
 
 DEFAULT_CONSOLE_WIDTH = 160
+DOTFILE_DIRS = [Path.cwd(), Path.home()]
+NOTIFICATION_STYLE = 'dim'
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
-DOTFILE_DIRS = [Path.cwd(), Path.home()]
 
 is_linux = lambda: platform.system().lower() == 'linux'
 is_macos = lambda: platform.system().lower() == 'darwin'
@@ -74,13 +75,13 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
         if dotenv_file.exists():
             load_dotenv(dotenv_path=dotenv_file)
             lines = [line for line in dotenv_file.read_text().split('\n') if line and not line.startswith('#')]
-            startup_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
+            stderr_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
             return
 
 
-def startup_notification(msg: str) -> None:
-    """Log a message at startup, before everything is setup."""
-    stderr_console.print(msg, style='dim')
+def stderr_notification(msg: str) -> None:
+    """Show a message (usually at startup, before everything is setup)."""
+    stderr_console.print(msg, style=NOTIFICATION_STYLE)
 
 
 @contextmanager

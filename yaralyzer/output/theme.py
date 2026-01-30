@@ -121,12 +121,12 @@ YARALYZER_TERMINAL_THEME = TerminalTheme(
 )
 
 
-def argparse_style(caegory: str) -> str:
+def argparse_style(category: str) -> str:
     """
     RichHelpFormatterPlus strings:
       https://github.com/michelcrypt4d4mus/rich-argparse-plus/blob/rich_argparse_plus/rich_argparse_plus/themes.py
     """
-    theme_style_name = themes.build_style_name(caegory)
+    theme_style_name = themes.build_style_name(category)
     return RichHelpFormatterPlus.styles[theme_style_name].replace('italic', '').strip()
 
 

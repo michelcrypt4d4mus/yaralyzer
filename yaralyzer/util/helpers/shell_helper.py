@@ -5,7 +5,7 @@ that needs to be here because it's used by the pytest suite in this repo and in 
 import logging
 import re
 import shutil
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from os import environ, getlogin
 from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run

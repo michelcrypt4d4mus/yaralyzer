@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from os import environ
 from pathlib import Path
 from shutil import get_terminal_size
-from typing import Any, Generator, Literal, Mapping, Sequence
+from typing import Generator, Literal, Mapping, Sequence
 
 from dotenv import load_dotenv
 from rich.console import Console
@@ -86,7 +86,7 @@ def stderr_notification(msg: str | Text) -> None:
 
 
 @contextmanager
-def temporary_argv(new_argv: Sequence[str | Path]) -> Generator[Any, Any, Any]:
+def temporary_argv(new_argv: Sequence[str | Path]) -> Generator[None, None, None]:
     """Temporarily replace sys.argv with something else."""
     old_argv = list(sys.argv)
     sys.argv = [str(arg) for arg in new_argv]
@@ -98,7 +98,7 @@ def temporary_argv(new_argv: Sequence[str | Path]) -> Generator[Any, Any, Any]:
 
 
 @contextmanager
-def temporary_env(env_vars: Mapping[str, str | Path]) -> Generator[Any, Any, Any]:
+def temporary_env(env_vars: Mapping[str, str | Path]) -> Generator[None, None, None]:
     """
     Temporarily add variables to the environemnt.
     See: https://shay-palachy.medium.com/temp-environment-variables-for-pytest-7253230bd777

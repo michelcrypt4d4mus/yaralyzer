@@ -6,7 +6,7 @@ from copy import deepcopy
 from math import isclose
 from os.path import dirname
 from pathlib import Path
-from typing import Tuple
+from typing import Generator, Tuple
 
 import pytest
 
@@ -25,11 +25,13 @@ EXPECTED_LINES = 1060
 
 
 @contextmanager
-def temporary_config():
-    old_args = deepcopy(YaralyzerConfig.args)
-    YaralyzerConfig.parse_args()
-    yield YaralyzerConfig
-    YaralyzerConfig._args = old_args
+def temporary_config(new_argv: list[str | Path]) -> Generator[None, None, None]:
+    """Temporarily update `YaralyzerConfig` with the results of parsing a new `sys.argv`."""
+    with temporary_argv(new_argv):
+        old_args = deepcopy(YaralyzerConfig.args)
+        YaralyzerConfig.parse_args()
+        yield
+        YaralyzerConfig._args = old_args
 
 
 def test_export_basepath(tulip_yaralyzer, il_tulipano_path, tulip_base_args, tulips_yara_path, tulips_yara_pattern):
@@ -44,18 +46,15 @@ def test_export_basepath(tulip_yaralyzer, il_tulipano_path, tulip_base_args, tul
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
     assert_filename(diralyzer, expected_rulefile_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
 
-    with temporary_argv(tulip_base_args + ['--suppress-decodes-table', '-Y', tulips_yara_path]):
-        with temporary_config() as cfg:
-            assert_filename(tulip_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}__suppress_decodes")
+    with temporary_config(tulip_base_args + ['--suppress-decodes-table']):
+        assert_filename(tulip_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}__suppress_decodes")
 
-    with temporary_argv(tulip_base_args + ['--file-prefix', 'nas']):
-        with temporary_config() as cfg:
-            assert_filename(tulip_yaralyzer, 'nas__' + expected_rulefile_basename + f"{tulips_yara_path.name}")
+    with temporary_config(tulip_base_args + ['--file-prefix', 'nas']):
+        assert_filename(tulip_yaralyzer, 'nas__' + expected_rulefile_basename + f"{tulips_yara_path.name}")
 
-    with temporary_argv(tulip_base_args + ['--file-suffix', 'NAS']):
-        with temporary_config() as cfg:
-            expected_basename_with_suffix = f"{expected_rulefile_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
-            assert tulip_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename_with_suffix)
+    with temporary_config(tulip_base_args + ['--file-suffix', 'NAS']):
+        expected_basename_with_suffix = f"{expected_rulefile_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
+        assert tulip_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename_with_suffix)
 
     # Regex
     regexalyzer = Yaralyzer.for_patterns([r"illmatic\s*by\s*nas"], 'regex', il_tulipano_path)

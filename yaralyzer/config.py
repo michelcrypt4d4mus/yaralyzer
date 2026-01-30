@@ -24,7 +24,7 @@ from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_c
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
-from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log, log_console, set_log_level
+from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log, log_console
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -242,11 +242,11 @@ class YaralyzerConfig:
         Returns:
             logging.Logger: The configured `logger`.
         """
-        # print(f"Logger current handlers: {config.log.handlers}")
         for log in cls.loggers:
             log.handlers = []
             rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
-            rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
+            log.addHandler(rich_stream_handler)
+            #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
             if cls.LOG_DIR:
                 if not (cls.LOG_DIR.is_dir() and cls.LOG_DIR.is_absolute()):
@@ -256,12 +256,9 @@ class YaralyzerConfig:
                 log_file_handler = logging.FileHandler(log_file_path)
                 log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
                 log.addHandler(log_file_handler)
-                rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
 
-            log.addHandler(rich_stream_handler)
-            set_log_level(cls.log_level, log)
-            print(f"Configured logger: '{log.name}'")
-        # print(f"Logger handlers after configure_logger(): {config.log.handlers}")
+            for handler in log.handlers + [log]:
+                handler.setLevel(log_level_for(cls.log_level))
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:

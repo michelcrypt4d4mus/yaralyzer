@@ -116,13 +116,6 @@ def log_trace(*args) -> None:
     log.log(logging.NOTSET, *args)
 
 
-# TODO: get rid of this
-def set_log_level(level: str | int, logger: logging.Logger) -> None:
-    """Set the log level at any time."""
-    for handler in logger.handlers + [logger]:
-        handler.setLevel(log_level_for(level))
-
-
 # Suppress annoying chardet library logs
 for submodule in ['universaldetector', 'charsetprober', 'codingstatemachine']:
     logging.getLogger(f"chardet.{submodule}").setLevel(logging.WARNING)

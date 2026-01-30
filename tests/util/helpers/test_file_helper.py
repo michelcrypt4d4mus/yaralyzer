@@ -13,3 +13,8 @@ def test_files_in_dir():
     assert len(files_in_dir(this_dir, with_extname='illmatic')) == 0
     assert len(files_in_dir(this_dir, with_extname='py')) >= 3
     assert len(files_in_dir(this_dir, with_extname='.py')) >= 3
+
+    files_with_ext = files_in_dir(this_dir, 'py')
+    assert len(files_with_ext) >= 3
+    files_with_ext = files_in_dir(this_dir, '.py')
+    assert len(files_with_ext) >= 3

@@ -32,7 +32,7 @@ def file_size_to_str(size: int, digits: int | None = None) -> str:
     return f"{size_num:,.{digits}f} {size_str}"
 
 
-def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path]:
+def files_in_dir(_dir: Path | str, with_extname: str = '') -> list[Path]:
     """
     Returns paths for all non dot files in `dir` (optionally filtered to only those ending in 'with_extname').
 
@@ -44,7 +44,7 @@ def files_in_dir(_dir: Path | str, with_extname: str | None = None) -> list[Path
         list[Path]: List of file paths.
     """
     dir = Path(_dir)
-    with_extname = f".{with_extname}" if (with_extname and not with_extname.startswith('.')) else ''
+    with_extname = f".{with_extname}" if (with_extname and not with_extname.startswith('.')) else with_extname
     glob_pattern = f"*{with_extname}"
 
     if not dir.is_dir():

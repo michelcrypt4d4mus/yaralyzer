@@ -2,8 +2,8 @@
 `BytesMatch` class for tracking regex and YARA matches against binary data.
 """
 import re
-from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional
+from dataclasses import dataclass
+from typing import Iterator
 
 from rich.table import Table
 from rich.text import Text
@@ -41,8 +41,8 @@ class BytesMatch:
     highlight_style: str = BYTES_BRIGHTER
 
     @property
-    def bytes(self) -> bytes:
-        """The bytes that matched the pattern. # TODO: Maybe should be called "matched_bytes."""
+    def matched_bytes(self) -> bytes:
+        """The bytes that matched the pattern."""
         return self.matched_against[self.start_idx:self.end_idx]
 
     @property
@@ -224,7 +224,7 @@ class BytesMatch:
             Table: Rich `Table` object with hashes.
         """
         return bytes_hashes_table(
-            self.bytes,
+            self.matched_bytes,
             self.location().plain,
             'center'
         )
@@ -256,7 +256,7 @@ class BytesMatch:
         json_dict = {
             'label': self.label,
             'match_length': self.match_length,
-            'matched_bytes': self.bytes.hex(),
+            'matched_bytes': self.matched_bytes.hex(),
             'ordinal': self.ordinal,
             'start_idx': self.start_idx,
             'end_idx': self.end_idx,

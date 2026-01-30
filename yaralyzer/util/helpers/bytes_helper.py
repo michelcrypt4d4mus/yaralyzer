@@ -213,7 +213,7 @@ def rich_text_view_of_raw_bytes(_bytes: bytes, bytes_match: BytesMatch) -> Text:
         Text: Rich Text object with highlighted match.
     """
     surrounding_bytes_str = clean_byte_string(_bytes)
-    highlighted_bytes_str = clean_byte_string(bytes_match.bytes)
+    highlighted_bytes_str = clean_byte_string(bytes_match.matched_bytes)
     highlighted_bytes_str_length = len(highlighted_bytes_str)
     highlight_idx = _find_str_rep_of_bytes(surrounding_bytes_str, highlighted_bytes_str, bytes_match)
 

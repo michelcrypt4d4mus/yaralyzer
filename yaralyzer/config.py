@@ -173,22 +173,6 @@ class YaralyzerConfig:
 
     @classmethod
     def parse_args(cls) -> Namespace:
-        cls._args = cls._parse_arguments()
-        cls._merge_env_options()
-        cls._configure_loggers()
-        cls._log_args_state()
-        return cls._args
-
-    @classmethod
-    def _parse_arguments(cls) -> Namespace:
-        """
-        Parse `sys.argv` and merge the result with any options set in the environment variables.
-        Run with `--env-vars` option for more info on how that works.
-        "Private" args injected outside of user selection will be prefixed with underscore.
-
-        Raises:
-            InvalidArgumentError: If args are invalid.
-        """
         if any(arg in EARLY_EXIT_ARGS for arg in sys.argv):
             if '--version' in sys.argv:
                 print(f"{cls.app_name} {version(cls.app_name)}")
@@ -200,8 +184,25 @@ class YaralyzerConfig:
 
             sys.exit()
 
-        # Parse args and set a few private variables we want that are unrelated to user input
-        args = cls._argparser.parse_args()
+        cls._args = cls._parse_arguments(cls._argparser.parse_args())
+        cls._merge_env_options()
+        cls._configure_loggers()
+        cls._log_args_state()
+        return cls._args
+
+    @classmethod
+    def _parse_arguments(cls, args: Namespace) -> Namespace:
+        """
+        Parse `sys.argv` and merge the result with any options set in the environment variables.
+        Run with `--env-vars` option for more info on how that works.
+        "Private" args injected outside of user selection will be prefixed with underscore.
+
+        Args:
+            args (Namespace): Result of calling ArgumentParser.parse_args()
+
+        Raises:
+            InvalidArgumentError: If args are invalid.
+        """
         args._invoked_at_str = timestamp_for_filename()
         args._yaralyzer_standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
         args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
@@ -238,6 +239,7 @@ class YaralyzerConfig:
             log.handlers = []
             rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
             log.addHandler(rich_stream_handler)
+            #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
             for handler in log.handlers + [log]:
                 handler.setLevel(cls.log_level)

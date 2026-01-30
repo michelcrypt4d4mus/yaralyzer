@@ -30,8 +30,8 @@ from rich.highlighter import ReprHighlighter
 from rich.text import Text
 
 from yaralyzer.util.constants import YARALYZER
-from yaralyzer.util.helpers.env_helper import (NOTIFICATION_STYLE, is_github_workflow,
-     is_invoked_by_pytest, log_console, stderr_notification)
+from yaralyzer.util.helpers.env_helper import (is_github_workflow, is_invoked_by_pytest, log_console,
+     stderr_notification)
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'

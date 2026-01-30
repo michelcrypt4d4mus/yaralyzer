@@ -40,6 +40,7 @@ class DecodingAttempt:
     bytes_match: BytesMatch
     encoding: str
     # Non-args
+    decoded_string: Text = field(init=False)
     encoding_label: str = field(init=False)
     failed_to_decode: bool = False
     start_offset: int = 0
@@ -51,12 +52,7 @@ class DecodingAttempt:
         return self.bytes_match.surrounding_bytes
 
     def __post_init__(self):
-        # Inferred / derived values
         self.encoding_label = self.encoding
-        self.start_offset = 0  # Offset in bytes to start decoding from
-        self.start_offset_label = None  # String to indicate what offset we were able to decode
-        self.was_force_decoded = False
-        self.failed_to_decode = False
         self.decoded_string = self._decode_bytes()
 
     def _decode_bytes(self) -> Text:
@@ -83,9 +79,7 @@ class DecodingAttempt:
             return self._custom_utf_decode()
 
     def _custom_utf_decode(self) -> Text:
-        """
-        Returns a `Text` obj representing an attempt to force a UTF-8 encoding onto an array of bytes.
-        """
+        """`Text` obj representing an attempt to force a UTF-8 encoding onto an array of bytes."""
         log.info(f"Custom decoding {self.bytes_match} with {self.encoding}...")
         unprintable_char_map = ENCODINGS_TO_ATTEMPT.get(self.encoding)
         output = Text('', style='bytes.decoded')
@@ -185,6 +179,7 @@ class DecodingAttempt:
         Args:
             _string (str): The decoded string to convert.
             bytes_offset (int): The byte offset used during decoding (for multi-byte encodings).
+
         Returns:
             Text: The rich `Text` representation of the decoded string with appropriate highlighting.
         """

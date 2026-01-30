@@ -30,14 +30,16 @@ EXPORT_TEXT_ARGS = DEFAULT_PYTEST_CLI_ARGS + ['-txt']
 def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
     """Fxn to compare the output of running yaralyze for a given file/arg combo to prerecorded fixture data."""
     def _compare_exported_txt_to_fixture(file_to_scan: str | Path, *args):
-        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt'] + DEFAULT_PYTEST_CLI_ARGS)
+        cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt'])
+        cmd += (DEFAULT_PYTEST_CLI_ARGS if DEFAULT_PYTEST_CLI_ARGS[0] not in cmd else [])
         return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)
 
     return _compare_exported_txt_to_fixture
 
 
-def test_debug_option(il_tulipano_path, yaralyze_run, tmp_dir, tulips_yara_path):
-    log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
+def test_debug_option(tmp_dir, yaralyze_run, yaralyze_tulips_args):
+    debug_tulips_args = yaralyze_tulips_args + ['--debug']
+    log_output = yaralyze_run(*debug_tulips_args).stderr_stripped
     assert 50_000 < len(log_output) < 100_000
     assert 'Skipping chardet result' in log_output
 
@@ -45,7 +47,7 @@ def test_debug_option(il_tulipano_path, yaralyze_run, tmp_dir, tulips_yara_path)
         f.write(log_output)
 
     with temporary_env({'YARALYZER_LOG_DIR': tmp_dir}):
-        log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
+        log_output = yaralyze_run(*debug_tulips_args).stderr_stripped
         assert len(log_output) < 100
         log_file = tmp_dir.joinpath('yaralyzer.log')
         assert log_file.exists()
@@ -66,26 +68,26 @@ def test_no_rule_args(il_tulipano_path, yaralyze_file):
         yaralyze_file(il_tulipano_path)
 
 
-def test_suppress_decodes(compare_to_fixture, il_tulipano_path, tulips_yara_path):
-    result = compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path, '--suppress-decodes')
+def test_suppress_decodes(compare_to_fixture, yaralyze_tulips_args):
+    result = compare_to_fixture(*yaralyze_tulips_args, '--suppress-decodes')
     assert '(offset 0' not in result.stdout_stripped
 
 
-def test_too_many_rule_args(il_tulipano_path, tulips_yara_path, yaralyze_file):
+def test_too_many_rule_args(il_tulipano_path, tulips_yara_path, yaralyze_file, yaralyze_tulips_args):
     with pytest.raises(CalledProcessError):
-        yaralyze_file(il_tulipano_path, '-Y', tulips_yara_path, '-re', 'tulip')
+        yaralyze_file(*yaralyze_tulips_args, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
         yaralyze_file(il_tulipano_path, '-dir', tulips_yara_path, '-re', 'tulip')
     with pytest.raises(CalledProcessError):
-        yaralyze_file(il_tulipano_path, '-Y', tulips_yara_path, '-dir', tulips_yara_path.parent)
+        yaralyze_file(*yaralyze_tulips_args, '-dir', tulips_yara_path.parent)
     with pytest.raises(CalledProcessError):
-        yaralyze_file(il_tulipano_path, '-Y', tulips_yara_path, '-hex', HEX_STRING)
+        yaralyze_file(*yaralyze_tulips_args, '-hex', HEX_STRING)
 
 
 @pytest.mark.skipif(version_info < (3, 11), reason="currently failing on python 3.10 (slight UTF-16 decode mismatch)")
-def test_yaralyze_with_rule_files(compare_to_fixture, il_tulipano_path, tulips_yara_path):
+def test_yaralyze_with_rule_files(compare_to_fixture, il_tulipano_path, tulips_yara_path, yaralyze_tulips_args):
     # yaralyze -Y tests/fixtures/yara_rules/tulips.yara tests/fixtures/il_tulipano_nero.txt
-    result = compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path)
+    result = compare_to_fixture(*yaralyze_tulips_args)
     assert WINDOWS_1252 in result.stdout_stripped
     # yaralyze -dir tests/fixtures/ tests/fixtures/il_tulipano_nero.txt
     compare_to_fixture(il_tulipano_path, '-dir', tulips_yara_path.parent)

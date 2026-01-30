@@ -16,14 +16,9 @@ ENV_VARS = {
 }
 
 
-@pytest.fixture
-def valid_argv(tulips_yara_path) -> list[str]:
-    return safe_args([YARALYZE, __file__, '-Y', tulips_yara_path])
-
-
-def test_env_var_merge(valid_argv):
+def test_env_var_merge(yaralyze_tulips_cmd):
     with temporary_env(ENV_VARS):
-        with temporary_argv(valid_argv):
+        with temporary_argv(yaralyze_tulips_cmd):
             args = YaralyzerConfig.parse_args()
             assert args == YaralyzerConfig.args
             assert YaralyzerConfig.args.min_chardet_bytes == 9
@@ -31,7 +26,7 @@ def test_env_var_merge(valid_argv):
             assert YaralyzerConfig.args.surrounding_bytes == 202
 
         # Ensure CLI overrides env vars
-        with temporary_argv(valid_argv + ['--surrounding-bytes', '123']):
+        with temporary_argv(yaralyze_tulips_cmd + ['--surrounding-bytes', '123']):
             YaralyzerConfig.parse_args()
             assert YaralyzerConfig.args.surrounding_bytes == 123
 
@@ -40,24 +35,24 @@ def test_option_validators():
     assert cli_option_validators.YaraRegexValidator()('/foo/') == 'foo'
 
 
-def test_output_dir(valid_argv, output_dir_args, tmp_dir):
-    with temporary_argv(valid_argv + output_dir_args):
+def test_output_dir(output_dir_args, tmp_dir, yaralyze_tulips_cmd):
+    with temporary_argv(yaralyze_tulips_cmd + output_dir_args):
         args = YaralyzerConfig.parse_args()
         assert args.output_dir == tmp_dir
 
 
-def test_private_args(valid_argv):
-    with temporary_argv(valid_argv):
+def test_private_args(yaralyze_tulips_cmd):
+    with temporary_argv(yaralyze_tulips_cmd):
         args = YaralyzerConfig.parse_args()
         assert len(YaralyzerConfig.args._invoked_at_str) == 19
         assert args._yaralyzer_standalone_mode is True
         assert args._any_export_selected is False
 
-    with temporary_argv(valid_argv + ['-txt']):
+    with temporary_argv(yaralyze_tulips_cmd + ['-txt']):
         args = YaralyzerConfig.parse_args()
         assert args._any_export_selected is True
 
-    with temporary_argv(valid_argv + ['-png']):
+    with temporary_argv(yaralyze_tulips_cmd + ['-png']):
         try:
             args = YaralyzerConfig.parse_args()
             assert args.export_svg == 'svg'

@@ -1,6 +1,6 @@
 Invoked with this command:
 
-[38;5;101m   yaralyze --output-dir tests/tmp -Y tests/fixtures/yara_rules/tulips.yara -txt --echo-command --no-timestamps tests/fixtures/il_tulipano_nero.txt[0m
+[38;5;101m   yaralyze --output-dir tests/tmp --no-timestamps tests/fixtures/il_tulipano_nero.txt -Y tests/fixtures/yara_rules/tulips.yara -txt --echo-command[0m
 
 
 

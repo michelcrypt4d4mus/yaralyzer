@@ -81,20 +81,6 @@ def tulips_yara_pattern() -> str:
     return 'tulip.{1,2500}tulip'
 
 
-# A Yaralyzer
-@pytest.fixture
-def tulip_base_args(il_tulipano_path, tulips_yara_path) -> list[str]:
-    return safe_args([YARALYZE, il_tulipano_path, '-Y', tulips_yara_path, *DEFAULT_PYTEST_CLI_ARGS])
-
-
-# A Yaralyzer
-@pytest.fixture
-def tulip_yaralyzer(il_tulipano_path, tulip_base_args, tulips_yara_path) -> Yaralyzer:
-    with temporary_argv(tulip_base_args):
-        YaralyzerConfig.parse_args()
-        return Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
-
-
 @pytest.fixture
 def yaralyze_cmd(output_dir_args, script_cmd_prefix) -> Callable[[Sequence[str | Path]], list[str]]:
     """Shell command to run run yaralyze [whatever]."""
@@ -114,6 +100,14 @@ def yaralyze_file_cmd(yaralyze_cmd) -> Callable[[Path, Sequence[str | Path]], li
 
 
 @pytest.fixture
+def yaralyze_file(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
+    def _run_yaralyze(file_to_scan: str | Path, *args) -> ShellResult:
+        return ShellResult.from_cmd(yaralyze_file_cmd(file_to_scan, *args), verify_success=True)
+
+    return _run_yaralyze
+
+
+@pytest.fixture
 def yaralyze_run(yaralyze_cmd) -> Callable[[Sequence[str | Path]], ShellResult]:
     def _run_yaralyze(*args) -> ShellResult:
         return ShellResult.from_cmd(yaralyze_cmd(*args), verify_success=True)
@@ -122,12 +116,15 @@ def yaralyze_run(yaralyze_cmd) -> Callable[[Sequence[str | Path]], ShellResult]:
 
 
 @pytest.fixture
-def yaralyze_file(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], ShellResult]:
-    def _run_yaralyze(file_to_scan: str | Path, *args) -> ShellResult:
-        return ShellResult.from_cmd(yaralyze_file_cmd(file_to_scan, *args), verify_success=True)
+def yaralyze_tulips_args(il_tulipano_path, tulips_yara_path) -> list[str]:
+    return safe_args(DEFAULT_PYTEST_CLI_ARGS + [il_tulipano_path, '-Y', tulips_yara_path])
 
-    return _run_yaralyze
+
+@pytest.fixture
+def yaralyze_tulips_cmd(yaralyze_tulips_args) -> list[str]:
+    return [YARALYZE] + yaralyze_tulips_args
 
 
 def current_test_name() -> str | None:
+    """Helper to show the current pytest, useful in windows githubg workflow sometimes."""
     return environ.get('PYTEST_CURRENT_TEST')

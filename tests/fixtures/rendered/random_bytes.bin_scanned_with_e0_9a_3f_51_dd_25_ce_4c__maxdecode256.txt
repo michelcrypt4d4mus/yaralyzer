@@ -1,6 +1,6 @@
 Invoked with this command:
 
-[38;5;101m   yaralyze --output-dir tests/tmp -hex e0 9a 3f 51 dd 25 ce 4c -txt --echo-command --no-timestamps tests/fixtures/random_bytes.bin[0m
+[38;5;101m   yaralyze --output-dir tests/tmp -hex e0 9a 3f 51 dd 25 ce 4c -txt tests/fixtures/random_bytes.bin --echo-command --no-timestamps[0m
 
 
 

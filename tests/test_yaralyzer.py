@@ -13,11 +13,12 @@ import pytest
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import temporary_argv
+from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR
+from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR, YARALYZE_BASE_CMD
 from .yara.test_yara_rule_builder import HEX_STRING
 
 CLOSENESS_THRESHOLD = 0.05
@@ -34,26 +35,31 @@ def temporary_config(new_argv: list[str | Path]) -> Generator[None, None, None]:
         YaralyzerConfig._args = old_args
 
 
-def test_export_basepath(tulip_yaralyzer, il_tulipano_path, tulip_base_args, tulips_yara_path, tulips_yara_pattern):
+# A Yaralyzer
+@pytest.fixture
+def tulip_yaralyzer(il_tulipano_path, yaralyze_tulips_cmd, tulips_yara_path) -> Generator[Yaralyzer, None, None]:
+    with temporary_config(yaralyze_tulips_cmd):
+        yield Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
+
+
+def test_export_basepath(tulip_yaralyzer, il_tulipano_path, yaralyze_tulips_cmd, tulips_yara_path, tulips_yara_pattern):
     expected_basename = f"{il_tulipano_path.name}_scanned_with_"
 
     def assert_filename(yaralyzer: Yaralyzer, filename: str) -> None:
         assert yaralyzer.export_basepath() == Path.cwd().joinpath(filename + MAXDECODE_SUFFIX)
 
-    # Rules files
-    expected_rulefile_basename = f"{expected_basename}"
-    assert_filename(tulip_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}")
+    assert_filename(tulip_yaralyzer, expected_basename + f"{tulips_yara_path.name}")
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
-    assert_filename(diralyzer, expected_rulefile_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
+    assert_filename(diralyzer, expected_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
 
-    with temporary_config(tulip_base_args + ['--suppress-decodes-table']):
-        assert_filename(tulip_yaralyzer, expected_rulefile_basename + f"{tulips_yara_path.name}__suppress_decodes")
+    with temporary_config(yaralyze_tulips_cmd + ['--suppress-decodes-table']):
+        assert_filename(tulip_yaralyzer, expected_basename + f"{tulips_yara_path.name}__suppress_decodes")
 
-    with temporary_config(tulip_base_args + ['--file-prefix', 'nas']):
-        assert_filename(tulip_yaralyzer, 'nas__' + expected_rulefile_basename + f"{tulips_yara_path.name}")
+    with temporary_config(yaralyze_tulips_cmd + ['--file-prefix', 'nas']):
+        assert_filename(tulip_yaralyzer, 'nas__' + expected_basename + f"{tulips_yara_path.name}")
 
-    with temporary_config(tulip_base_args + ['--file-suffix', 'NAS']):
-        expected_basename_with_suffix = f"{expected_rulefile_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
+    with temporary_config(yaralyze_tulips_cmd + ['--file-suffix', 'NAS']):
+        expected_basename_with_suffix = f"{expected_basename}{tulips_yara_path.name}{MAXDECODE_SUFFIX}_NAS"
         assert tulip_yaralyzer.export_basepath() == Path.cwd().joinpath(expected_basename_with_suffix)
 
     # Regex

@@ -23,10 +23,6 @@ class DecodingTableRow:
     def encoding_label_plain(self) -> str:
         return self.encoding_label.plain
 
-    def to_row_list(self) -> list[Text]:
-        """Returns a row for the decoding attempts table."""
-        return [self.encoding_label, self.confidence_text, self.was_forced_txt, self.decoded_string]
-
     @classmethod
     def from_decoded_assessment(
         cls,
@@ -65,3 +61,7 @@ class DecodingTableRow:
             score (float): The score to use for sorting this row within the table.
         """
         return cls.from_decoded_assessment(assessment, na_txt(), DECODE_NOT_ATTEMPTED_MSG, score)
+
+    def to_row_list(self) -> list[Text]:
+        """Returns a row for the decoding attempts table."""
+        return [self.encoding_label, self.confidence_text, self.was_forced_txt, self.decoded_string]

@@ -57,7 +57,7 @@ def test_help_option(yaralyze_run):
     help_text = yaralyze_run('-h').stdout_stripped
     assert all(word in help_text for word in ['.yaralyzer', 'maximize-width', 'API docs', 'http'])
     assert 'pdfalyzer' not in help_text.lower()
-    _assert_line_count_within_range(140, help_text, 0.2)
+    assert isclose(140, line_count(help_text), rel_tol=0.2)
 
 
 def test_no_rule_args(il_tulipano_path, yaralyze_file):
@@ -125,11 +125,3 @@ def test_png_export(il_tulipano_path, tmp_dir, yaralyze_file):
     assert tmp_png_path.exists(), f"PNG does not exist! '{tmp_png_path}'"
     assert file_size(tmp_png_path) > 500_000
     assert not tmp_dir.joinpath(f"{expected_basepath}.svg").exists()
-
-
-def _assert_line_count_within_range(expected_line_count: int, text: str, rel_tol: float = CLOSENESS_THRESHOLD):
-    lines_in_text = line_count(text)
-
-    if not isclose(expected_line_count, lines_in_text, rel_tol=rel_tol):
-        console.print(text)
-        raise AssertionError(f"Expected {expected_line_count} +/- but found {lines_in_text}")

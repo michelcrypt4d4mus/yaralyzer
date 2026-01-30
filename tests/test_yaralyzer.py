@@ -4,7 +4,6 @@ Tests for the Yaralyzer class itself.
 from contextlib import contextmanager
 from copy import deepcopy
 from math import isclose
-from os.path import dirname
 from pathlib import Path
 from typing import Generator, Tuple
 
@@ -13,12 +12,11 @@ import pytest
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import temporary_argv
-from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
-from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR, YARALYZE_BASE_CMD
+from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR
 from .yara.test_yara_rule_builder import HEX_STRING
 
 CLOSENESS_THRESHOLD = 0.05
@@ -35,7 +33,6 @@ def temporary_config(new_argv: list[str | Path]) -> Generator[None, None, None]:
         YaralyzerConfig._args = old_args
 
 
-# A Yaralyzer
 @pytest.fixture
 def tulip_yaralyzer(il_tulipano_path, yaralyze_tulips_cmd, tulips_yara_path) -> Generator[Yaralyzer, None, None]:
     with temporary_config(yaralyze_tulips_cmd):
@@ -91,7 +88,7 @@ def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_pattern):
 
 
 def test_yaralyzer_for_rules_dir(il_tulipano_path, tulips_yara_path):
-    result = _check_output_linecount(Yaralyzer.for_rules_dirs([dirname(tulips_yara_path)], il_tulipano_path))
+    result = _check_output_linecount(Yaralyzer.for_rules_dirs([tulips_yara_path.parent], il_tulipano_path))
     assert result[0], result[1]
 
     with pytest.raises(FileNotFoundError):

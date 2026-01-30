@@ -40,6 +40,7 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
     return _compare_exported_txt_to_fixture
 
 
+# TODO: test log writes
 def test_debug_option(il_tulipano_path, yaralyze_run, tulips_yara_path):
     assert len(yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr) == 2000
 

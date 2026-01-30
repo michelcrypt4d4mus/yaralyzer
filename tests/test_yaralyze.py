@@ -40,6 +40,10 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
     return _compare_exported_txt_to_fixture
 
 
+def test_debug_option(il_tulipano_path, yaralyze_run, tulips_yara_path):
+    assert len(yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr) == 2000
+
+
 # Asking for help screen is a good canary test... proves code compiles, at least.
 def test_help_option(yaralyze_run):
     help_text = yaralyze_run('-h').stdout_stripped

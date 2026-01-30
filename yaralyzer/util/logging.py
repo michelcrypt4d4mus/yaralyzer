@@ -35,7 +35,7 @@ from rich.text import Text
 
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import YARALYZER
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_workflow, is_invoked_by_pytest, stderr_notification
+from yaralyzer.util.helpers.env_helper import NOTIFICATION_STYLE, default_console_kwargs, is_github_workflow, is_invoked_by_pytest, stderr_notification
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import log_level_for
 
@@ -111,7 +111,7 @@ def invocation_txt() -> Text:
 def log_and_print(msg: str) -> None:
     """Both print (to console) and log (to file) a string."""
     log.info(msg)
-    stderr_notification(msg)
+    log_console.print(msg, style=NOTIFICATION_STYLE)  # TODO: test fails if we try to use stderr_notification???
 
 
 def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:

@@ -16,7 +16,6 @@ for required_dir in [LOG_DIR, TMP_DIR]:
 
 # Must be set before importing yaralyzer.helper.env_helper
 environ['INVOKED_BY_PYTEST'] = 'True'
-environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
 # from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
 from yaralyzer.config import YaralyzerConfig
@@ -24,7 +23,6 @@ from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
 from yaralyzer.util.helpers.file_helper import files_in_dir
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
-from yaralyzer.util.logging import log
 from yaralyzer.yaralyzer import Yaralyzer
 
 # Dirs
@@ -101,12 +99,7 @@ def tulip_yaralyzer(il_tulipano_path, tulip_base_args, tulips_yara_path) -> Yara
 def yaralyze_cmd(output_dir_args, script_cmd_prefix) -> Callable[[Sequence[str | Path]], list[str]]:
     """Shell command to run run yaralyze [whatever]."""
     def _shell_cmd(*args) -> list[str]:
-        cmd = safe_args(script_cmd_prefix + [YARALYZE] + output_dir_args + [*args])
-
-        if is_windows():
-            log.warning(f"current test: {environ.get('PYTEST_CURRENT_TEST')}\n         cmd: {cmd}")
-
-        return safe_args(cmd)
+        return safe_args(script_cmd_prefix + [YARALYZE] + output_dir_args + [*args])
 
     return _shell_cmd
 
@@ -134,3 +127,7 @@ def yaralyze_file(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path]], S
         return ShellResult.from_cmd(yaralyze_file_cmd(file_to_scan, *args), verify_success=True)
 
     return _run_yaralyze
+
+
+def current_test_name() -> str | None:
+    return environ.get('PYTEST_CURRENT_TEST')

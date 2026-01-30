@@ -43,9 +43,6 @@ def test_debug_option(tmp_dir, yaralyze_run, yaralyze_tulips_args):
     assert 50_000 < len(log_output) < 100_000
     assert 'Skipping chardet result' in log_output
 
-    with open(tmp_dir.joinpath('stderr_output.log'), 'wt') as f:
-        f.write(log_output)
-
     with temporary_env({'YARALYZER_LOG_DIR': tmp_dir}):
         log_output = yaralyze_run(*debug_tulips_args).stderr_stripped
         assert len(log_output) < 100

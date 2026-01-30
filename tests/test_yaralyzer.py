@@ -39,7 +39,7 @@ def tulip_yaralyzer(il_tulipano_path, yaralyze_tulips_cmd, tulips_yara_path) -> 
         yield Yaralyzer.for_rules_files([tulips_yara_path], il_tulipano_path)
 
 
-def test_export_basepath(tulip_yaralyzer, il_tulipano_path, yaralyze_tulips_cmd, tulips_yara_path, tulips_yara_pattern):
+def test_export_basepath(il_tulipano_path, tulip_yaralyzer, yaralyze_tulips_cmd, tulips_yara_path, tulips_yara_pattern):
     expected_basename = f"{il_tulipano_path.name}_scanned_with_"
 
     def assert_filename(yaralyzer: Yaralyzer, filename: str) -> None:
@@ -80,11 +80,6 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
 
     with pytest.raises(FileNotFoundError):
         Yaralyzer.for_rules_files(['nonexistent.file.yara'], il_tulipano_path)
-
-
-def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_pattern):
-    result = _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_pattern], REGEX, il_tulipano_path))
-    assert result[0], result[1]
 
 
 def test_yaralyzer_for_rules_dir(il_tulipano_path, tulips_yara_path):

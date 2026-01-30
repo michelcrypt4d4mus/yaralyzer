@@ -59,8 +59,8 @@ LOG_LEVELS = {
 
 
 # User messaging
-PDFALYZER_MSG_TXT = Text("\nIf you are analyzing a PDF you may be interested in Pdfalyzer, ", style='bright_white bold') \
-                 .append("birthplace of the Yaralyzer:\n -> ").append('') \
+PDFALYZER_MSG_TXT = Text("\nIf you are analyzing a PDF you may be interested in ", style='bright_white bold') \
+                 .append("Pdfalyzer, birthplace of the Yaralyzer:\n ").append('-> ', style='dim') \
                  .append(f'{PDFALYZER_REPO_URL}\n', style='bright_cyan underline')
 
 PNG_EXPORT_WARNING = f"PNG export requires CairoSVG or Inkscape and you have neither.\n" \

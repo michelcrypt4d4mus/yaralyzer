@@ -6,7 +6,8 @@ from yaralyzer.util.helpers.env_helper import is_windows
 
 def timeout(seconds=5, default=None):
     """
-    From: https://stackoverflow.com/questions/75928586/how-to-stop-the-execution-of-a-function-in-python-after-a-certain-time
+    From:
+    https://stackoverflow.com/questions/75928586/how-to-stop-the-execution-of-a-function-in-python-after-a-certain-time
 
     Example:
         @timeout(seconds=5, default=None)

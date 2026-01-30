@@ -1,7 +1,6 @@
 """
 Helper methods to work with strings.
 """
-import logging
 import re
 from functools import partial
 from typing import Any, Callable, List

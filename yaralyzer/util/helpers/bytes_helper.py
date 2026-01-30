@@ -95,11 +95,11 @@ def clean_byte_string(bytes_array: bytes) -> str:
 
 
 def get_bytes_before_and_after_match(
-        _bytes: bytes,
-        match: re.Match,
-        num_before: int | None = None,
-        num_after: int | None = None
-    ) -> bytes:
+    _bytes: bytes,
+    match: re.Match,
+    num_before: int | None = None,
+    num_after: int | None = None
+) -> bytes:
     """
     Get bytes before and after a regex match within a byte sequence.
 
@@ -117,12 +117,12 @@ def get_bytes_before_and_after_match(
 
 
 def get_bytes_surrounding_range(
-        _bytes: bytes,
-        start_idx: int,
-        end_idx: int,
-        num_before: int | None = None,
-        num_after: int | None = None
-    ) -> bytes:
+    _bytes: bytes,
+    start_idx: int,
+    end_idx: int,
+    num_before: int | None = None,
+    num_after: int | None = None
+) -> bytes:
     """
     Get bytes surrounding a specified range in a byte sequence.
 

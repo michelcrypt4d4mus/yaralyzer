@@ -22,7 +22,8 @@ from rich.table import Table
 from rich.text import Text
 
 from yaralyzer.bytes_match import BytesMatch
-from yaralyzer.util.helpers.bytes_helper import ascii_view_of_raw_bytes, hex_view_of_raw_bytes, rich_text_view_of_raw_bytes
+from yaralyzer.util.helpers.bytes_helper import (ascii_view_of_raw_bytes, hex_view_of_raw_bytes,
+     rich_text_view_of_raw_bytes)
 from yaralyzer.util.helpers.rich_helper import DEFAULT_TABLE_OPTIONS, na_txt
 
 HEX = Text('HEX', style='bytes.title')

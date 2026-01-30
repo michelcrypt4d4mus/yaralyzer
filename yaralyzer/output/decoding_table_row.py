@@ -28,7 +28,13 @@ class DecodingTableRow:
         return [self.encoding_label, self.confidence_text, self.errors_while_decoded, self.decoded_string]
 
     @classmethod
-    def from_decoded_assessment(cls, assessment: EncodingAssessment, is_forced: Text, txt: Text, score: float) -> 'DecodingTableRow':
+    def from_decoded_assessment(
+        cls,
+        assessment: EncodingAssessment,
+        is_forced: Text,
+        txt: Text,
+        score: float
+    ) -> 'DecodingTableRow':
         """
         Alternate constructor that builds a table row for a decoding attempt.
 

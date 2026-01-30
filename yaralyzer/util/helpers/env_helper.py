@@ -1,7 +1,6 @@
 """
 Configuration management for Yaralyzer.
 """
-import os
 import platform
 import re
 import sys
@@ -15,7 +14,7 @@ from typing import Any, Generator, Literal, Mapping, Sequence
 from dotenv import load_dotenv
 from rich.console import Console
 
-from yaralyzer.util.constants import INVOKED_BY_PYTEST, YARALYZER_UPPER, dotfile_name
+from yaralyzer.util.constants import INVOKED_BY_PYTEST, dotfile_name
 from yaralyzer.util.helpers.file_helper import relative_path
 
 DEFAULT_CONSOLE_WIDTH = 160
@@ -28,19 +27,6 @@ is_macos = lambda: platform.system().lower() == 'darwin'
 is_windows = lambda: platform.system().lower() == 'windows'
 
 
-def config_var_name(env_var: str) -> str:
-    """
-    Get the name of `env_var` and strip off `YARALYZER_` prefix.
-
-    Example:
-        ```
-        config_var_name('YARALYZER_SURROUNDING_BYTES') => 'SURROUNDING_BYTES'
-        ```
-    """
-    env_var = env_var.removeprefix(f"{YARALYZER_UPPER}_")
-    return f'{env_var=}'.partition('=')[0]
-
-
 # TODO: why is this a function?
 def console_width_possibilities():
     """Returns a list of possible console widths, the first being the current terminal width."""
@@ -51,7 +37,7 @@ def console_width_possibilities():
 def is_cairosvg_installed() -> bool:
     """True if cairosvg package is available on the current system."""
     try:
-        import cairosvg
+        import cairosvg  # noqa: F401
         return True
     except (ModuleNotFoundError, OSError):
         return False
@@ -87,7 +73,7 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
     for dotenv_file in [dir.joinpath(dotfile_name(app_name)) for dir in DOTFILE_DIRS]:
         if dotenv_file.exists():
             load_dotenv(dotenv_path=dotenv_file)
-            lines = [l for l in dotenv_file.read_text().split('\n') if l and not l.startswith('#')]
+            lines = [line for line in dotenv_file.read_text().split('\n') if line and not line.startswith('#')]
             startup_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
             return
 

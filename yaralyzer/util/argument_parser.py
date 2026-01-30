@@ -8,15 +8,16 @@ from rich.padding import Padding
 from rich.panel import Panel
 from rich.text import Text
 from rich_argparse_plus import RichHelpFormatterPlus
+
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.encoding_detection.encoding_detector import CONFIDENCE_SCORE_RANGE
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES, argparse_style
 from yaralyzer.util.cli_option_validators import (DirValidator, OptionValidator, PathValidator,
      PatternsLabelValidator, YaraRegexValidator)
-from yaralyzer.util.constants import *
+from yaralyzer.util.constants import *  # noqa: F403
 from yaralyzer.util.helpers import env_helper
 from yaralyzer.util.helpers.string_helper import comma_join
-from yaralyzer.util.logging import highlighter, log, log_console
+from yaralyzer.util.logging import highlighter, log_console
 from yaralyzer.yara.yara_rule_builder import YARA_REGEX_MODIFIERS
 
 DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make up a YARA rule match."
@@ -24,16 +25,16 @@ DESCRIPTION = "Get a good hard colorful look at all the byte sequences that make
 
 def epilog(config: type[YaralyzerConfig]) -> str:
     """Returns a string with some rich text tags for color to be used as the --help footer."""
-    color_var = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
-    color_link = lambda s: f"[argparse.metavar]{s}[/argparse.metavar]"
     package = config.ENV_VAR_PREFIX.lower()
+    metavar_style = argparse_style('metavar')
+    color_var = lambda s: f"[{metavar_style}]{s}[/{metavar_style}]"  # noqa: E731
 
     msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
-          f"{color_var(f'.{package}')} file. Try [argparse.args]{config.executable_name} {ENV_VARS_OPTION}" \
-          f"[/argparse.args] for more info." \
+          f"{color_var(f'.{package}')} file. Try [{argparse_style('args')}]{config.executable_name} {ENV_VARS_OPTION}" \
+          f"[/{argparse_style('args')}] for more info." \
 
     if package == YARALYZER:
-        msg += f"\n[gray46]API docs: {color_link(YARALYZER_API_DOCS_URL)}[/gray46]"
+        msg += f"\n[gray46]API docs: {color_var(YARALYZER_API_DOCS_URL)}[/gray46]"
 
     return msg
 

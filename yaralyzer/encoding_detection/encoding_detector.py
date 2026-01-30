@@ -72,7 +72,7 @@ class EncodingDetector:
         self.assessments = [EncodingAssessment(a) for a in self.raw_chardet_assessments]
         self._uniquify_results_and_build_table()
         self.force_decode_assessments = self._assessments_above_confidence(YaralyzerConfig.args.force_decode_threshold)
-        self.force_display_assessments = self._assessments_above_confidence(YaralyzerConfig.args.force_display_threshold)
+        self.force_display_assessments = self._assessments_above_confidence(YaralyzerConfig.args.force_display_threshold)  # noqa: E501
 
     def get_encoding_assessment(self, encoding: str) -> EncodingAssessment:
         """

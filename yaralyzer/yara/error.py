@@ -13,7 +13,6 @@ YARA_ERRORS_URL = f"https://github.com/VirusTotal/yara/blob/{YARA_ERRORS_REPO_PA
 # Extracted from YARA_ERRORS_RAW_URL
 YARA_ERROR_CODES = {
     0: 'SUCCESS',
-    1: 'INSUFICIENT_MEMORY',
     1: 'INSUFFICIENT_MEMORY',
     2: 'COULD_NOT_ATTACH_TO_PROCESS',
     3: 'COULD_NOT_OPEN_FILE',

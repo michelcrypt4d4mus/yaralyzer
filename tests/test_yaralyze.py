@@ -14,10 +14,10 @@ import pytest
 from yaralyzer.output.console import console
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS
 from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux
-from yaralyzer.util.helpers.file_helper import file_size, load_file, relative_path
+from yaralyzer.util.helpers.file_helper import file_size, load_file
 from yaralyzer.util.helpers.shell_helper import ShellResult
 from yaralyzer.util.helpers.string_helper import line_count
-from yaralyzer.util.logging import log, log_bigly
+from yaralyzer.util.logging import log, log_bigly  # noqa: F401
 
 from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR
 from .test_yaralyzer import CLOSENESS_THRESHOLD
@@ -35,7 +35,7 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
         can be compared against the same fixture file.
         """
         cmd = yaralyze_file_cmd(file_to_scan, *[*args, '-txt'] + DEFAULT_PYTEST_CLI_ARGS)
-        return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)#, DEFAULT_CLI_ARGS)
+        return ShellResult.run_and_compare_exported_files_to_existing(cmd, RENDERED_FIXTURES_DIR)
 
     return _compare_exported_txt_to_fixture
 
@@ -97,7 +97,7 @@ def test_multi_export(binary_file_path, compare_to_fixture, tulips_yara_path):
     assert len(first_match.get('surrounding_bytes')) == 272, "First match should have 272 'surrounding_bytes'"
 
 
-@pytest.mark.skipif(is_github_workflow() and not is_linux(), reason="cairo executable doesn't come w/pkg on macOS/windows")
+@pytest.mark.skipif(is_github_workflow() and not is_linux(), reason="cairo executable doesn't come w/pkg on macOS/windows")  # noqa: E501
 def test_png_export(il_tulipano_path, tmp_dir, yaralyze_file):
     regex = 'pregiatissimi'
     result = yaralyze_file(il_tulipano_path, '-re', regex, '-png', *DEFAULT_PYTEST_CLI_ARGS)

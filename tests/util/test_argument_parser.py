@@ -7,8 +7,8 @@ from yaralyzer.util import cli_option_validators
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER
 from yaralyzer.util.exceptions import InvalidArgumentError
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
-from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
-from yaralyzer.util.logging import log, log_console
+from yaralyzer.util.helpers.shell_helper import safe_args
+from yaralyzer.util.logging import log
 
 ENV_VARS = {
     'YARALYZER_SUPPRESS_DECODES_TABLE': 'True',
@@ -85,8 +85,8 @@ def test_show_configurable_env_vars_option(yaralyze_run):
 
     validator_types = [
         v for v in vars(cli_option_validators).values()
-        if isinstance(v, type) and issubclass(v, cli_option_validators.OptionValidator) \
-            and not v == cli_option_validators.OptionValidator
+        if isinstance(v, type) and issubclass(v, cli_option_validators.OptionValidator)
+            and not v == cli_option_validators.OptionValidator  # noqa: E131
     ]
 
     for validator in validator_types:

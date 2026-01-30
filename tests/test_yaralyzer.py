@@ -6,14 +6,13 @@ from copy import deepcopy
 from math import isclose
 from os.path import dirname
 from pathlib import Path
-from typing import Tuple, Type
+from typing import Tuple
 
 import pytest
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
-from yaralyzer.util.constants import NO_TIMESTAMPS_OPTION, YARALYZE
-from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
+from yaralyzer.util.helpers.env_helper import temporary_argv
 from yaralyzer.util.helpers.string_helper import line_count
 from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer

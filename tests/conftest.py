@@ -1,4 +1,3 @@
-import os
 from os import environ
 from pathlib import Path
 from typing import Callable, Sequence
@@ -19,14 +18,14 @@ for required_dir in [LOG_DIR, TMP_DIR]:
 environ['INVOKED_BY_PYTEST'] = 'True'
 environ['YARALYZER_LOG_DIR'] = str(LOG_DIR)
 
-# from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false     # noqa: E402
+# from yaralyzer.util.helpers.env_helper import is_env_var_set_and_not_false
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS, YARALYZE
 from yaralyzer.util.helpers.env_helper import is_windows, temporary_argv
 from yaralyzer.util.helpers.file_helper import files_in_dir
 from yaralyzer.util.helpers.shell_helper import ShellResult, safe_args
 from yaralyzer.util.logging import log
-from yaralyzer.yaralyzer import Yaralyzer                                 # noqa: E402
+from yaralyzer.yaralyzer import Yaralyzer
 
 # Dirs
 FIXTURES_DIR = PYTESTS_DIR.joinpath('fixtures')

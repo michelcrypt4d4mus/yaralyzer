@@ -1,7 +1,8 @@
 [flake8]
-extend-ignore = E127,E128,F541
+extend-ignore = E127,E128,F541,E731
 max-line-length = 120
 
 per-file-ignores =
+    tests/conftest.py: E402
     tests/yara/test_yara_rule_builder.py: E722
-    yaralyzer/util/argument_parser.py: E131
+    yaralyzer/util/argument_parser.py: E131,F405

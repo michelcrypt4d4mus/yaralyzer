@@ -1,13 +1,10 @@
 from pathlib import Path
-from subprocess import run
 
 import pytest
 
 from yaralyzer.config import YaralyzerConfig
-from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER_UPPER
-from yaralyzer.util.exceptions import InvalidArgumentError
+from yaralyzer.util.constants import YARALYZER_UPPER
 from yaralyzer.util.helpers.env_helper import temporary_env
-from yaralyzer.util.helpers.string_helper import strip_ansi_colors
 
 
 def test_get_env_value(tmp_dir, tulips_yara_path):
@@ -24,7 +21,7 @@ def test_get_env_value(tmp_dir, tulips_yara_path):
         assert YaralyzerConfig.get_env_value('float', float) == 5.5
 
     with temporary_env({f"{YARALYZER_UPPER}_YARA_RULES_DIRS": f'{__file__},{tulips_yara_path}'}):
-        assert len(YaralyzerConfig.get_env_value('yara_rules_dirs')) == 2 #['1.yara', '2.yara']
+        assert len(YaralyzerConfig.get_env_value('yara_rules_dirs')) == 2  # ['1.yara', '2.yara']
 
     with temporary_env({f"{YARALYZER_UPPER}_SOME_DIR": '1.yara,2.yara'}):
         with pytest.raises(EnvironmentError):

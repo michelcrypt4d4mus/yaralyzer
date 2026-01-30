@@ -23,7 +23,6 @@ Python log levels for reference:
 import logging
 import sys
 import time
-from argparse import Namespace
 from contextlib import contextmanager
 from copy import copy
 from pathlib import Path
@@ -74,7 +73,7 @@ def configure_logger(config: type['YaralyzerConfig']) -> logging.Logger:  # noqa
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
         logger.addHandler(log_file_handler)
-        rich_stream_handler.setLevel('WARN') # Rich handler is only for warnings when writing to log file
+        rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
 
     logger.addHandler(rich_stream_handler)
     logger.setLevel(config.LOG_LEVEL)

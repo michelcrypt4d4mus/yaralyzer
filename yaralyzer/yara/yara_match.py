@@ -73,7 +73,8 @@ class YaraMatch:
     def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
         """Renders a rich `Panel` showing the color highlighted raw YARA match info."""
         yield Text("\n")
-        yield Padding(Panel(self.label, expand=False, style=f"on color(251) reverse", **DEFAULT_TABLE_OPTIONS), MATCH_PADDING)
+        label_panel = Panel(self.label, expand=False, style=f"on color(251) reverse", **DEFAULT_TABLE_OPTIONS)
+        yield Padding(label_panel, MATCH_PADDING)
         yield RAW_YARA_THEME_TXT
         yield Padding(Panel(_rich_yara_match(self.match), **DEFAULT_TABLE_OPTIONS), MATCH_PADDING)
 

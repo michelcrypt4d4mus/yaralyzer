@@ -2,6 +2,7 @@
 Help with lists and dicts.
 """
 
+
 def flatten(a: list) -> list:
     """
     Flatten a list that may contain other lists which may also contain lists etc.

@@ -11,7 +11,7 @@ from rich.text import Text
 from yaralyzer.output.theme import BYTES_DECODED, BYTES_HIGHLIGHT
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import is_invoked_by_pytest
-from yaralyzer.util.logging import log, log_console
+from yaralyzer.util.logging import log
 
 # Color meter realted constants. Make even sized buckets color coded from blue (cold) to green (go)
 METER_COLORS = list(reversed([82, 85, 71, 60, 67, 30, 24, 16]))

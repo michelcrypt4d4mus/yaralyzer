@@ -2,7 +2,6 @@
 Configuration management for Yaralyzer.
 """
 import logging
-import re
 import sys
 from argparse import _AppendAction, ArgumentParser, Namespace
 from importlib.metadata import version
@@ -17,7 +16,7 @@ from yaralyzer.util.constants import (EARLY_EXIT_ARGS, ENV_VARS_OPTION, KILOBYTE
      YARALYZE, YARALYZER_UPPER, dotfile_name)
 from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers.collections_helper import listify
-from yaralyzer.util.helpers.debug_helper import print_stack
+from yaralyzer.util.helpers.debug_helper import print_stack  # noqa: F401
 from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed,
      is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
@@ -146,7 +145,7 @@ class YaralyzerConfig:
 
             for file_path in listify(env_value):
                 if not file_path.exists():
-                    raise EnvironmentError(f"Environment has {env_var} set to '{env_value}' but that path doesn't exist!")
+                    raise EnvironmentError(f"env has {env_var} set to '{env_value}' but that path doesn't exist!")
 
         # print(f"Got value for var='{var}', env_var='{env_var}', value={env_value}")
         if is_falsey(str(env_value)):

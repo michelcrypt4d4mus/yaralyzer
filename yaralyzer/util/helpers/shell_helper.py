@@ -59,7 +59,12 @@ class ShellResult:
         return strip_ansi_colors(self.stdout) if self.stdout is not None else None
 
     @classmethod
-    def from_cmd(cls, cmd: str | list, verify_success: bool = False, no_log_args: list[str] | None = None) -> 'ShellResult':
+    def from_cmd(
+        cls,
+        cmd: str | list,
+        verify_success: bool = False,
+        no_log_args: list[str] | None = None
+    ) -> 'ShellResult':
         """
         Alternate constructor that runs `cmd` and gets the result.
 
@@ -152,8 +157,10 @@ class ShellResult:
             print(f"{error_msg}Result of diff '{existing_path}'\n       against '{export_path}'\n")
             print(diff_result.output_logs(True))
             print(f"\n\n[stderr]\n{self.stderr}\n\n")
-        except Exception as e:
-            log_console.print(f"Failed to print diff of '{existing_path}'\n        against '{export_path}'!", style='bright_red bold')
+        except Exception:
+            log_console.print(
+                f"Failed to print diff of '{existing_path}'\n        against '{export_path}'!", style='bright_red bold'
+            )
 
         return error_msg
 

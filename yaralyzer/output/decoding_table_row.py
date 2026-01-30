@@ -13,7 +13,7 @@ class DecodingTableRow:
     encoding_label: Text
     confidence_text: Text
     was_forced_txt: Text
-    decoded_string: Text
+    decoded_txt: Text
     # Properties below here are not displayed in the table but are used for sorting etc.
     confidence: float
     encoding: str
@@ -28,7 +28,7 @@ class DecodingTableRow:
         cls,
         assessment: EncodingAssessment,
         was_forced_txt: Text,
-        txt: Text,
+        decoded_txt: Text,
         score: float
     ) -> 'DecodingTableRow':
         """
@@ -37,14 +37,14 @@ class DecodingTableRow:
         Args:
             assessment (EncodingAssessment): The `chardet` assessment for the encoding used.
             was_forced_txt (Text): Text indicating if the decode was forced.
-            txt (Text): The decoded string as a rich `Text` object (with highlighting).
+            decoded_txt (Text): The decoded string as a rich `Text` object (with highlighting).
             score (float): The score to use for sorting this row in the table.
         """
         return cls(
             encoding_label=assessment.encoding_label,
             confidence_text=assessment.confidence_text,
             was_forced_txt=was_forced_txt,
-            decoded_string=txt,
+            decoded_txt=decoded_txt,
             confidence=assessment.confidence,
             encoding=assessment.encoding,
             sort_score=score,
@@ -64,4 +64,4 @@ class DecodingTableRow:
 
     def to_row_list(self) -> list[Text]:
         """Returns a row for the decoding attempts table."""
-        return [self.encoding_label, self.confidence_text, self.was_forced_txt, self.decoded_string]
+        return [self.encoding_label, self.confidence_text, self.was_forced_txt, self.decoded_txt]

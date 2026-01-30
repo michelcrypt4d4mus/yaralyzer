@@ -5,7 +5,6 @@ import platform
 import re
 import sys
 from contextlib import contextmanager
-from copy import deepcopy
 from os import environ
 from pathlib import Path
 from shutil import get_terminal_size
@@ -13,6 +12,7 @@ from typing import Any, Generator, Literal, Mapping, Sequence
 
 from dotenv import load_dotenv
 from rich.console import Console
+from rich.text import Text
 
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, dotfile_name
@@ -80,7 +80,7 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
             return
 
 
-def stderr_notification(msg: str) -> None:
+def stderr_notification(msg: str | Text) -> None:
     """Show a message (usually at startup, before everything is setup)."""
     log_console.print(msg, style=NOTIFICATION_STYLE)
 

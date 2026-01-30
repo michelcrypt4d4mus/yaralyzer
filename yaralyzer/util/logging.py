@@ -74,13 +74,6 @@ def invocation_txt() -> Text:
     return txt
 
 
-# TODO: this sucks, should be handlers instead
-def log_and_print(msg: str) -> None:
-    """Both print (to console) and log (to file) a string."""
-    log.info(msg)
-    log_console.print(msg, style=NOTIFICATION_STYLE)  # TODO: test fails if we try to use stderr_notification???
-
-
 def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
     """Log something with newlines around it."""
     log.log(level, f"{msg}\n\n {big_msg}\n")
@@ -99,7 +92,7 @@ def log_file_export(file_path: Path) -> Generator[Path, None, None]:
 
     if file_path.exists():
         size = file_size_str(file_path)
-        log_and_print(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).")
+        stderr_notification(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).")
     else:
         log.error(f"Spent {write_time} writing file '{file_path}' but there's nothing there!")
 

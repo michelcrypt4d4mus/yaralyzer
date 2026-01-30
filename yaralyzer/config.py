@@ -246,7 +246,6 @@ class YaralyzerConfig:
             log.handlers = []
             rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
             log.addHandler(rich_stream_handler)
-            #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
             for handler in log.handlers + [log]:
                 handler.setLevel(cls.log_level)

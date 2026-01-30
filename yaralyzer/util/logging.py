@@ -22,7 +22,7 @@ import logging
 import sys
 import time
 from contextlib import contextmanager
-from copy import copy
+from copy import deepcopy
 from pathlib import Path
 from typing import Generator
 
@@ -51,7 +51,7 @@ highlighter = ReprHighlighter()
 
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
-    _argv = copy(_argv or sys.argv)
+    _argv = deepcopy(_argv or sys.argv)
 
     if not raw:
         _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]

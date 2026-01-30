@@ -69,6 +69,7 @@ def configure_logger(config: type['YaralyzerConfig']) -> None:  # noqa: F821
     # print(f"Logger current handlers: {config.log.handlers}")
     config.log.handlers = []
     rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
+    rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
     if config.LOG_DIR:
         if not (config.LOG_DIR.is_dir() and config.LOG_DIR.is_absolute()):

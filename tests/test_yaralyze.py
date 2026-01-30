@@ -43,7 +43,7 @@ def compare_to_fixture(yaralyze_file_cmd) -> Callable[[Path, Sequence[str | Path
 # TODO: test log writes
 def test_debug_option(il_tulipano_path, yaralyze_run, tulips_yara_path):
     log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
-    assert len(log_output) > 50_000
+    assert 50_000 < len(log_output) < 100_000
     assert 'Skipping chardet result' in log_output
 
 

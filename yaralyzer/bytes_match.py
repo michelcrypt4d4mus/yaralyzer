@@ -3,7 +3,7 @@
 """
 import re
 from dataclasses import dataclass, field
-from typing import Iterator, Optional
+from typing import Any, Iterator, Optional
 
 from rich.table import Table
 from rich.text import Text
@@ -31,10 +31,6 @@ class BytesMatch:
         ordinal (int): This was the Nth match for this pattern (used for labeling only).
         match (re.Match, optional): Regex `match` object, if available.
         highlight_style (str, optional): Style to use for highlighting the match.
-
-    Attributes:
-        end_idx (int): End index of the match in the byte sequence.
-        bytes: (bytes): The bytes that matched the regex.
     """
     matched_against: bytes
     start_idx: int
@@ -43,26 +39,40 @@ class BytesMatch:
     ordinal: int
     match: re.Match | None = None   # It's rough to get the regex from yara :(
     highlight_style: str = BYTES_BRIGHTER
-    end_idx: int = field(init=False)
-    match_grooups: tuple = field(init=False)
-    highlight_start_idx: int = field(init=False)
-    highlight_end_idx: int = field(init=False)
-    surrounding_start_idx: int = field(init=False)
-    surrounding_end_idx: int = field(init=False)
-    surrounding_bytes: bytes = field(init=False)
 
-    def __post_init__(self):
-        self.end_idx: int = self.start_idx + self.match_length
-        self.bytes = self.matched_against[self.start_idx:self.end_idx]  # TODO: Maybe should be called "matched_bytes"
-        self.match_groups: Optional[tuple] = self.match.groups() if self.match else None
-        num_after = YaralyzerConfig.args.surrounding_bytes
-        num_before = YaralyzerConfig.args.surrounding_bytes
-        # Adjust the highlighting start point in case this match is very early or late in the stream
-        self.surrounding_start_idx: int = max(self.start_idx - num_before, 0)
-        self.surrounding_end_idx: int = min(self.end_idx + num_after, len(self.matched_against))
-        self.surrounding_bytes: bytes = self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
-        self.highlight_start_idx = self.start_idx - self.surrounding_start_idx
-        self.highlight_end_idx = self.highlight_start_idx + self.match_length
+    @property
+    def bytes(self) -> bytes:
+        """The bytes that matched the pattern. # TODO: Maybe should be called "matched_bytes."""
+        return self.matched_against[self.start_idx:self.end_idx]
+
+    @property
+    def end_idx(self) -> int:
+        return self.start_idx + self.match_length
+
+    @property
+    def highlight_start_idx(self) -> int:
+        """Adjust the highlighting start point in case this match is near the start of the matched bytes."""
+        return self.start_idx - self.surrounding_start_idx
+
+    @property
+    def highlight_end_idx(self) -> int:
+        """Adjust the highlighting end point in case this match is near the end of the matched bytes."""
+        return self.highlight_start_idx + self.match_length
+
+    @property
+    def surrounding_start_idx(self) -> int:
+        """Index of the first byte to display of those surrounding the match."""
+        return max(self.start_idx - YaralyzerConfig.args.surrounding_bytes, 0)
+
+    @property
+    def surrounding_end_idx(self) -> int:
+        """Index of the last byte to display of those surrounding the match."""
+        return min(self.end_idx + YaralyzerConfig.args.surrounding_bytes, len(self.matched_against))
+
+    @property
+    def surrounding_bytes(self) -> bytes:
+        """Bytes before and after the bytes that actually matched the pattern."""
+        return self.matched_against[self.surrounding_start_idx:self.surrounding_end_idx]
 
     @classmethod
     def from_regex_match(

@@ -14,13 +14,15 @@ from typing import Any, Generator, Literal, Mapping, Sequence
 from dotenv import load_dotenv
 from rich.console import Console
 
+from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import INVOKED_BY_PYTEST, dotfile_name
 from yaralyzer.util.helpers.file_helper import relative_path
 
 DEFAULT_CONSOLE_WIDTH = 160
+DOTFILE_DIRS = [Path.cwd(), Path.home()]
+NOTIFICATION_STYLE = 'dim'
 PATH_ENV_VAR_REGEX = re.compile(r"^.*_(DIR|FILE|PATH)S?$", re.I)
 PYTEST_REBUILD_FIXTURES_ENV_VAR = 'PYTEST_REBUILD_FIXTURES'
-DOTFILE_DIRS = [Path.cwd(), Path.home()]
 
 is_linux = lambda: platform.system().lower() == 'linux'
 is_macos = lambda: platform.system().lower() == 'darwin'
@@ -74,13 +76,13 @@ def load_dotenv_file(app_name: Literal['pdfalyzer', 'yaralyzer']) -> None:
         if dotenv_file.exists():
             load_dotenv(dotenv_path=dotenv_file)
             lines = [line for line in dotenv_file.read_text().split('\n') if line and not line.startswith('#')]
-            startup_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
+            stderr_notification(f"Loaded {len(lines)} vars from {relative_path(dotenv_file)}...")
             return
 
 
-def startup_notification(msg: str) -> None:
-    """Log a message at startup, before everything is setup."""
-    stderr_console.print(msg, style='dim')
+def stderr_notification(msg: str) -> None:
+    """Show a message (usually at startup, before everything is setup)."""
+    log_console.print(msg, style=NOTIFICATION_STYLE)
 
 
 @contextmanager
@@ -128,14 +130,12 @@ DEFAULT_CONSOLE_KWARGS = {
     'width': CONSOLE_WIDTH,
 }
 
-
-def default_console_kwargs() -> dict[str, str | int]:
-    """Returns a fresh copy of DEFAULT_CONSOLE_KWARGS."""
-    return deepcopy(DEFAULT_CONSOLE_KWARGS)
-
-
-# For use when you need to write output before the main rich.console has managed to get set up.
-stderr_console = Console(stderr=True, **{**DEFAULT_CONSOLE_KWARGS, 'width': max(console_width_possibilities())})
+log_console = Console(
+    color_system = DEFAULT_CONSOLE_KWARGS['color_system'],
+    stderr=True,
+    theme=LOG_THEME,
+    width=max(console_width_possibilities())
+)
 # stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
 
 

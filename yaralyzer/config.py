@@ -9,6 +9,8 @@ from os import environ
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
+from rich.logging import RichHandler
+
 from yaralyzer.output.console import console
 from yaralyzer.output.theme import YARALYZER_THEME_DICT, color_theme_grid
 from yaralyzer.util.classproperty import classproperty
@@ -18,11 +20,11 @@ from yaralyzer.util.exceptions import handle_argument_error
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack  # noqa: F401
 from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed,
-     is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, stderr_console, temporary_argv)
+     is_env_var_set_and_not_false, is_invoked_by_pytest, is_path_var, load_dotenv_file, log_console, temporary_argv)
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
-from yaralyzer.util.logging import configure_logger, log, log_console, set_log_level
+from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log, log_console
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -73,7 +75,7 @@ class YaralyzerConfig:
 
     @classproperty
     def app_name(cls) -> str:
-        return cls.ENV_VAR_PREFIX.strip('_').title()
+        return cls.ENV_VAR_PREFIX.strip('_').lower()
 
     @classproperty
     def args(cls) -> Namespace:
@@ -91,7 +93,7 @@ class YaralyzerConfig:
     @classproperty
     def executable_name(cls) -> str:
         """The command used to run this app, e.g. `'yaralyze'`."""
-        return cls.app_name.lower().removesuffix('r')
+        return cls.app_name.removesuffix('r')
 
     @classproperty
     def log_dir_env_var(cls) -> str:
@@ -99,8 +101,22 @@ class YaralyzerConfig:
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
 
     @classproperty
-    def script_name(cls) -> str:
-        return cls.app_name.removesuffix('r').lower()
+    def log_level(cls) -> int:
+        """Returns the `Logger` for this app."""
+        if '_args' not in dir(cls):  # Avoid triggering set_default_args at initial log setup
+            return cls.LOG_LEVEL
+        else:
+            return log_level_for(logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL))
+
+    @classproperty
+    def log(cls) -> logging.Logger:
+        """Returns the `Logger` for this app."""
+        return logging.getLogger(cls.app_name)
+
+    @classproperty
+    def loggers(cls) -> list[logging.Logger]:
+        """The `Logger` objects for this app (overloaded in Pdfalyzer so it can configure both loggers)."""
+        return [cls.log]
 
     @classmethod
     def init(cls, argparser: ArgumentParser) -> None:
@@ -112,21 +128,21 @@ class YaralyzerConfig:
         """
         cls._argparser = argparser
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
-        sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.script_name + '.cmd') else a for a in sys.argv]
+        sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.executable_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
-        configure_logger(cls)
+        cls._configure_loggers()
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
 
     @classmethod
-    def env_var_for_command_line_option(cls, option: str) -> str:
+    def env_var_for_option_dest(cls, option: str) -> str:
         """`output_dir' becomes``YARALYZER_OUTPUT_DIR`. Overriden in pdfalyzer to distinguish yaralyzer only options."""
         return cls.prefixed_env_var(option)
 
     @classmethod
     def get_env_value(cls, var: str, var_type: Callable[[str], T] = str) -> T | None:
         """If called with `'output_dir'` it will check env value of `YARALYZER_OUTPUT_DIR`."""
-        env_var = cls.env_var_for_command_line_option(var)
+        env_var = cls.env_var_for_option_dest(var)
         env_value = environ.get(env_var)
         var = var.removeprefix(f"{cls.ENV_VAR_PREFIX}_").lower()  # Accomodates being called with YARALYZER_OUTPUT_DIR
 
@@ -157,21 +173,6 @@ class YaralyzerConfig:
 
     @classmethod
     def parse_args(cls) -> Namespace:
-        cls._args = cls._parse_arguments()
-        cls._merge_env_options()
-        cls._log_args_state()
-        return cls._args
-
-    @classmethod
-    def _parse_arguments(cls) -> Namespace:
-        """
-        Parse `sys.argv` and merge the result with any options set in the environment variables.
-        Run with `--env-vars` option for more info on how that works.
-        "Private" args injected outside of user selection will be prefixed with underscore.
-
-        Raises:
-            InvalidArgumentError: If args are invalid.
-        """
         if any(arg in EARLY_EXIT_ARGS for arg in sys.argv):
             if '--version' in sys.argv:
                 print(f"{cls.app_name} {version(cls.app_name)}")
@@ -183,8 +184,25 @@ class YaralyzerConfig:
 
             sys.exit()
 
-        # Parse args and set a few private variables we want that are unrelated to user input
-        args = cls._argparser.parse_args()
+        cls._args = cls._parse_arguments(cls._argparser.parse_args())
+        cls._merge_env_options()
+        cls._configure_loggers()
+        cls._log_args_state()
+        return cls._args
+
+    @classmethod
+    def _parse_arguments(cls, args: Namespace) -> Namespace:
+        """
+        Parse `sys.argv` and merge the result with any options set in the environment variables.
+        Run with `--env-vars` option for more info on how that works.
+        "Private" args injected outside of user selection will be prefixed with underscore.
+
+        Args:
+            args (Namespace): Result of calling ArgumentParser.parse_args()
+
+        Raises:
+            InvalidArgumentError: If args are invalid.
+        """
         args._invoked_at_str = timestamp_for_filename()
         args._yaralyzer_standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
         args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
@@ -207,13 +225,35 @@ class YaralyzerConfig:
             elif not args.export_svg:
                 args.export_svg = 'svg'
 
-        set_log_level(logging.DEBUG if args.debug else (args.log_level or cls.LOG_LEVEL))
         return args
 
     @classmethod
     def prefixed_env_var(cls, var: str) -> str:
         """Turns 'LOG_DIR' into 'YARALYZER_LOG_DIR' etc."""
         return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
+
+    @classmethod
+    def _configure_loggers(cls) -> None:  # noqa: F821
+        """Set up a file and/or stream `Logger` depending on the configuration."""
+        for log in cls.loggers:
+            log.handlers = []
+            rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
+            log.addHandler(rich_stream_handler)
+            #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
+
+            for handler in log.handlers + [log]:
+                handler.setLevel(cls.log_level)
+
+            if cls.LOG_DIR:
+                if not (cls.LOG_DIR.is_dir() and cls.LOG_DIR.is_absolute()):
+                    raise FileNotFoundError(f"Log dir '{cls.LOG_DIR}' doesn't exist or is not absolute")
+
+                log_file_path = cls.LOG_DIR.joinpath(f"{cls.app_name}.log")
+                log_file_handler = logging.FileHandler(log_file_path)
+                log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
+                log.addHandler(log_file_handler)
+                rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
+                log_file_handler.setLevel(cls.log_level)
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:
@@ -240,7 +280,7 @@ class YaralyzerConfig:
             arg_val = args_dict[arg_var]
             log_msg += ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
 
-        stderr_console.print(f"{log_msg}\n")
+        cls.log.info(f"{log_msg}\n")
 
     @classmethod
     def _merge_env_options(cls) -> None:
@@ -287,7 +327,7 @@ class YaralyzerConfig:
             cls.LOG_LEVEL = log_level_for(log_level)
 
         if cls.LOG_DIR and not is_invoked_by_pytest():
-            stderr_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
+            log_console.print(f"Writing logs to '{cls.LOG_DIR}' instead of stderr/stdout...", style='dim')
 
     @classmethod
     def _set_default_args(cls) -> None:

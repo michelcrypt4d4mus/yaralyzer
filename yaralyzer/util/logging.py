@@ -30,14 +30,13 @@ from typing import Generator
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
-from rich.logging import RichHandler
 from rich.text import Text
 
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import YARALYZER
-from yaralyzer.util.helpers.env_helper import NOTIFICATION_STYLE, default_console_kwargs, is_github_workflow, is_invoked_by_pytest, stderr_notification
+from yaralyzer.util.helpers.env_helper import (NOTIFICATION_STYLE, default_console_kwargs, is_github_workflow,
+     is_invoked_by_pytest, stderr_notification)
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
-from yaralyzer.util.helpers.string_helper import log_level_for
 
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35

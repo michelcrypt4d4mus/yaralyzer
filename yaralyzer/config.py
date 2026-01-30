@@ -101,12 +101,12 @@ class YaralyzerConfig:
         return cls.prefixed_env_var(LOG_DIR_ENV_VAR)
 
     @classproperty
-    def log_level(cls) -> int | str:
+    def log_level(cls) -> int:
         """Returns the `Logger` for this app."""
         if '_args' not in dir(cls):  # Avoid triggering set_default_args at initial log setup
             return cls.LOG_LEVEL
         else:
-            return logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL)
+            return log_level_for(logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL))
 
     @classproperty
     def log(cls) -> logging.Logger:
@@ -258,7 +258,7 @@ class YaralyzerConfig:
                 log.addHandler(log_file_handler)
 
             for handler in log.handlers + [log]:
-                handler.setLevel(log_level_for(cls.log_level))
+                handler.setLevel(cls.log_level)
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:

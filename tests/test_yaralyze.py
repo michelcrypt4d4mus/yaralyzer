@@ -68,7 +68,7 @@ def test_no_rule_args(il_tulipano_path, yaralyze_file):
 
 def test_suppress_decodes(compare_to_fixture, il_tulipano_path, tulips_yara_path):
     result = compare_to_fixture(il_tulipano_path, '-Y', tulips_yara_path, '--suppress-decodes')
-    assert WINDOWS_1252 not in result.stdout_stripped
+    assert '(offset 0' not in result.stdout_stripped
 
 
 def test_too_many_rule_args(il_tulipano_path, tulips_yara_path, yaralyze_file):

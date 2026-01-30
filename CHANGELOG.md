@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Add `__suppress_decodes` to filenames if `--suppress-decodes-table` option is in use
 
 ### 1.3.14
 * Give `YaralyzerConfig` a `_log_handler_kwargs prop` so pdfalyzer can override log highlighting

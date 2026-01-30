@@ -49,11 +49,12 @@ def test_debug_option(il_tulipano_path, yaralyze_run, tmp_dir, tulips_yara_path)
 
     with temporary_env({'YARALYZER_LOG_DIR': tmp_dir}):
         log_output = yaralyze_run('--debug', il_tulipano_path, '-Y', tulips_yara_path).stderr_stripped
+        assert len(log_output) < 100
         log_file = tmp_dir.joinpath('yaralyzer.log')
         assert log_file.exists()
-        logfile_contents = log_file.read_text()
-        # assert logfile_contents == log_output
-        assert 30_000 < len(logfile_contents) < 70_000
+        log_file_contents = log_file.read_text()
+        assert 30_000 < len(log_file.read_text()) < 70_000
+        assert 'Skipping chardet result' in log_file_contents
 
 
 def test_help_option(yaralyze_run):

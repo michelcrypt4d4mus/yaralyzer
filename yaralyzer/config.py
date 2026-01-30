@@ -130,7 +130,7 @@ class YaralyzerConfig:
         # Windows changes 'pdfalyze' to 'pdfalyze.cmd' when run in github workflows
         sys.argv = [a.removesuffix('.cmd') if a.endswith(cls.executable_name + '.cmd') else a for a in sys.argv]
         cls._set_class_vars_from_env()
-        cls._configure_logger()
+        cls._configure_loggers()
         cls._argparse_dests = sorted([action.dest for action in argparser._actions])
         cls._append_option_vars = [a.dest for a in argparser._actions if isinstance(a, _AppendAction)]
 
@@ -175,7 +175,7 @@ class YaralyzerConfig:
     def parse_args(cls) -> Namespace:
         cls._args = cls._parse_arguments()
         cls._merge_env_options()
-        cls._configure_logger()
+        cls._configure_loggers()
         cls._log_args_state()
         return cls._args
 
@@ -232,7 +232,7 @@ class YaralyzerConfig:
         return (var if var.startswith(cls.ENV_VAR_PREFIX) else f"{cls.ENV_VAR_PREFIX}_{var}").upper()
 
     @classmethod
-    def _configure_logger(cls) -> None:  # noqa: F821
+    def _configure_loggers(cls) -> None:  # noqa: F821
         """
         Set up a file or stream `logger` depending on the configuration.
 
@@ -248,6 +248,9 @@ class YaralyzerConfig:
             log.addHandler(rich_stream_handler)
             #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
+            for handler in log.handlers + [log]:
+                handler.setLevel(cls.log_level)
+
             if cls.LOG_DIR:
                 if not (cls.LOG_DIR.is_dir() and cls.LOG_DIR.is_absolute()):
                     raise FileNotFoundError(f"Log dir '{cls.LOG_DIR}' doesn't exist or is not absolute")
@@ -256,9 +259,8 @@ class YaralyzerConfig:
                 log_file_handler = logging.FileHandler(log_file_path)
                 log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
                 log.addHandler(log_file_handler)
-
-            for handler in log.handlers + [log]:
-                handler.setLevel(cls.log_level)
+                rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
+                log_file_handler.setLevel(cls.log_level)
 
     @classmethod
     def _get_default_arg(cls, arg: str) -> Any:
@@ -285,7 +287,7 @@ class YaralyzerConfig:
             arg_val = args_dict[arg_var]
             log_msg += ARGPARSE_LOG_FORMAT.format(arg_var, type(arg_val).__name__, str(arg_val))
 
-        stderr_console.print(f"{log_msg}\n")
+        cls.log.info(f"{log_msg}\n")
 
     @classmethod
     def _merge_env_options(cls) -> None:

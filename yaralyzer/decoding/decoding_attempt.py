@@ -172,16 +172,16 @@ class DecodingAttempt:
         else:
             return self._failed_to_decode_msg_txt(last_exception)
 
-    def _to_rich_text(self, _string: str, bytes_offset: int = 0) -> Text:
+    def _to_rich_text(self, decoded_string: str, bytes_offset: int = 0) -> Text:
         """
         Convert a decoded string to highlighted `Text` representation.
 
         Args:
-            _string (str): The decoded string to convert.
+            decoded_string (str): The decoded string to format.
             bytes_offset (int): The byte offset used during decoding (for multi-byte encodings).
 
         Returns:
-            Text: The rich `Text` representation of the decoded string with appropriate highlighting.
+            Text: Representation of the decoded string with appropriate color highlighting.
         """
         # Adjust where we start the highlighting given the multibyte nature of the encodings
         log.debug(f"Stepping through {self.encoding} encoded string...")
@@ -196,7 +196,7 @@ class DecodingAttempt:
             is_single_byte_encoding = False
             unprintable_chars = {}
 
-        for _i, c in enumerate(_string):
+        for c in decoded_string:
             char_bytes = bytes(c, self.encoding)
             char_width = len(char_bytes)
             style = self.bytes_match.style_at_position(current_byte_idx + bytes_offset)

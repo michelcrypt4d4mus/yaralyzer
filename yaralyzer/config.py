@@ -103,7 +103,10 @@ class YaralyzerConfig:
     @classproperty
     def log_level(cls) -> int | str:
         """Returns the `Logger` for this app."""
-        return logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL)
+        if '_args' not in dir(cls):  # Avoid triggering set_default_args at initial log setup
+            return cls.LOG_LEVEL
+        else:
+            return logging.DEBUG if cls.args.debug else (cls.args.log_level or cls.LOG_LEVEL)
 
     @classproperty
     def log(cls) -> logging.Logger:

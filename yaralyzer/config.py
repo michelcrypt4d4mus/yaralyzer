@@ -115,7 +115,7 @@ class YaralyzerConfig:
 
     @classproperty
     def loggers(cls) -> list[logging.Logger]:
-        """Returns the `Logger` objects for this app."""
+        """The `Logger` objects for this app (overloaded in Pdfalyzer so it can configure both loggers)."""
         return [cls.log]
 
     @classmethod

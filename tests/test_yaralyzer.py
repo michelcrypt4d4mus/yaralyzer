@@ -86,11 +86,7 @@ def test_yaralyzer_with_files(il_tulipano_path, tulips_yara_path):
 
 
 def test_yaralyzer_with_patterns(il_tulipano_path, tulips_yara_pattern):
-    result = _check_output_linecount(
-        Yaralyzer.for_patterns([tulips_yara_pattern], REGEX, il_tulipano_path),
-        EXPECTED_LINES
-    )
-
+    result = _check_output_linecount(Yaralyzer.for_patterns([tulips_yara_pattern], REGEX, il_tulipano_path))
     assert result[0], result[1]
 
 

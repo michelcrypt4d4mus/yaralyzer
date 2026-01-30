@@ -11,7 +11,6 @@ from typing import Callable, Sequence
 
 import pytest
 
-from yaralyzer.output.console import console
 from yaralyzer.util.constants import DEFAULT_PYTEST_CLI_ARGS
 from yaralyzer.encoding_detection.character_encodings import WINDOWS_1252
 from yaralyzer.util.helpers.env_helper import is_github_workflow, is_linux, temporary_env
@@ -20,7 +19,6 @@ from yaralyzer.util.helpers.shell_helper import ShellResult
 from yaralyzer.util.helpers.string_helper import line_count
 
 from .conftest import MAXDECODE_SUFFIX, RENDERED_FIXTURES_DIR
-from .test_yaralyzer import CLOSENESS_THRESHOLD
 from .yara.test_yara_rule_builder import HEX_STRING
 
 EXPORT_TEXT_ARGS = DEFAULT_PYTEST_CLI_ARGS + ['-txt']

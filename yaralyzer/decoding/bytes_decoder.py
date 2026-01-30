@@ -49,6 +49,7 @@ class BytesDecoder:
         decoded_strings (dict[str, str]): Maps encoding to decoded string.
         decodings (list[DecodingAttempt]): DecodingAttempt objects for each encoding tried.
         encoding_detector (EncodingDetector): Used to detect and assess possible encodings.
+        table (Table): Table that contains the decoding attempts.
         was_match_decodable (dict): Tracks successful decodes per encoding.
         was_match_force_decoded (dict): Tracks forced decodes per encoding.
         was_match_undecodable (dict): Tracks failed decodes per encoding.
@@ -59,6 +60,7 @@ class BytesDecoder:
     decoded_strings: dict[str, str] = field(default_factory=dict)
     decodings: list[DecodingAttempt] = field(default_factory=list)
     encoding_detector: EncodingDetector = field(init=False)
+    table: Table = field(init=False)
     was_match_decodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
     was_match_force_decoded: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
     was_match_undecodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
@@ -71,6 +73,7 @@ class BytesDecoder:
         # Note we instantiate EncodingDetector both the match and surrounding bytes
         self.encoding_detector = EncodingDetector(self.bytes)
         self.label = self.label or self.bytes_match.label
+        self.table = new_decoding_attempts_table(self.bytes_match)
 
     def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
         """
@@ -79,8 +82,6 @@ class BytesDecoder:
         Args:
             suppress_decodes (bool, optional): If `True` don't add decoding attempts to the table. Defaults to `False`.
         """
-        self.table = new_decoding_attempts_table(self.bytes_match)
-
         # Add the encoding rows to the table if not suppressed
         if not (YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes):
             self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT]

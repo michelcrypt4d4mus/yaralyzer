@@ -26,7 +26,7 @@ import time
 from contextlib import contextmanager
 from copy import copy
 from pathlib import Path
-from typing import Any, Generator
+from typing import Generator
 
 from rich.console import Console
 from rich.highlighter import ReprHighlighter
@@ -35,13 +35,12 @@ from rich.text import Text
 
 from yaralyzer.output.theme import LOG_THEME
 from yaralyzer.util.constants import YARALYZER
-from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_workflow, is_invoked_by_pytest
+from yaralyzer.util.helpers.env_helper import default_console_kwargs, is_github_workflow, is_invoked_by_pytest, stderr_notification
 from yaralyzer.util.helpers.file_helper import file_size_str, relative_path
 from yaralyzer.util.helpers.string_helper import log_level_for
 
 LOG_FILE_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 LOG_SEPARATOR = '-' * 35
-WRITE_STYLE = 'grey46'
 
 DEFAULT_LOG_HANDLER_KWARGS = {
     'console': Console(stderr=True, theme=LOG_THEME, **default_console_kwargs()),
@@ -51,8 +50,13 @@ DEFAULT_LOG_HANDLER_KWARGS = {
     'show_time': not is_invoked_by_pytest(),
 }
 
+# See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
+log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
+log = logging.getLogger(YARALYZER)
+highlighter = ReprHighlighter()
 
-def configure_logger(config: type['YaralyzerConfig']) -> logging.Logger:  # noqa: F821
+
+def configure_logger(config: type['YaralyzerConfig']) -> None:  # noqa: F821
     """
     Set up a file or stream `logger` depending on the configuration.
 
@@ -62,7 +66,6 @@ def configure_logger(config: type['YaralyzerConfig']) -> logging.Logger:  # noqa
     Returns:
         logging.Logger: The configured `logger`.
     """
-    logger = logging.getLogger(config.app_name.lower())
     rich_stream_handler = RichHandler(**DEFAULT_LOG_HANDLER_KWARGS)
 
     if config.LOG_DIR:
@@ -72,12 +75,11 @@ def configure_logger(config: type['YaralyzerConfig']) -> logging.Logger:  # noqa
         log_file_path = config.LOG_DIR.joinpath(f"{config.app_name}.log")
         log_file_handler = logging.FileHandler(log_file_path)
         log_file_handler.setFormatter(logging.Formatter(LOG_FILE_LOG_FORMAT))
-        logger.addHandler(log_file_handler)
+        config.log.addHandler(log_file_handler)
         rich_stream_handler.setLevel('WARN')  # Rich handler is only for warnings when writing to log file
 
-    logger.addHandler(rich_stream_handler)
-    logger.setLevel(config.LOG_LEVEL)
-    return logger
+    config.log.addHandler(rich_stream_handler)
+    set_log_level(config.log_level, config.log)
 
 
 def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
@@ -105,10 +107,11 @@ def invocation_txt() -> Text:
     return txt
 
 
-def log_and_print(msg: str, log_level: str = 'INFO', style: str = '') -> None:
+# TODO: this sucks, should be handlers instead
+def log_and_print(msg: str) -> None:
     """Both print (to console) and log (to file) a string."""
-    log.log(logging.getLevelName(log_level), msg)
-    log_console.print(msg, style=style)
+    log.info(msg)
+    stderr_notification(msg)
 
 
 def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
@@ -117,7 +120,7 @@ def log_bigly(msg: str, big_msg: object, level: int = logging.INFO) -> None:
 
 
 @contextmanager
-def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
+def log_file_export(file_path: Path) -> Generator[Path, None, None]:
     """Standardize the way file exports are logged about."""
     if file_path.exists():
         log.debug(f"Overwriting existing '{file_path}' ({file_size_str(file_path)})...")
@@ -129,7 +132,7 @@ def log_file_export(file_path: Path) -> Generator[Any, Any, Any]:
 
     if file_path.exists():
         size = file_size_str(file_path)
-        log_and_print(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).", style=WRITE_STYLE)
+        log_and_print(f"Wrote '{relative_path(file_path)}' in {write_time} ({size}).")
     else:
         log.error(f"Spent {write_time} writing file '{file_path}' but there's nothing there!")
 
@@ -139,16 +142,12 @@ def log_trace(*args) -> None:
     log.log(logging.NOTSET, *args)
 
 
-def set_log_level(level: str | int) -> None:
+# TODO: get rid of this
+def set_log_level(level: str | int, logger: logging.Logger) -> None:
     """Set the log level at any time."""
-    for handler in log.handlers + [log]:
+    for handler in logger.handlers + [logger]:
         handler.setLevel(log_level_for(level))
 
-
-# See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
-log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
-log = logging.getLogger(YARALYZER)
-highlighter = ReprHighlighter()
 
 # Suppress annoying chardet library logs
 for submodule in ['universaldetector', 'charsetprober', 'codingstatemachine']:

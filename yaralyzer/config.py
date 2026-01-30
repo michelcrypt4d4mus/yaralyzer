@@ -22,7 +22,7 @@ from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_c
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
-from yaralyzer.util.logging import configure_logger, log, log_console, set_log_level
+from yaralyzer.util.logging import configure_logger, log, log_console
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"

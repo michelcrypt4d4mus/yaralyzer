@@ -24,7 +24,7 @@ from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_c
 from yaralyzer.util.helpers.file_helper import timestamp_for_filename
 from yaralyzer.util.helpers.shell_helper import get_inkscape_version
 from yaralyzer.util.helpers.string_helper import is_falsey, is_number, is_truthy, log_level_for
-from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log, log_console
+from yaralyzer.util.logging import DEFAULT_LOG_HANDLER_KWARGS, LOG_FILE_LOG_FORMAT, log
 
 LOG_DIR_ENV_VAR = "LOG_DIR"
 LOG_LEVEL_ENV_VAR = "LOG_LEVEL"
@@ -240,7 +240,7 @@ class YaralyzerConfig:
             log.handlers = []
             rich_stream_handler = RichHandler(**cls._log_handler_kwargs)
             log.addHandler(rich_stream_handler)
-            #rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
+            # rich_stream_handler.formatter = logging.Formatter('[%(name)s] %(message)s')  # TODO: remove %name
 
             for handler in log.handlers + [log]:
                 handler.setLevel(cls.log_level)

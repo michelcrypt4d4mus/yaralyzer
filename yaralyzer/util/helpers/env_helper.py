@@ -130,13 +130,13 @@ DEFAULT_CONSOLE_KWARGS = {
     'width': CONSOLE_WIDTH,
 }
 
+# stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
 log_console = Console(
-    color_system = DEFAULT_CONSOLE_KWARGS['color_system'],
+    color_system=DEFAULT_CONSOLE_KWARGS['color_system'],
     stderr=True,
     theme=LOG_THEME,
     width=max(console_width_possibilities())
 )
-# stderr_console.print(f"\n\n MAX WIDTH = {max(console_width_possibilities())}", style='bright_cyan')
 
 
 # Pytest method, here only so Pdfalyzer can also access it.

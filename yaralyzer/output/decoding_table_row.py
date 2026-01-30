@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from rich.text import Text
 
@@ -8,7 +8,7 @@ from yaralyzer.util.helpers.rich_helper import na_txt
 DECODE_NOT_ATTEMPTED_MSG = Text('(decode not attempted)', style='decode.no_attempt')
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DecodingTableRow:
     encoding_label: Text
     confidence_text: Text

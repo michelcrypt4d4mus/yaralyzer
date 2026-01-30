@@ -22,10 +22,7 @@ class EncodingAssessment:
 
     Attributes:
         assessment (ResultDict): The dict returned by `chardet.detect_all()`.
-        encoding (str): The encoding detected, in lowercase.
-        confidence (float): Confidence score from 0.0 to 100.0.
         confidence_text (Text): Rich `Text` object representing the confidence with styling.
-        language (Optional[str]): The detected language, if any.
         encoding_label (Text): Rich `Text` object for displaying the encoding with optional language info.
     """
 
@@ -35,15 +32,17 @@ class EncodingAssessment:
 
     @property
     def encoding(self) -> str:
+        """The encoding detected in lowercase."""
         return (self.assessment.get(ENCODING) or '???').lower()
 
     @property
     def confidence(self) -> float:
-        """Shift confidence from 0-1.0 scale to 0-100.0 scale"""
+        """Shift chardet confidence from 0-1.0 scale to 0-100.0 scale"""
         return 100.0 * (self._get_empty_value_as_None(CONFIDENCE) or 0.0)
 
     @property
     def language(self) -> str | None:
+        """The language detected by chardet (if any)."""
         return self._get_empty_value_as_None(LANGUAGE)
 
     def __post_init__(self) -> None:

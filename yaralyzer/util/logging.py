@@ -1,6 +1,4 @@
 """
-Handle logging for `yaralyzer`.
-
 Logs are not normally ephemeral/not written to files but can be configured to do so by setting
 the `YARALYZER_LOG_DIR` env var. See `.yaralyzer.example` for documentation about the side effects
 of setting `YARALYZER_LOG_DIR` to a value.
@@ -49,7 +47,6 @@ DEFAULT_LOG_HANDLER_KWARGS = {
     'show_time': not is_invoked_by_pytest(),
 }
 
-# See file comment. 'log' is the standard application log, 'invocation_log' is a history of yaralyzer runs
 log_console = DEFAULT_LOG_HANDLER_KWARGS['console']
 log = logging.getLogger(YARALYZER)
 highlighter = ReprHighlighter()

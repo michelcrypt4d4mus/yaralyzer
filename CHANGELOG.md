@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.14
 * Give `YaralyzerConfig` a `_log_handler_kwargs prop` so pdfalyzer can override log highlighting
 
 ### 1.3.13

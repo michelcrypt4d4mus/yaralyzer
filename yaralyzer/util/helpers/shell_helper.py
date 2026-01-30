@@ -28,15 +28,13 @@ class ShellResult:
 
     Attributes:
         result (CompletedProcess): Object returned by `subprocess.run()`
-        no_log_args (list[str], optional): Arguments that we would prefer not to see in the logs.
     """
     result: CompletedProcess
-    no_log_args: list[str] = field(default_factory=list)
 
     @property
     def invocation_str(self) -> str:
         """Simplified version of the command that was run."""
-        return invocation_str([arg for arg in self.result.args if arg not in (self.no_log_args)])
+        return invocation_str(self.result.args)
 
     @property
     def stderr(self) -> str:
@@ -59,21 +57,15 @@ class ShellResult:
         return strip_ansi_colors(self.stdout) if self.stdout is not None else None
 
     @classmethod
-    def from_cmd(
-        cls,
-        cmd: str | list,
-        verify_success: bool = False,
-        no_log_args: list[str] | None = None
-    ) -> 'ShellResult':
+    def from_cmd(cls, cmd: str | list, verify_success: bool = False) -> 'ShellResult':
         """
         Alternate constructor that runs `cmd` and gets the result.
 
         Args:
             cmd (str | list): The shell command to run.
             verify_success (bool, optional): If True run `check_returncode()` (raises on non-zero return codes).
-            no_log_args (list[str], optional): Args that might be in `cmd` to not show in logs.
         """
-        result = cls(run(safe_args(cmd), capture_output=True, env=environ, text=True), no_log_args or [])
+        result = cls(run(safe_args(cmd), capture_output=True, env=environ, text=True))
         log.debug(f"Ran command: {result.invocation_str}")
 
         if verify_success:
@@ -131,8 +123,7 @@ class ShellResult:
 
     def output_logs(self, with_streams: bool = False) -> str:
         """Long string with all info about a shell command's execution and output."""
-        cmd = invocation_str([arg for arg in self.result.args if arg not in (self.no_log_args or [])])
-        msg = f"Return code {self.result.returncode} from shell command:\n\n{cmd}"
+        msg = f"Return code {self.result.returncode} from shell command:\n\n{self.invocation_str}"
 
         if True or with_streams:
             for i, stream in enumerate([self.stdout, self.stderr]):
@@ -165,21 +156,15 @@ class ShellResult:
         return error_msg
 
     @classmethod
-    def run_and_compare_exported_files_to_existing(
-        cls,
-        cmd: list[str] | str,
-        against_dir: Path,
-        no_log_args: list[str] | None = None,
-    ) -> 'ShellResult':
+    def run_and_compare_exported_files_to_existing(cls, cmd: list[str] | str, against_dir: Path) -> 'ShellResult':
         """
         Used by pytest to compare fixture data to output of export commands. Here so that pdfalyzer can use it.
 
         Args:
             cmd (list[str] | str): Shell command to run.
             against_dir (Path): Dir where the existing files you want to compare the new oones to live.
-            ignorable_args (list[str], optional): Don't log these args if they exist in `cmd`.
         """
-        shell_result = cls.from_cmd(cmd, True, no_log_args)
+        shell_result = cls.from_cmd(cmd, True)
         shell_result.compare_exported_files_to_existing(against_dir)
         return shell_result
 

@@ -11,11 +11,13 @@ from pathlib import Path
 from subprocess import CalledProcessError, CompletedProcess, run
 # from typing import Self  # TODO: this requires python 3.11
 
+from rich.text import Text
+
 from yaralyzer.util.constants import INKSCAPE
 from yaralyzer.util.helpers.env_helper import PYTEST_REBUILD_FIXTURES_ENV_VAR, _should_rebuild_fixtures
 from yaralyzer.util.helpers.file_helper import load_file, relative_path
 from yaralyzer.util.helpers.string_helper import strip_ansi_colors
-from yaralyzer.util.logging import LOG_SEPARATOR, invocation_str, log, log_bigly, log_console
+from yaralyzer.util.logging import LOG_SEPARATOR, invocation_str, invocation_txt, log, log_bigly, log_console
 
 WROTE_TO_FILE_REGEX = re.compile(r"Wrote '(.*)' in [\d.]+ seconds")
 
@@ -27,14 +29,25 @@ class ShellResult:
     Also used by pytest to compare output of commands to prerecorded fixture data.
 
     Attributes:
-        result (CompletedProcess): Object returned by `subprocess.run()`
+        result (CompletedProcess): Object returned by `subprocess.run()`.
+        should_log (bool): If True, log stdout and stderr after command completion.
     """
     result: CompletedProcess
+    should_log: bool = False
+
+    def __post_init__(self):
+        if self.should_log:
+            log.debug(self.output_logs())
 
     @property
     def invocation_str(self) -> str:
         """Simplified version of the command that was run."""
         return invocation_str(self.result.args)
+
+    @property
+    def invocation_txt(self) -> Text:
+        """Simplified version of the command that was run."""
+        return invocation_txt(self.result.args)
 
     @property
     def stderr(self) -> str:
@@ -57,7 +70,7 @@ class ShellResult:
         return strip_ansi_colors(self.stdout) if self.stdout is not None else None
 
     @classmethod
-    def from_cmd(cls, cmd: str | list, verify_success: bool = False) -> 'ShellResult':
+    def from_cmd(cls, cmd: str | list, verify_success: bool = False, should_log: bool = False) -> 'ShellResult':
         """
         Alternate constructor that runs `cmd` and gets the result.
 
@@ -65,8 +78,7 @@ class ShellResult:
             cmd (str | list): The shell command to run.
             verify_success (bool, optional): If True run `check_returncode()` (raises on non-zero return codes).
         """
-        result = cls(run(safe_args(cmd), capture_output=True, env=environ, text=True))
-        log.debug(f"Ran command: {result.invocation_str}")
+        result = cls(run(safe_args(cmd), capture_output=True, env=environ, text=True), should_log)
 
         if verify_success:
             try:
@@ -121,19 +133,18 @@ class ShellResult:
         """Returns the last file that exported by this shell command."""
         return self.exported_file_paths()[-1]
 
-    def output_logs(self, with_streams: bool = False) -> str:
+    def output_logs(self) -> str:
         """Long string with all info about a shell command's execution and output."""
         msg = f"Return code {self.result.returncode} from shell command:\n\n{self.invocation_str}"
 
-        if True or with_streams:
-            for i, stream in enumerate([self.stdout, self.stderr]):
-                label = 'stdout' if i == 0 else 'stderr'
-                msg += f"\n\n[{label}"
+        for i, stream in enumerate([self.stdout, self.stderr]):
+            label = 'stdout' if i == 0 else 'stderr'
+            msg += f"\n\n[{label}"
 
-                if stream:
-                    msg += f"]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
-                else:
-                    msg += f" (empty)]"
+            if stream:
+                msg += f"]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
+            else:
+                msg += f" (empty)]"
 
         return msg + "\n"
 

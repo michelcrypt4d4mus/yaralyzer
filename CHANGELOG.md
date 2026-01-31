@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Add `invocation_txt` and `should_log` attributes to `ShellResult`
 
 ### 1.3.15
 * Fix behavior of `--suppress-decodes-table` vs. `--suppress-decoding-attempts`, don't attempt unnecessary decodes if either is enabled

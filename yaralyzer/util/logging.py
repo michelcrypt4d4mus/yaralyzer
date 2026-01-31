@@ -49,27 +49,27 @@ log = logging.getLogger(YARALYZER)
 highlighter = ReprHighlighter()
 
 
-def invocation_str(_argv: list[str] | None = None, raw: bool = False) -> str:
+def invocation_str(argv: list[str] | None = None, raw: bool = False) -> str:
     """Convert `sys.argv` into something readable by relativizing paths."""
-    _argv = deepcopy(_argv or sys.argv)
+    argv = deepcopy(argv or sys.argv)
 
     if not raw:
-        _argv = [Path(_argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in _argv[1:]]
+        argv = [Path(argv[0]).name] + [a if a.startswith('-') else str(relative_path(a)) for a in argv[1:]]
 
     if is_github_workflow():
-        _argv = [arg.replace('\\', '/') for arg in _argv]  # Adjust windows paths
+        argv = [arg.replace('\\', '/') for arg in argv]  # Adjust windows paths
 
-    return "   " + ' '.join(_argv)
+    return "   " + ' '.join(argv)
 
 
-def invocation_txt() -> Text:
+def invocation_txt(argv: list[str] | None = None) -> Text:
     txt = Text(f"Invoked with this command:\n\n")
-    txt.append(f"{invocation_str()}\n\n", style='wheat4')
+    txt.append(f"{invocation_str(argv)}\n\n", style='wheat4')
 
     # TODO: Ugly way to keep local system info out of fixture data
     if not is_invoked_by_pytest():
         txt.append(f"Invocation raw argv:\n\n", style='dim')
-        txt.append(f"{invocation_str(raw=True)}", style='wheat4 dim')
+        txt.append(f"{invocation_str(argv, raw=True)}", style='wheat4 dim')
 
     return txt
 

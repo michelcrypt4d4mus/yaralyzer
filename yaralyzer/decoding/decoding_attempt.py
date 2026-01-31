@@ -63,7 +63,7 @@ class DecodingAttempt:
         """
         try:
             decoded_string = self._to_rich_text(escape(self.bytes.decode(self.encoding)))
-            log.info(f"{self.encoding} auto-decoded {self.bytes_match}")
+            log.debug(f"{self.encoding} auto-decoded {self.bytes_match}")
             return decoded_string
         except UnicodeDecodeError:
             log.info(f"{self.encoding} failed on 1st pass decoding {self.bytes_match} capture; custom decoding...")

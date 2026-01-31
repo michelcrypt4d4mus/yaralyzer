@@ -29,8 +29,11 @@ def temporary_config(new_argv: list[str | Path]) -> Generator[None, None, None]:
     with temporary_argv(new_argv):
         old_args = deepcopy(YaralyzerConfig.args)
         YaralyzerConfig.parse_args()
-        yield
-        YaralyzerConfig._args = old_args
+
+        try:
+            yield
+        finally:
+            YaralyzerConfig._args = old_args
 
 
 @pytest.fixture

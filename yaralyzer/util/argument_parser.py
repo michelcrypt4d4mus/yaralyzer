@@ -208,7 +208,7 @@ export.add_argument('-json', '--export-json', action='store_const',
 export.add_argument('-out', '--output-dir',
                     metavar='OUTPUT_DIR',
                     help='export files to OUTPUT_DIR instead of the current directory',
-                    type=DirValidator())
+                    type=DirValidator(allow_create=True))
 
 export.add_argument('-pfx', '--file-prefix',
                     metavar='PREFIX',

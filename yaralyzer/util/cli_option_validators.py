@@ -4,10 +4,12 @@ Validators for command line arguments.
 import re
 from abc import ABC
 from argparse import ArgumentTypeError
+from dataclasses import dataclass
 from pathlib import Path
 
 import yara
 
+from yaralyzer.util.helpers.interaction_helper import ask_to_proceed
 from yaralyzer.yara.yara_rule_builder import PATTERN_TYPES, build_yara_rule
 
 
@@ -20,12 +22,19 @@ class OptionValidator(ABC):
         return type(self).__name__.removesuffix('Validator')
 
 
+@dataclass(frozen=True)
 class DirValidator(OptionValidator):
+    allow_create: bool = False
+
     def __call__(self, value: str) -> Path:
         dir = Path(value)
 
         if not dir.exists():
-            raise ArgumentTypeError(f"'{dir}' is not a directory that exists")
+            if self.allow_create:
+                ask_to_proceed(f"Directory '{dir}' doesn't exist. Create it?")
+                dir.mkdir(parents=True)
+            else:
+                raise ArgumentTypeError(f"'{dir}' is not a directory that exists")
         elif not dir.is_dir():
             raise ArgumentTypeError(f"'{dir}' is a file not directory")
 

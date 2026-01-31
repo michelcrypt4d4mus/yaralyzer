@@ -9,9 +9,9 @@ LONG_BYTES = b"\x04f\xff\xa1\x04f\xff\xa1\x04f\xff\xba\x04f\xff\xba\x04f\xff\xba
 TRUNCATE_TEST_BYTES = b"1234567"
 
 LINUX_HASHES = {
-    'md5': '1B710FB4A0FA3717F22BB6CBBF6FD467',
-    'sha1': '24CEEDEB1457C1AB2D46DB58B47F14FBE3C2A7B5',
-    'sha256': 'E34735D74DD6AFA882B9EE1426A00CCA36AEAB07C100D86558BC78CC3965A935',
+    'md5': '9F484F190D5AFEC09D2070F68AF8921B',
+    'sha1': 'A30499F981B1757E62CF24CF656038F992DA6077',
+    'sha256': 'A870D7D50244AB0A169AF27A325F5895FBEA95371E8D972BE293462C41570BC3',
 }
 
 
@@ -23,8 +23,8 @@ def test_clean_byte_string():
 
 
 @pytest.mark.skipif(is_windows(), reason="hashes are different on windows?")
-def test_compute_file_hashes(tulips_yara_path):
-    bytes_info = BytesInfo.for_file(tulips_yara_path)
+def test_compute_file_hashes(il_tulipano_path):
+    bytes_info = BytesInfo.for_file(il_tulipano_path)
     assert bytes_info.size == 350 if is_windows() else 333
     assert bytes_info.hash_dict() == LINUX_HASHES
 

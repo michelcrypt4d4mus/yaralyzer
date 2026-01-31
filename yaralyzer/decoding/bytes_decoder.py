@@ -85,7 +85,7 @@ class BytesDecoder:
         table = new_decoding_attempts_table(self.bytes_match)
 
         # Add the encoding rows to the table if not suppressed
-        if self.bytes_match.is_decodable() and not YaralyzerConfig.args.suppress_decoding_attempts:
+        if self.bytes_match.is_decodable():
             self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT]
             # Attempt decodings we don't usually attempt if chardet is insistent enough
             forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
@@ -187,7 +187,9 @@ class BytesDecoder:
             yield Align(self.encoding_detector, 'center')
             yield NewLine()
 
-        yield self.table
+        if not YaralyzerConfig.args.suppress_decodes_table:
+            yield self.table
+
         yield NewLine()
         yield Align(self.bytes_match.bytes_hashes_table(), 'center', style='dim')
 

@@ -1,4 +1,5 @@
 # NEXT RELEASE
+* Fix behavior of `--suppress-decodes-table` vs. `--suppress-decoding-attempts`, don't attempt unnecessary decodes if either is enabled
 * Add `__suppress_decodes` to filenames if `--suppress-decodes-table` option is in use
 * Get rid of the reliance on `args._standalone_mode` when deciding whether to build decodings tables (Pdfalyzer forces it to `True` anyways)
 

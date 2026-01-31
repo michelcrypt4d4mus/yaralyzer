@@ -212,9 +212,11 @@ class BytesMatch:
         Returns:
             bool: `True` if decodable, `False` otherwise.
         """
-        return self.match_length >= YaralyzerConfig.args.min_decode_length \
-           and self.match_length <= YaralyzerConfig.args.max_decode_length \
-           and not YaralyzerConfig.args.suppress_decodes_table
+        # Checking config is an optimization so we don't do attempt unnecessary expensive decodes
+        return not YaralyzerConfig.args.suppress_decodes_table \
+           and not YaralyzerConfig.args.suppress_decoding_attempts \
+           and self.match_length >= YaralyzerConfig.args.min_decode_length \
+           and self.match_length <= YaralyzerConfig.args.max_decode_length
 
     def bytes_hashes_table(self) -> Table:
         """

@@ -1,4 +1,6 @@
 # NEXT RELEASE
+
+### 1.3.16
 * Add `invocation_txt` and `should_log` attributes to `ShellResult`
 
 ### 1.3.15

@@ -45,7 +45,6 @@ def test_private_args(yaralyze_tulips_cmd):
     with temporary_argv(yaralyze_tulips_cmd):
         args = YaralyzerConfig.parse_args()
         assert len(YaralyzerConfig.args._invoked_at_str) == 19
-        assert args._yaralyzer_standalone_mode is True
         assert args._any_export_selected is False
 
     with temporary_argv(yaralyze_tulips_cmd + ['-txt']):

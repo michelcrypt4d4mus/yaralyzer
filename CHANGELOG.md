@@ -1,7 +1,7 @@
 # NEXT RELEASE
 * Fix behavior of `--suppress-decodes-table` vs. `--suppress-decoding-attempts`, don't attempt unnecessary decodes if either is enabled
-* Add `__suppress_decodes` to filenames if `--suppress-decodes-table` option is in use
-* Get rid of the reliance on `args._standalone_mode` when deciding whether to build decodings tables (Pdfalyzer forces it to `True` anyways)
+* Add `__suppress_decodes_table` / `__suppress_decoding_attempts` to filenames if those options are in use
+* Get rid of `args._standalone_mode`
 
 ### 1.3.14
 * Give `YaralyzerConfig` a `_log_handler_kwargs prop` so pdfalyzer can override log highlighting

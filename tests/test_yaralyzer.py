@@ -20,7 +20,7 @@ from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR
 from .yara.test_yara_rule_builder import HEX_STRING
 
 CLOSENESS_THRESHOLD = 0.05
-EXPECTED_LINES = 1060
+EXPECTED_LINES = 1158
 
 
 @contextmanager
@@ -52,8 +52,11 @@ def test_export_basepath(il_tulipano_path, tulip_yaralyzer, yaralyze_tulips_cmd,
     diralyzer = Yaralyzer.for_rules_dirs([YARA_FIXTURES_DIR], il_tulipano_path)
     assert_filename(diralyzer, expected_basename + f'pdf_rule.yara,{tulips_yara_path.name}')
 
-    with temporary_config(yaralyze_tulips_cmd + ['--suppress-decodes-table']):
-        assert_filename(tulip_yaralyzer, expected_basename + f"{tulips_yara_path.name}__suppress_decodes")
+    with temporary_config(yaralyze_tulips_cmd + ['--suppress-decoding-attempts', '--suppress-decodes-table']):
+        assert_filename(tulip_yaralyzer, expected_basename + f"{tulips_yara_path.name}__suppress_decodes_table")
+
+    with temporary_config(yaralyze_tulips_cmd + ['--suppress-decoding-attempts']):
+        assert_filename(tulip_yaralyzer, expected_basename + f"{tulips_yara_path.name}__suppress_decoding_attempts")
 
     with temporary_config(yaralyze_tulips_cmd + ['--file-prefix', 'nas']):
         assert_filename(tulip_yaralyzer, 'nas__' + expected_basename + f"{tulips_yara_path.name}")

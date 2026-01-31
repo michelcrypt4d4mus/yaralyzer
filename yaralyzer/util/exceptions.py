@@ -10,14 +10,6 @@ class InvalidArgumentError(ArgumentTypeError):
     pass
 
 
-def handle_argument_error(msg: str, e: Exception | None = None, is_standalone_mode: bool = False) -> None:
-    """Standalone mode means in a situation where the `yaralyze` command is being run."""
-    if is_standalone_mode and not is_invoked_by_pytest():
-        print_fatal_error_and_exit(msg, e)
-    else:
-        raise e or InvalidArgumentError(msg)
-
-
 def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> None:
     """
     Print a fatal error message

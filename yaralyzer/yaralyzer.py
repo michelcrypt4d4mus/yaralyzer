@@ -208,7 +208,9 @@ class Yaralyzer:
         export_basename  = f"{args.file_prefix}{filename_str}"  # noqa: E221
 
         if args.suppress_decodes_table:
-            export_basename += f"__suppress_decodes"
+            export_basename += f"__suppress_decodes_table"
+        elif args.suppress_decoding_attempts:
+            export_basename += f"__suppress_decoding_attempts"
 
         export_basename += f"__maxdecode{YaralyzerConfig.args.max_decode_length}"
         export_basename += args.file_suffix

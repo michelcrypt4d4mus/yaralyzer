@@ -16,7 +16,7 @@ from yaralyzer.output.theme import YARALYZER_THEME_DICT, color_theme_grid
 from yaralyzer.util.classproperty import classproperty
 from yaralyzer.util.constants import (EARLY_EXIT_ARGS, ENV_VARS_OPTION, KILOBYTE, PNG_EXPORT_WARNING,
      YARALYZE, YARALYZER_UPPER, dotfile_name)
-from yaralyzer.util.exceptions import handle_argument_error
+from yaralyzer.util.exceptions import print_fatal_error_and_exit
 from yaralyzer.util.helpers.collections_helper import listify
 from yaralyzer.util.helpers.debug_helper import print_stack  # noqa: F401
 from yaralyzer.util.helpers.env_helper import (console_width_possibilities, is_cairosvg_installed,
@@ -205,7 +205,6 @@ class YaralyzerConfig:
             InvalidArgumentError: If args are invalid.
         """
         args._invoked_at_str = timestamp_for_filename()
-        args._yaralyzer_standalone_mode = True  # TODO: set False in PdfalyzerConfig but should be eliminated
         args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)
 
         if args.maximize_width:
@@ -222,7 +221,7 @@ class YaralyzerConfig:
             args._keep_exported_svg = bool(args.export_svg)
 
             if not (is_cairosvg_installed() or get_inkscape_version()):
-                handle_argument_error(PNG_EXPORT_WARNING, is_standalone_mode=args._yaralyzer_standalone_mode)
+                print_fatal_error_and_exit(PNG_EXPORT_WARNING)
             elif not args.export_svg:
                 args.export_svg = 'svg'
 

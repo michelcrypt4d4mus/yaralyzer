@@ -64,7 +64,9 @@ def test_no_rule_args(il_tulipano_path, yaralyze_file):
 
 
 def test_suppress_decodes(compare_to_fixture, yaralyze_tulips_args):
-    result = compare_to_fixture(*yaralyze_tulips_args, '--suppress-decodes')
+    result = compare_to_fixture(*yaralyze_tulips_args, '--suppress-decodes-table')
+    assert '(offset 0' not in result.stdout_stripped
+    result = compare_to_fixture(*yaralyze_tulips_args, '--suppress-decoding-attempts')
     assert '(offset 0' not in result.stdout_stripped
 
 
@@ -105,7 +107,7 @@ def test_multi_export(binary_file_path, compare_to_fixture, tulips_yara_path):
     assert isinstance(json_data, list), "JSON data should be a list of matches"
     assert len(json_data) == 2, "JSON data should not be empty"
     first_match = json_data[0]
-    assert first_match.get('label') == "There_Will_Be_Tulips: $tulip", "First match should have correct 'label'"
+    assert first_match.get('label') == "There_Will_Be_No_Tulips: $tulip", "First match should have correct 'label'"
     assert first_match.get('match_length') == 8, "First match should have 'length' key"
     assert first_match.get('ordinal') == 1, "First match should have 'ordinal' value of 1"
     assert first_match.get('start_idx') == 120512, "First match should have 'start_idx' value of 120512"

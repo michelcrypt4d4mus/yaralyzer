@@ -61,9 +61,9 @@ class BytesDecoder:
     decodings: list[DecodingAttempt] = field(default_factory=list)
     encoding_detector: EncodingDetector = field(init=False)
     table: Table = field(init=False)
-    was_match_decodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
-    was_match_force_decoded: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
-    was_match_undecodable: defaultdict[str, int] = field(default_factory=lambda: _build_encodings_metric_dict())
+    was_match_decodable: defaultdict[str, int] = field(default_factory=lambda: _new_encoding_metrics())
+    was_match_force_decoded: defaultdict[str, int] = field(default_factory=lambda: _new_encoding_metrics())
+    was_match_undecodable: defaultdict[str, int] = field(default_factory=lambda: _new_encoding_metrics())
 
     @property
     def bytes(self) -> bytes:
@@ -73,14 +73,9 @@ class BytesDecoder:
         # Note we instantiate EncodingDetector both the match and surrounding bytes
         self.encoding_detector = EncodingDetector(self.bytes)
         self.label = self.label or self.bytes_match.label
+        self.table = self._build_decodings_table()
 
-        if self.bytes_match.is_decodable():
-            self.table = self._build_decodings_table()
-        elif YaralyzerConfig.args._yaralyzer_standalone_mode:
-            # In standalone mode we always print the hex/raw bytes # TODO this sucks
-            self.table = self._build_decodings_table(suppress_decodes=True)
-
-    def _build_decodings_table(self, suppress_decodes: bool = False) -> Table:
+    def _build_decodings_table(self) -> Table:
         """
         First rows are the raw / hex views of the bytes, next rows are the attempted decodings.
 
@@ -90,7 +85,7 @@ class BytesDecoder:
         table = new_decoding_attempts_table(self.bytes_match)
 
         # Add the encoding rows to the table if not suppressed
-        if not (YaralyzerConfig.args.suppress_decoding_attempts or suppress_decodes):
+        if self.bytes_match.is_decodable() and not YaralyzerConfig.args.suppress_decoding_attempts:
             self.decodings = [DecodingAttempt(self.bytes_match, encoding) for encoding in ENCODINGS_TO_ATTEMPT]
             # Attempt decodings we don't usually attempt if chardet is insistent enough
             forced_decodes = self._undecoded_assessments(self.encoding_detector.force_decode_assessments)
@@ -197,7 +192,7 @@ class BytesDecoder:
         yield Align(self.bytes_match.bytes_hashes_table(), 'center', style='dim')
 
 
-def _build_encodings_metric_dict():
+def _new_encoding_metrics():
     """One key for each key in `ENCODINGS_TO_ATTEMPT`, values are all 0."""
     metrics_dict = defaultdict(lambda: 0)
 

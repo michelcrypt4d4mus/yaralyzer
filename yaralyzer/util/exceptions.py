@@ -1,4 +1,3 @@
-from argparse import ArgumentTypeError
 from rich.padding import Padding
 from rich.text import Text
 

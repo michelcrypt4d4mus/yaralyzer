@@ -41,12 +41,12 @@
 ### 1.3.1
 * Accomodate Python 3.10 for a little while longer
 
-# 1.3.0
+## 1.3.0
 * Add `--export-png` option to render .png images of output
 * Add `--suppress-output` option
 * Truncate extremely long filenames so they don't exceed system limit
 
-# 1.2.0
+## 1.2.0
 * Multi-select command line options (e.g. `--yara-file`, `--rule-dir`) can be set permanently via env vars using comma separated strings
 * Add `--env-vars` option to display exactly which command line options can be set by which variables
 * Add `--echo-command` option to print the exact command used along with the output

@@ -46,7 +46,7 @@ YARA just tells you the byte position and the matched string but it can't tell y
 
 Enter **The Yaralyzer**, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were forced into various character encodings.
 
-**The Yaralyzer** isn't a malware reversing tool. It can't do all the things a tool like [CyberChef](https://gchq.github.io/CyberChef/) does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool like [CyberChef](https://gchq.github.io/CyberChef/).
+**The Yaralyzer** isn't a malware reversing tool. It can't the things a tool like [CyberChef](https://gchq.github.io/CyberChef/) does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool.
 
 # Installation
 Install it with [`pipx`](https://pypa.github.io/pipx/) or `pip3`. `pipx` is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with `pip`/`pip3`.
@@ -100,7 +100,7 @@ If you want to export `.png` images like the ones below directly from Yaralyzer 
 1. Install [Inkscape](https://inkscape.org/) (homebrew users can install it with `brew install --cask inkscape`)
 2. Ask for the `img` extra when installing Yaralyzer which will install [`cairosvg`](https://pypi.org/project/CairoSVG/): `pipx install yaralyzer[img]`. You'll also have to install the CairoSVG executable manually in different ways depending on your operating system, see [the CairoSVG docs](https://cairosvg.org/documentation/#installation) for the specifics.
 
-In our experience Inkscape and CairoSVG both work though we've seen some glitchiness in the rendered output using CairoSVG on the SVGs rendered by Yaralyzer so Inkscape is the recommended option.
+In our experience Inkscape and CairoSVG both work though we've seen some glitchiness in the rendered output using CairoSVG on SVGs rendered by Yaralyzer so Inkscape is the recommended option.
 
 
 #### Raw YARA match result:

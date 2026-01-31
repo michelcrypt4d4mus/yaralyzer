@@ -1,13 +1,10 @@
-import pytest
 import re
 
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util import cli_option_validators
-from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZE, YARALYZER
-from yaralyzer.util.exceptions import InvalidArgumentError
+from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZER
 from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
-from yaralyzer.util.helpers.shell_helper import safe_args
 from yaralyzer.util.logging import log
 
 ENV_VARS = {
@@ -52,12 +49,9 @@ def test_private_args(yaralyze_tulips_cmd):
         assert args._any_export_selected is True
 
     with temporary_argv(yaralyze_tulips_cmd + ['-png']):
-        try:
-            args = YaralyzerConfig.parse_args()
-            assert args.export_svg == 'svg'
-            assert args._keep_exported_svg is False
-        except InvalidArgumentError as e:
-            log.warning(f"Got InvalidArgumentError {e} but this is probably ok")
+        args = YaralyzerConfig.parse_args()
+        assert args.export_svg == 'svg'
+        assert args._keep_exported_svg is False
 
 
 def test_yaralyzer_show_colors_option(yaralyze_run):

@@ -13,7 +13,6 @@ from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.console import console
 from yaralyzer.util.helpers.env_helper import temporary_argv
 from yaralyzer.util.helpers.string_helper import line_count
-from yaralyzer.yara.yara_rule_builder import REGEX
 from yaralyzer.yaralyzer import Yaralyzer
 
 from .conftest import MAXDECODE_SUFFIX, YARA_FIXTURES_DIR

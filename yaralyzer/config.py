@@ -200,9 +200,6 @@ class YaralyzerConfig:
 
         Args:
             args (Namespace): Result of calling ArgumentParser.parse_args()
-
-        Raises:
-            InvalidArgumentError: If args are invalid.
         """
         args._invoked_at_str = timestamp_for_filename()
         args._any_export_selected = any(k for k, v in vars(args).items() if k.startswith('export') and v)

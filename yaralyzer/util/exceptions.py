@@ -2,12 +2,7 @@ from argparse import ArgumentTypeError
 from rich.padding import Padding
 from rich.text import Text
 
-from yaralyzer.util.helpers.env_helper import is_invoked_by_pytest
 from yaralyzer.util.logging import highlighter, log_console
-
-
-class InvalidArgumentError(ArgumentTypeError):
-    pass
 
 
 def print_fatal_error(msg: str | Text | None, e: Exception | None = None) -> None:

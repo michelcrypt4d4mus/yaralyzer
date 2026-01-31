@@ -1,11 +1,12 @@
 import re
 
+import pytest
+
 from yaralyzer.config import YaralyzerConfig
 from yaralyzer.output.theme import CLI_OPTION_TYPE_STYLES
 from yaralyzer.util import cli_option_validators
 from yaralyzer.util.constants import ENV_VARS_OPTION, YARALYZER
-from yaralyzer.util.helpers.env_helper import temporary_argv, temporary_env
-from yaralyzer.util.logging import log
+from yaralyzer.util.helpers.env_helper import is_github_workflow, is_windows, temporary_argv, temporary_env
 
 ENV_VARS = {
     'YARALYZER_SUPPRESS_DECODES_TABLE': 'True',
@@ -38,6 +39,7 @@ def test_output_dir(output_dir_args, tmp_dir, yaralyze_tulips_cmd):
         assert args.output_dir == tmp_dir
 
 
+@pytest.mark.skipif(is_github_workflow() and is_windows(), reason="cairo executable doesn't come w/pkg on macOS/windows")  # noqa: E501
 def test_private_args(yaralyze_tulips_cmd):
     with temporary_argv(yaralyze_tulips_cmd):
         args = YaralyzerConfig.parse_args()

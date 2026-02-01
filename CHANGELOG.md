@@ -1,5 +1,8 @@
 # NEXT RELEASE
 
+### 1.3.17
+* Use the ANSI stripped versions of stdout/stderr in `ShellResult.output_logs()`
+
 ### 1.3.16
 * Add `invocation_txt` and `should_log` attributes to `ShellResult`
 

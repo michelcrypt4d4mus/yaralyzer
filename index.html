@@ -1,0 +1,1275 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="API Documentation for Yaralyzer, a tool for analyzing and managing YARA rules.">
+      
+      
+        <meta name="author" content="Michel de Cryptadamus">
+      
+      
+      
+      
+        <link rel="next" href="api/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Yaralyzer API Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-yaralyzer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Yaralyzer API Documentation" class="md-header__button md-logo" aria-label="Yaralyzer API Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Yaralyzer API Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/michelcrypt4d4mus/yaralyzer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yaralyzer
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Yaralyzer API Documentation" class="md-nav__button md-logo" aria-label="Yaralyzer API Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Yaralyzer API Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/michelcrypt4d4mus/yaralyzer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yaralyzer
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why It Do
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Api
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Api
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/argument_parser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Argument parser
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/bytes_decoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bytes decoder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/bytes_match/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bytes match
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/character_encodings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Character encodings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/classproperty/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Classproperty
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/cli_option_validators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cli option validators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/decoding_attempt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decoding attempt
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/decoding_attempts_table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decoding attempts table
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/decoding_table_row/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decoding table row
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/encoding_assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Encoding assessment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/encoding_detector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Encoding detector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/error/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/file_export/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File export
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/file_hashes_table/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File hashes table
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/regex_match_metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regex match metrics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/theme/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theme
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/timeout/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timeout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/yara_match/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Yara match
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/yara_rule_builder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Yara rule builder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/yaralyzer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Yaralyzer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why It Do
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<p>This is an embedded verson of the <code>yaralyzer</code> GitHub repository's <a href="https://github.com/michelcrypt4d4mus/yaralyzer">README.md</a>. A few links may not work here that do work over there.</p>
+<p><a href="https://pypi.org/project/yaralyzer/"><img alt="GithubRelease" src="https://img.shields.io/github/v/release/michelcrypt4d4mus/yaralyzer?sort=semver" /></a>
+<img alt="Release" src="https://img.shields.io/pypi/v/yaralyzer" />
+<img alt="Downloads" src="https://img.shields.io/pypi/dm/yaralyzer" />
+<a href="https://github.com/michelcrypt4d4mus/yaralyzer/actions/workflows/python-package.yml"><img alt="Tests" src="https://github.com/michelcrypt4d4mus/yaralyzer/actions/workflows/python-package.yml/badge.svg" /></a>
+<img alt="Python Version" src="https://img.shields.io/pypi/pyversions/yaralyzer" /></p>
+<h1 id="the-yaralyzer">THE YARALYZER</h1>
+<p><img alt="YARA match" src="https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/top_of_readme.png" /></p>
+<p>Visually inspect all of the regex matches (and their sexier, more cloak and dagger cousins, the <a href="https://github.com/VirusTotal/yara-python">YARA</a> matches) found in binary data and/or text. See what happens when you force various character encodings upon those matched bytes. <a href="https://github.com/michelcrypt4d4mus/yaralyzer#example-output">With colors</a>.</p>
+<h4 id="quick-start">Quick Start</h4>
+<pre><code class="language-sh">pipx install yaralyzer
+
+# Scan against YARA definitions in a file:
+yaralyze --yara-rules /secret/vault/sigmunds_malware_rules.yara lacan_buys_the_dip.pdf
+
+# Scan against an arbitrary regular expression:
+yaralyze --regex-pattern 'good and evil.*of\s+\w+byte' --regex-modifier wide the_crypto_archipelago.exe
+
+# Scan against an arbitrary YARA hex pattern
+yaralyze --hex-pattern 'd0 93 d0 a3 d0 [-] 9b d0 90 d0 93' one_day_in_the_life_of_ivan_cryptosovich.bin
+</code></pre>
+<h4 id="what-it-do">What It Do</h4>
+<ol>
+<li><strong>See the actual bytes your YARA rules are matching.</strong> No more digging around copy/pasting the start positions reported by YARA into your favorite hex editor. Displays both the bytes matched by YARA as well as a configurable number of bytes before and after each match in hexadecimal and "raw" python string representation.</li>
+<li><strong>Do the same for byte patterns and regular expressions without writing a YARA file.</strong> If you're too lazy to write a YARA file but are trying to determine, say, whether there's a regular expression hidden somewhere in the file you could scan for the pattern <code>'/.+/'</code> and immediately get a window into all the bytes in the file that live between front slashes. Same story for quotes, BOMs, etc. Any regex YARA can handle is supported so the sky is the limit.</li>
+<li><strong>Detect the possible encodings of each set of matched bytes.</strong> <a href="https://github.com/chardet/chardet"><code>chardet</code></a> is a sophisticated library for guessing character encodings and it is leveraged here.</li>
+<li><strong>Display the result of forcing various character encodings upon the matched areas.</strong> Several default character encodings will be <em>forcibly</em> attempted in the region around the match. <a href="https://github.com/chardet/chardet"><code>chardet</code></a> will also be leveraged to see if the bytes fit the pattern of <em>any</em> known encoding. If <code>chardet</code> is confident enough (configurable) an attempt at decoding the bytes using that encoding will be displayed.</li>
+<li><strong>Export the matched regions/decodings to SVG, HTML, and colored text files.</strong> Show off your ASCII art.</li>
+</ol>
+<h4 id="why-it-do">Why It Do</h4>
+<p>The Yaralyzer's functionality was extracted from <a href="https://github.com/michelcrypt4d4mus/pdfalyzer">The Pdfalyzer</a> when it became apparent that visualizing and decoding pattern matches in binaries had more utility than just in a PDF analysis tool.</p>
+<p><a href="https://github.com/VirusTotal/yara-python">YARA</a>, for those who are unaware[^1], is branded as a malware analysis/alerting tool but it's actually both a lot more and a lot less than that. One way to think about it is that YARA is a regular expression matching engine on steroids. It can locate regex matches in binaries like any regex engine but it can also do far wilder things like combine regexes in logical groups, compare regexes against all 256 XORed versions of a binary, check for <code>base64</code> and other encodings of the pattern, and more.  Maybe most importantly of all YARA provides a standard text based format for
+people to <em>share</em> their 'roided regexes with the world. All these features are particularly useful when analyzing or reverse engineering malware, whose authors tend to invest a great deal of time into making stuff hard to find.</p>
+<p>But... that's also all YARA does. Everything else is up to the user. YARA's just a match engine and if you don't know what to match (or even what character encoding you might be able to match in) it only gets you so far. I found myself a bit frustrated trying to use YARA to look at all the matches of a few critical patterns:</p>
+<ol>
+<li>Bytes between escaped quotes (<code>\".+\"</code> and <code>\'.+\'</code>)</li>
+<li>Bytes between front slashes (<code>/.+/</code>). Front slashes demarcate a regular expression in many implementations and I was trying to see if any of the bytes matching this pattern were <em>actually</em> regexes.</li>
+</ol>
+<p>YARA just tells you the byte position and the matched string but it can't tell you whether those bytes are UTF-8, UTF-16, Latin-1, etc. etc. (or none of the above). I also found myself wanting to understand what was going <em>in the region</em> of the matched bytes and not just <em>in</em> the matched bytes. In other words I wanted to scope the bytes immediately before and after whatever got matched.</p>
+<p>Enter <strong>The Yaralyzer</strong>, which lets you quickly scan the regions around matches while also showing you what those regions would look like if they were forced into various character encodings.</p>
+<p><strong>The Yaralyzer</strong> isn't a malware reversing tool. It can't the things a tool like <a href="https://gchq.github.io/CyberChef/">CyberChef</a> does and it doesn't try to. It's more intended to give you a quick visual overview of suspect regions in the binary so you can hone in on the areas you might want to inspect with a more serious tool.</p>
+<h1 id="installation">Installation</h1>
+<p>Install it with <a href="https://pypa.github.io/pipx/"><code>pipx</code></a> or <code>pip3</code>. <code>pipx</code> is a marginally better solution as it guarantees any packages installed with it will be isolated from the rest of your local python environment. Of course if you don't really have a local python environment this is a moot point and you can feel free to install with <code>pip</code>/<code>pip3</code>.</p>
+<pre><code>pipx install yaralyzer
+</code></pre>
+<h1 id="usage">Usage</h1>
+<p>Run <code>yaralyze -h</code> to see the command line options (screenshot below).</p>
+<p><img alt="" src="https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/yaralyze_help.png" /></p>
+<p>For info on exporting SVG images, HTML, etc., see <a href="#example-output">Example Output</a>.</p>
+<h3 id="configuration">Configuration</h3>
+<p>If you place a file called <code>.yaralyzer</code> in your home directory or the current working directory then environment variables specified in that <code>.yaralyzer</code> file will be added to the environment each time yaralyzer is invoked. This provides a mechanism for permanently configuring various command line options so you can avoid typing them over and over. See the comments in the example file <a href="../../.yaralyzer.example"><code>.yaralyzer.example</code></a> for more info.</p>
+<p>Only one <code>.yaralyzer</code> file will be loaded and the working directory's <code>.yaralyzer</code> takes precedence over the home directory's <code>.yaralyzer</code>.</p>
+<h3 id="as-a-library">As A Library</h3>
+<p><a href="../../yaralyzer/yaralyzer.py"><code>Yaralyzer</code></a> is the main class. Auto generated documentation for <code>Yaralyzer</code>'s various classes and methods can be found <a href="https://michelcrypt4d4mus.github.io/yaralyzer/">here</a>. It has a variety of <a href="https://michelcrypt4d4mus.github.io/yaralyzer/api/yaralyzer/">alternate constructors</a> supporting:</p>
+<ol>
+<li>Precompiled YARA rules</li>
+<li>Creating a YARA rule from a string</li>
+<li>Loading YARA rules from files</li>
+<li>Loading YARA rules from all <code>.yara</code> file in a directory</li>
+<li>Scanning <code>bytes</code></li>
+<li>Scanning a file</li>
+</ol>
+<p>Should you want to iterate over the <a href="https://michelcrypt4d4mus.github.io/yaralyzer/api/bytes_match/"><code>BytesMatch</code></a> (like a <code>re.Match</code> object for a YARA match) and <a href="https://michelcrypt4d4mus.github.io/yaralyzer/api/bytes_decoder/"><code>BytesDecoder</code></a> (tracks decoding attempt stats) objects used by The Yaralyzer, you can do so like this:</p>
+<pre><code class="language-python">from yaralyzer.yaralyzer import Yaralyzer
+
+yaralyzer = Yaralyzer.for_rules_files(['/secret/rule.yara'], 'lacan_buys_the_dip.pdf')
+
+for bytes_match, bytes_decoder in yaralyzer.match_iterator():
+    do_stuff()
+</code></pre>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p>If you get a <code>yara.Error</code> with a numerical error code you can check what that code might mean <a href="https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h">here</a>.</p>
+<h1 id="example-output">Example Output</h1>
+<p>The Yaralyzer can export visualizations to HTML, ANSI colored text, and both PNG and SVG vector images using the file export functionality that comes with <a href="https://github.com/Textualize/rich">Rich</a> as well as a (somewhat limited) plain text JSON format.</p>
+<p>If you want to export <code>.png</code> images like the ones below directly from Yaralyzer you'll need to do one of these things:</p>
+<ol>
+<li>Install <a href="https://inkscape.org/">Inkscape</a> (homebrew users can install it with <code>brew install --cask inkscape</code>)</li>
+<li>Ask for the <code>img</code> extra when installing Yaralyzer which will install <a href="https://pypi.org/project/CairoSVG/"><code>cairosvg</code></a>: <code>pipx install yaralyzer[img]</code>. You'll also have to install the CairoSVG executable manually in different ways depending on your operating system, see <a href="https://cairosvg.org/documentation/#installation">the CairoSVG docs</a> for the specifics.</li>
+</ol>
+<p>In our experience Inkscape and CairoSVG both work though we've seen some glitchiness in the rendered output using CairoSVG on SVGs rendered by Yaralyzer so Inkscape is the recommended option.</p>
+<h4 id="raw-yara-match-result">Raw YARA match result:</h4>
+<p><img alt="" src="https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/yara_match_result.jpg" /></p>
+<h4 id="display-hex-raw-python-string-and-various-attempted-decodings-of-both-the-match-and-the-bytes-before-and-after-the-match-configurable">Display hex, raw python string, and various attempted decodings of both the match and the bytes before and after the match (configurable):</h4>
+<p><img alt="" src="https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/font_34_frontslash_scan.png" /></p>
+<h4 id="bonus-see-what-chardetdetect-thinks-about-the-likelihood-your-bytes-are-in-a-given-encodinglanguage">Bonus: see what <code>chardet.detect()</code> thinks about the likelihood your bytes are in a given encoding/language:</h4>
+<p><img alt="" src="https://github.com/michelcrypt4d4mus/yaralyzer/raw/master/doc/rendered_images/decoding_and_chardet_table_2.png" /></p>
+<h1 id="contributing">Contributing</h1>
+<p>Contributions are more than welcome; see <a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a> for details on environment setup, running the test suite, etc. There's also a TODO list over there of work that needs to be done.</p>
+<p>[^1]: As I was until recently.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

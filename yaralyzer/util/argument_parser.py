@@ -29,7 +29,7 @@ def epilog(config: type[YaralyzerConfig]) -> str:
     metavar_style = argparse_style('metavar')
     color_var = lambda s: f"[{metavar_style}]{s}[/{metavar_style}]"  # noqa: E731
 
-    msg = f"Values for most command options can be permanently set by setting via env vars or creating a " \
+    msg = f"Values for most command line options can be permanently set by setting via env vars or creating a " \
           f"{color_var(f'.{package}')} file. Try [{argparse_style('args')}]{config.executable_name} {ENV_VARS_OPTION}" \
           f"[/{argparse_style('args')}] for more info." \
 

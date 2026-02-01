@@ -37,7 +37,7 @@ class ShellResult:
 
     def __post_init__(self):
         if self.should_log:
-            log.debug(self.output_logs())
+            log.debug(self.output_logs()) #, extra={"highlighter": None})
 
     @property
     def invocation_str(self) -> str:
@@ -137,9 +137,9 @@ class ShellResult:
         """Long string with all info about a shell command's execution and output."""
         msg = f"Return code {self.result.returncode} from shell command:\n\n{self.invocation_str}"
 
-        for i, stream in enumerate([self.stdout, self.stderr]):
+        for i, stream in enumerate([self.stdout_stripped, self.stderr_stripped]):
             label = 'stdout' if i == 0 else 'stderr'
-            msg += f"\n\n[{label}"
+            msg += f"\n\n[{label}_stripped"
 
             if stream:
                 msg += f"]\n{LOG_SEPARATOR}\n{stream}\n{LOG_SEPARATOR}"
